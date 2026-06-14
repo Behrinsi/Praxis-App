@@ -1,0 +1,125 @@
+PRAXIS SABRINA BEHRINGER · ABRECHNUNG
+iPhone-/iPad-App (PWA) – Installation
+========================================================
+
+Was ist das?
+------------
+Diese „App" ist eine Progressive Web App (PWA): dieselbe Anwendung, die auch
+am Computer im Browser läuft, lässt sich auf dem iPhone zum Home-Bildschirm
+hinzufügen und startet dann wie eine normale App – im Vollbild, mit eigenem
+Icon. Vorteile gegenüber einer App-Store-App:
+
+  • keine App-Store-Gebühren, keine Freigabeprozesse
+  • Aktualisierung durch einfaches Ersetzen der Dateien
+  • dieselben Daten und dasselbe Erscheinungsbild wie am Computer
+  • funktioniert auch auf dem iPad
+
+Wichtig: Die Daten (Rechnungen, Rezepte, Verträge, Einstellungen) werden
+ausschließlich lokal auf dem jeweiligen Gerät im Browser gespeichert. Sie
+werden nicht zwischen Geräten synchronisiert. Für die Übertragung auf ein
+anderes Gerät bitte in der App „Sicherung exportieren" nutzen und die Datei
+auf dem anderen Gerät „importieren".
+
+
+Inhalt dieses Pakets
+--------------------
+  index.html              – die Anwendung
+  manifest.webmanifest    – App-Beschreibung (Name, Icon, Farben)
+  sw.js                   – Offline-Funktion (Service Worker)
+  icon-180.png            – App-Icon (iPhone)
+  icon-192.png            – App-Icon
+  icon-512.png            – App-Icon (hohe Auflösung)
+
+
+SCHRITT 1 – Dateien ins Internet stellen (einmalig)
+---------------------------------------------------
+Für die App-Installation und die Offline-Funktion müssen die Dateien über
+eine https-Adresse erreichbar sein (nicht als lose Datei). Das geht kostenlos.
+Wichtig: ALLE Dateien müssen im selben Ordner liegen.
+
+Option A – GitHub Pages (kostenlos, dauerhaft):
+  1. Kostenloses Konto auf github.com anlegen.
+  2. Neues Repository erstellen (z. B. „praxis-abrechnung"), als „privat"
+     oder „öffentlich". Hinweis: Bei GitHub Pages ist die Seite technisch
+     über die Adresse erreichbar – legen Sie daher keine echten Patientendaten
+     in die Datei; diese werden ohnehin erst lokal in der App eingegeben.
+  3. Alle Dateien dieses Pakets in das Repository hochladen
+     (Add file → Upload files).
+  4. Settings → Pages → Branch „main" / Ordner „/root" → Save.
+  5. Nach ein paar Minuten erscheint dort die Adresse, z. B.
+     https://IHR-NAME.github.io/praxis-abrechnung/
+
+Option B – Netlify (kostenlos):
+  1. Konto auf netlify.com anlegen und einloggen.
+  2. Den gesamten Ordner per Drag-and-drop auf die „Deploys"-Fläche ziehen.
+  3. Netlify zeigt sofort eine https-Adresse an.
+
+Option C – eigener Webspace / Praxis-Homepage:
+  Den Ordner per FTP in ein Unterverzeichnis hochladen (z. B. /app/) und die
+  zugehörige https-Adresse aufrufen.
+
+
+SCHRITT 2 – Auf dem iPhone zum Home-Bildschirm hinzufügen
+---------------------------------------------------------
+  1. Die Adresse aus Schritt 1 in **Safari** öffnen
+     (wichtig: Safari, nicht Chrome – nur Safari kann unter iOS Web-Apps
+     installieren).
+  2. Unten auf das Teilen-Symbol tippen (Quadrat mit Pfeil nach oben).
+  3. „Zum Home-Bildschirm" wählen.
+  4. Name bestätigen (z. B. „Praxis Behringer") → „Hinzufügen".
+  5. Das Icon erscheint auf dem Home-Bildschirm. Beim ersten Start bitte
+     einmal mit Internetverbindung öffnen, damit alles geladen und für die
+     Offline-Nutzung gespeichert wird.
+
+
+Drucken / PDF auf dem iPhone
+----------------------------
+In der App auf „… drucken / als PDF" tippen. Im Druckdialog kann über
+„Drucker" → Auf zwei Fingern aufziehen bzw. „Als PDF sichern" eine
+PDF-Datei erzeugt und z. B. per Mail versendet oder in „Dateien"
+gespeichert werden.
+
+
+Aktualisierung auf eine neue Version
+------------------------------------
+Neue Dateien am selben Ort ersetzen (in sw.js zusätzlich die Zeile
+  const CACHE = 'praxis-behringer-v1';
+auf v2, v3 … hochzählen). Die App lädt die neue Version beim nächsten Start
+mit Internetverbindung automatisch nach.
+
+
+Ohne Internet / nur am Computer nutzen
+--------------------------------------
+Die Datei „index.html" kann auch einfach per Doppelklick im Browser am
+Computer geöffnet werden – ganz ohne die Schritte oben. Die Offline-App-
+Installation auf dem iPhone setzt jedoch die https-Adresse aus Schritt 1
+voraus.
+
+
+========================================================
+Google-Kalender verbinden (optional)
+========================================================
+Termine aus Google Calendar lassen sich in der App ansehen und in eine
+Rechnung übernehmen. Das funktioniert nur in der gehosteten Variante
+(Schritt 1 oben) und erfordert eine einmalige Einrichtung:
+
+  1. console.cloud.google.com öffnen, kostenloses Projekt anlegen.
+  2. „APIs & Dienste" → „Google Calendar API" aktivieren.
+  3. „OAuth-Zustimmungsbildschirm" → extern; sich selbst (das Praxis-
+     Google-Konto) als Testnutzer eintragen.
+  4. „Anmeldedaten" → „OAuth-Client-ID erstellen" → Typ „Webanwendung".
+  5. Bei „Autorisierte JavaScript-Quellen" die https-Adresse Ihrer App
+     eintragen (z. B. https://ihr-name.github.io – ohne Pfad/Unterseite).
+  6. Die erzeugte Client-ID in der App unter „Einstellungen → Google
+     Kalender" einfügen und speichern.
+  7. Im Reiter „Kalender" auf „Mit Google verbinden" tippen, Zeitraum
+     wählen, Termine auswählen und „→ neue Rechnung".
+
+Hinweise:
+  • Zugriff erfolgt ausschließlich lesend; es werden keine Kalenderdaten
+    dauerhaft in der App gespeichert.
+  • Datenschutz: Termine mit Patientennamen sind Gesundheitsdaten. Für die
+    DSGVO-Konformität von Google Calendar ggf. Auftragsverarbeitungsvertrag
+    und Datensparsamkeit (Kürzel statt Klarnamen) beachten.
+  • Auf dem iPhone kann sich das Google-Anmeldefenster in Safari öffnen; am
+    Computer/in mobiler Safari läuft die Anmeldung am zuverlässigsten.

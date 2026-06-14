@@ -1,0 +1,1788 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Praxis Behringer">
+<meta name="theme-color" content="#8a8a5c">
+<meta name="format-detection" content="telephone=no">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
+<title>Abrechnung · Praxis Sabrina Behringer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500;1,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<script>/* qrcodejs (davidshimjs) – eingebettet für Offline-Betrieb */
+var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this.parsedData=[];for(var b=[],d=0,e=this.data.length;e>d;d++){var f=this.data.charCodeAt(d);f>65536?(b[0]=240|(1835008&f)>>>18,b[1]=128|(258048&f)>>>12,b[2]=128|(4032&f)>>>6,b[3]=128|63&f):f>2048?(b[0]=224|(61440&f)>>>12,b[1]=128|(4032&f)>>>6,b[2]=128|63&f):f>128?(b[0]=192|(1984&f)>>>6,b[1]=128|63&f):b[0]=f,this.parsedData=this.parsedData.concat(b)}this.parsedData.length!=this.data.length&&(this.parsedData.unshift(191),this.parsedData.unshift(187),this.parsedData.unshift(239))}function b(a,b){this.typeNumber=a,this.errorCorrectLevel=b,this.modules=null,this.moduleCount=0,this.dataCache=null,this.dataList=[]}function i(a,b){if(void 0==a.length)throw new Error(a.length+"/"+b);for(var c=0;c<a.length&&0==a[c];)c++;this.num=new Array(a.length-c+b);for(var d=0;d<a.length-c;d++)this.num[d]=a[d+c]}function j(a,b){this.totalCount=a,this.dataCount=b}function k(){this.buffer=[],this.length=0}function m(){return"undefined"!=typeof CanvasRenderingContext2D}function n(){var a=!1,b=navigator.userAgent;return/android/i.test(b)&&(a=!0,aMat=b.toString().match(/android ([0-9]\.[0-9])/i),aMat&&aMat[1]&&(a=parseFloat(aMat[1]))),a}function r(a,b){for(var c=1,e=s(a),f=0,g=l.length;g>=f;f++){var h=0;switch(b){case d.L:h=l[f][0];break;case d.M:h=l[f][1];break;case d.Q:h=l[f][2];break;case d.H:h=l[f][3]}if(h>=e)break;c++}if(c>l.length)throw new Error("Too long data");return c}function s(a){var b=encodeURI(a).toString().replace(/\%[0-9a-fA-F]{2}/g,"a");return b.length+(b.length!=a?3:0)}a.prototype={getLength:function(){return this.parsedData.length},write:function(a){for(var b=0,c=this.parsedData.length;c>b;b++)a.put(this.parsedData[b],8)}},b.prototype={addData:function(b){var c=new a(b);this.dataList.push(c),this.dataCache=null},isDark:function(a,b){if(0>a||this.moduleCount<=a||0>b||this.moduleCount<=b)throw new Error(a+","+b);return this.modules[a][b]},getModuleCount:function(){return this.moduleCount},make:function(){this.makeImpl(!1,this.getBestMaskPattern())},makeImpl:function(a,c){this.moduleCount=4*this.typeNumber+17,this.modules=new Array(this.moduleCount);for(var d=0;d<this.moduleCount;d++){this.modules[d]=new Array(this.moduleCount);for(var e=0;e<this.moduleCount;e++)this.modules[d][e]=null}this.setupPositionProbePattern(0,0),this.setupPositionProbePattern(this.moduleCount-7,0),this.setupPositionProbePattern(0,this.moduleCount-7),this.setupPositionAdjustPattern(),this.setupTimingPattern(),this.setupTypeInfo(a,c),this.typeNumber>=7&&this.setupTypeNumber(a),null==this.dataCache&&(this.dataCache=b.createData(this.typeNumber,this.errorCorrectLevel,this.dataList)),this.mapData(this.dataCache,c)},setupPositionProbePattern:function(a,b){for(var c=-1;7>=c;c++)if(!(-1>=a+c||this.moduleCount<=a+c))for(var d=-1;7>=d;d++)-1>=b+d||this.moduleCount<=b+d||(this.modules[a+c][b+d]=c>=0&&6>=c&&(0==d||6==d)||d>=0&&6>=d&&(0==c||6==c)||c>=2&&4>=c&&d>=2&&4>=d?!0:!1)},getBestMaskPattern:function(){for(var a=0,b=0,c=0;8>c;c++){this.makeImpl(!0,c);var d=f.getLostPoint(this);(0==c||a>d)&&(a=d,b=c)}return b},createMovieClip:function(a,b,c){var d=a.createEmptyMovieClip(b,c),e=1;this.make();for(var f=0;f<this.modules.length;f++)for(var g=f*e,h=0;h<this.modules[f].length;h++){var i=h*e,j=this.modules[f][h];j&&(d.beginFill(0,100),d.moveTo(i,g),d.lineTo(i+e,g),d.lineTo(i+e,g+e),d.lineTo(i,g+e),d.endFill())}return d},setupTimingPattern:function(){for(var a=8;a<this.moduleCount-8;a++)null==this.modules[a][6]&&(this.modules[a][6]=0==a%2);for(var b=8;b<this.moduleCount-8;b++)null==this.modules[6][b]&&(this.modules[6][b]=0==b%2)},setupPositionAdjustPattern:function(){for(var a=f.getPatternPosition(this.typeNumber),b=0;b<a.length;b++)for(var c=0;c<a.length;c++){var d=a[b],e=a[c];if(null==this.modules[d][e])for(var g=-2;2>=g;g++)for(var h=-2;2>=h;h++)this.modules[d+g][e+h]=-2==g||2==g||-2==h||2==h||0==g&&0==h?!0:!1}},setupTypeNumber:function(a){for(var b=f.getBCHTypeNumber(this.typeNumber),c=0;18>c;c++){var d=!a&&1==(1&b>>c);this.modules[Math.floor(c/3)][c%3+this.moduleCount-8-3]=d}for(var c=0;18>c;c++){var d=!a&&1==(1&b>>c);this.modules[c%3+this.moduleCount-8-3][Math.floor(c/3)]=d}},setupTypeInfo:function(a,b){for(var c=this.errorCorrectLevel<<3|b,d=f.getBCHTypeInfo(c),e=0;15>e;e++){var g=!a&&1==(1&d>>e);6>e?this.modules[e][8]=g:8>e?this.modules[e+1][8]=g:this.modules[this.moduleCount-15+e][8]=g}for(var e=0;15>e;e++){var g=!a&&1==(1&d>>e);8>e?this.modules[8][this.moduleCount-e-1]=g:9>e?this.modules[8][15-e-1+1]=g:this.modules[8][15-e-1]=g}this.modules[this.moduleCount-8][8]=!a},mapData:function(a,b){for(var c=-1,d=this.moduleCount-1,e=7,g=0,h=this.moduleCount-1;h>0;h-=2)for(6==h&&h--;;){for(var i=0;2>i;i++)if(null==this.modules[d][h-i]){var j=!1;g<a.length&&(j=1==(1&a[g]>>>e));var k=f.getMask(b,d,h-i);k&&(j=!j),this.modules[d][h-i]=j,e--,-1==e&&(g++,e=7)}if(d+=c,0>d||this.moduleCount<=d){d-=c,c=-c;break}}}},b.PAD0=236,b.PAD1=17,b.createData=function(a,c,d){for(var e=j.getRSBlocks(a,c),g=new k,h=0;h<d.length;h++){var i=d[h];g.put(i.mode,4),g.put(i.getLength(),f.getLengthInBits(i.mode,a)),i.write(g)}for(var l=0,h=0;h<e.length;h++)l+=e[h].dataCount;if(g.getLengthInBits()>8*l)throw new Error("code length overflow. ("+g.getLengthInBits()+">"+8*l+")");for(g.getLengthInBits()+4<=8*l&&g.put(0,4);0!=g.getLengthInBits()%8;)g.putBit(!1);for(;;){if(g.getLengthInBits()>=8*l)break;if(g.put(b.PAD0,8),g.getLengthInBits()>=8*l)break;g.put(b.PAD1,8)}return b.createBytes(g,e)},b.createBytes=function(a,b){for(var c=0,d=0,e=0,g=new Array(b.length),h=new Array(b.length),j=0;j<b.length;j++){var k=b[j].dataCount,l=b[j].totalCount-k;d=Math.max(d,k),e=Math.max(e,l),g[j]=new Array(k);for(var m=0;m<g[j].length;m++)g[j][m]=255&a.buffer[m+c];c+=k;var n=f.getErrorCorrectPolynomial(l),o=new i(g[j],n.getLength()-1),p=o.mod(n);h[j]=new Array(n.getLength()-1);for(var m=0;m<h[j].length;m++){var q=m+p.getLength()-h[j].length;h[j][m]=q>=0?p.get(q):0}}for(var r=0,m=0;m<b.length;m++)r+=b[m].totalCount;for(var s=new Array(r),t=0,m=0;d>m;m++)for(var j=0;j<b.length;j++)m<g[j].length&&(s[t++]=g[j][m]);for(var m=0;e>m;m++)for(var j=0;j<b.length;j++)m<h[j].length&&(s[t++]=h[j][m]);return s};for(var c={MODE_NUMBER:1,MODE_ALPHA_NUM:2,MODE_8BIT_BYTE:4,MODE_KANJI:8},d={L:1,M:0,Q:3,H:2},e={PATTERN000:0,PATTERN001:1,PATTERN010:2,PATTERN011:3,PATTERN100:4,PATTERN101:5,PATTERN110:6,PATTERN111:7},f={PATTERN_POSITION_TABLE:[[],[6,18],[6,22],[6,26],[6,30],[6,34],[6,22,38],[6,24,42],[6,26,46],[6,28,50],[6,30,54],[6,32,58],[6,34,62],[6,26,46,66],[6,26,48,70],[6,26,50,74],[6,30,54,78],[6,30,56,82],[6,30,58,86],[6,34,62,90],[6,28,50,72,94],[6,26,50,74,98],[6,30,54,78,102],[6,28,54,80,106],[6,32,58,84,110],[6,30,58,86,114],[6,34,62,90,118],[6,26,50,74,98,122],[6,30,54,78,102,126],[6,26,52,78,104,130],[6,30,56,82,108,134],[6,34,60,86,112,138],[6,30,58,86,114,142],[6,34,62,90,118,146],[6,30,54,78,102,126,150],[6,24,50,76,102,128,154],[6,28,54,80,106,132,158],[6,32,58,84,110,136,162],[6,26,54,82,110,138,166],[6,30,58,86,114,142,170]],G15:1335,G18:7973,G15_MASK:21522,getBCHTypeInfo:function(a){for(var b=a<<10;f.getBCHDigit(b)-f.getBCHDigit(f.G15)>=0;)b^=f.G15<<f.getBCHDigit(b)-f.getBCHDigit(f.G15);return(a<<10|b)^f.G15_MASK},getBCHTypeNumber:function(a){for(var b=a<<12;f.getBCHDigit(b)-f.getBCHDigit(f.G18)>=0;)b^=f.G18<<f.getBCHDigit(b)-f.getBCHDigit(f.G18);return a<<12|b},getBCHDigit:function(a){for(var b=0;0!=a;)b++,a>>>=1;return b},getPatternPosition:function(a){return f.PATTERN_POSITION_TABLE[a-1]},getMask:function(a,b,c){switch(a){case e.PATTERN000:return 0==(b+c)%2;case e.PATTERN001:return 0==b%2;case e.PATTERN010:return 0==c%3;case e.PATTERN011:return 0==(b+c)%3;case e.PATTERN100:return 0==(Math.floor(b/2)+Math.floor(c/3))%2;case e.PATTERN101:return 0==b*c%2+b*c%3;case e.PATTERN110:return 0==(b*c%2+b*c%3)%2;case e.PATTERN111:return 0==(b*c%3+(b+c)%2)%2;default:throw new Error("bad maskPattern:"+a)}},getErrorCorrectPolynomial:function(a){for(var b=new i([1],0),c=0;a>c;c++)b=b.multiply(new i([1,g.gexp(c)],0));return b},getLengthInBits:function(a,b){if(b>=1&&10>b)switch(a){case c.MODE_NUMBER:return 10;case c.MODE_ALPHA_NUM:return 9;case c.MODE_8BIT_BYTE:return 8;case c.MODE_KANJI:return 8;default:throw new Error("mode:"+a)}else if(27>b)switch(a){case c.MODE_NUMBER:return 12;case c.MODE_ALPHA_NUM:return 11;case c.MODE_8BIT_BYTE:return 16;case c.MODE_KANJI:return 10;default:throw new Error("mode:"+a)}else{if(!(41>b))throw new Error("type:"+b);switch(a){case c.MODE_NUMBER:return 14;case c.MODE_ALPHA_NUM:return 13;case c.MODE_8BIT_BYTE:return 16;case c.MODE_KANJI:return 12;default:throw new Error("mode:"+a)}}},getLostPoint:function(a){for(var b=a.getModuleCount(),c=0,d=0;b>d;d++)for(var e=0;b>e;e++){for(var f=0,g=a.isDark(d,e),h=-1;1>=h;h++)if(!(0>d+h||d+h>=b))for(var i=-1;1>=i;i++)0>e+i||e+i>=b||(0!=h||0!=i)&&g==a.isDark(d+h,e+i)&&f++;f>5&&(c+=3+f-5)}for(var d=0;b-1>d;d++)for(var e=0;b-1>e;e++){var j=0;a.isDark(d,e)&&j++,a.isDark(d+1,e)&&j++,a.isDark(d,e+1)&&j++,a.isDark(d+1,e+1)&&j++,(0==j||4==j)&&(c+=3)}for(var d=0;b>d;d++)for(var e=0;b-6>e;e++)a.isDark(d,e)&&!a.isDark(d,e+1)&&a.isDark(d,e+2)&&a.isDark(d,e+3)&&a.isDark(d,e+4)&&!a.isDark(d,e+5)&&a.isDark(d,e+6)&&(c+=40);for(var e=0;b>e;e++)for(var d=0;b-6>d;d++)a.isDark(d,e)&&!a.isDark(d+1,e)&&a.isDark(d+2,e)&&a.isDark(d+3,e)&&a.isDark(d+4,e)&&!a.isDark(d+5,e)&&a.isDark(d+6,e)&&(c+=40);for(var k=0,e=0;b>e;e++)for(var d=0;b>d;d++)a.isDark(d,e)&&k++;var l=Math.abs(100*k/b/b-50)/5;return c+=10*l}},g={glog:function(a){if(1>a)throw new Error("glog("+a+")");return g.LOG_TABLE[a]},gexp:function(a){for(;0>a;)a+=255;for(;a>=256;)a-=255;return g.EXP_TABLE[a]},EXP_TABLE:new Array(256),LOG_TABLE:new Array(256)},h=0;8>h;h++)g.EXP_TABLE[h]=1<<h;for(var h=8;256>h;h++)g.EXP_TABLE[h]=g.EXP_TABLE[h-4]^g.EXP_TABLE[h-5]^g.EXP_TABLE[h-6]^g.EXP_TABLE[h-8];for(var h=0;255>h;h++)g.LOG_TABLE[g.EXP_TABLE[h]]=h;i.prototype={get:function(a){return this.num[a]},getLength:function(){return this.num.length},multiply:function(a){for(var b=new Array(this.getLength()+a.getLength()-1),c=0;c<this.getLength();c++)for(var d=0;d<a.getLength();d++)b[c+d]^=g.gexp(g.glog(this.get(c))+g.glog(a.get(d)));return new i(b,0)},mod:function(a){if(this.getLength()-a.getLength()<0)return this;for(var b=g.glog(this.get(0))-g.glog(a.get(0)),c=new Array(this.getLength()),d=0;d<this.getLength();d++)c[d]=this.get(d);for(var d=0;d<a.getLength();d++)c[d]^=g.gexp(g.glog(a.get(d))+b);return new i(c,0).mod(a)}},j.RS_BLOCK_TABLE=[[1,26,19],[1,26,16],[1,26,13],[1,26,9],[1,44,34],[1,44,28],[1,44,22],[1,44,16],[1,70,55],[1,70,44],[2,35,17],[2,35,13],[1,100,80],[2,50,32],[2,50,24],[4,25,9],[1,134,108],[2,67,43],[2,33,15,2,34,16],[2,33,11,2,34,12],[2,86,68],[4,43,27],[4,43,19],[4,43,15],[2,98,78],[4,49,31],[2,32,14,4,33,15],[4,39,13,1,40,14],[2,121,97],[2,60,38,2,61,39],[4,40,18,2,41,19],[4,40,14,2,41,15],[2,146,116],[3,58,36,2,59,37],[4,36,16,4,37,17],[4,36,12,4,37,13],[2,86,68,2,87,69],[4,69,43,1,70,44],[6,43,19,2,44,20],[6,43,15,2,44,16],[4,101,81],[1,80,50,4,81,51],[4,50,22,4,51,23],[3,36,12,8,37,13],[2,116,92,2,117,93],[6,58,36,2,59,37],[4,46,20,6,47,21],[7,42,14,4,43,15],[4,133,107],[8,59,37,1,60,38],[8,44,20,4,45,21],[12,33,11,4,34,12],[3,145,115,1,146,116],[4,64,40,5,65,41],[11,36,16,5,37,17],[11,36,12,5,37,13],[5,109,87,1,110,88],[5,65,41,5,66,42],[5,54,24,7,55,25],[11,36,12],[5,122,98,1,123,99],[7,73,45,3,74,46],[15,43,19,2,44,20],[3,45,15,13,46,16],[1,135,107,5,136,108],[10,74,46,1,75,47],[1,50,22,15,51,23],[2,42,14,17,43,15],[5,150,120,1,151,121],[9,69,43,4,70,44],[17,50,22,1,51,23],[2,42,14,19,43,15],[3,141,113,4,142,114],[3,70,44,11,71,45],[17,47,21,4,48,22],[9,39,13,16,40,14],[3,135,107,5,136,108],[3,67,41,13,68,42],[15,54,24,5,55,25],[15,43,15,10,44,16],[4,144,116,4,145,117],[17,68,42],[17,50,22,6,51,23],[19,46,16,6,47,17],[2,139,111,7,140,112],[17,74,46],[7,54,24,16,55,25],[34,37,13],[4,151,121,5,152,122],[4,75,47,14,76,48],[11,54,24,14,55,25],[16,45,15,14,46,16],[6,147,117,4,148,118],[6,73,45,14,74,46],[11,54,24,16,55,25],[30,46,16,2,47,17],[8,132,106,4,133,107],[8,75,47,13,76,48],[7,54,24,22,55,25],[22,45,15,13,46,16],[10,142,114,2,143,115],[19,74,46,4,75,47],[28,50,22,6,51,23],[33,46,16,4,47,17],[8,152,122,4,153,123],[22,73,45,3,74,46],[8,53,23,26,54,24],[12,45,15,28,46,16],[3,147,117,10,148,118],[3,73,45,23,74,46],[4,54,24,31,55,25],[11,45,15,31,46,16],[7,146,116,7,147,117],[21,73,45,7,74,46],[1,53,23,37,54,24],[19,45,15,26,46,16],[5,145,115,10,146,116],[19,75,47,10,76,48],[15,54,24,25,55,25],[23,45,15,25,46,16],[13,145,115,3,146,116],[2,74,46,29,75,47],[42,54,24,1,55,25],[23,45,15,28,46,16],[17,145,115],[10,74,46,23,75,47],[10,54,24,35,55,25],[19,45,15,35,46,16],[17,145,115,1,146,116],[14,74,46,21,75,47],[29,54,24,19,55,25],[11,45,15,46,46,16],[13,145,115,6,146,116],[14,74,46,23,75,47],[44,54,24,7,55,25],[59,46,16,1,47,17],[12,151,121,7,152,122],[12,75,47,26,76,48],[39,54,24,14,55,25],[22,45,15,41,46,16],[6,151,121,14,152,122],[6,75,47,34,76,48],[46,54,24,10,55,25],[2,45,15,64,46,16],[17,152,122,4,153,123],[29,74,46,14,75,47],[49,54,24,10,55,25],[24,45,15,46,46,16],[4,152,122,18,153,123],[13,74,46,32,75,47],[48,54,24,14,55,25],[42,45,15,32,46,16],[20,147,117,4,148,118],[40,75,47,7,76,48],[43,54,24,22,55,25],[10,45,15,67,46,16],[19,148,118,6,149,119],[18,75,47,31,76,48],[34,54,24,34,55,25],[20,45,15,61,46,16]],j.getRSBlocks=function(a,b){var c=j.getRsBlockTable(a,b);if(void 0==c)throw new Error("bad rs block @ typeNumber:"+a+"/errorCorrectLevel:"+b);for(var d=c.length/3,e=[],f=0;d>f;f++)for(var g=c[3*f+0],h=c[3*f+1],i=c[3*f+2],k=0;g>k;k++)e.push(new j(h,i));return e},j.getRsBlockTable=function(a,b){switch(b){case d.L:return j.RS_BLOCK_TABLE[4*(a-1)+0];case d.M:return j.RS_BLOCK_TABLE[4*(a-1)+1];case d.Q:return j.RS_BLOCK_TABLE[4*(a-1)+2];case d.H:return j.RS_BLOCK_TABLE[4*(a-1)+3];default:return void 0}},k.prototype={get:function(a){var b=Math.floor(a/8);return 1==(1&this.buffer[b]>>>7-a%8)},put:function(a,b){for(var c=0;b>c;c++)this.putBit(1==(1&a>>>b-c-1))},getLengthInBits:function(){return this.length},putBit:function(a){var b=Math.floor(this.length/8);this.buffer.length<=b&&this.buffer.push(0),a&&(this.buffer[b]|=128>>>this.length%8),this.length++}};var l=[[17,14,11,7],[32,26,20,14],[53,42,32,24],[78,62,46,34],[106,84,60,44],[134,106,74,58],[154,122,86,64],[192,152,108,84],[230,180,130,98],[271,213,151,119],[321,251,177,137],[367,287,203,155],[425,331,241,177],[458,362,258,194],[520,412,292,220],[586,450,322,250],[644,504,364,280],[718,560,394,310],[792,624,442,338],[858,666,482,382],[929,711,509,403],[1003,779,565,439],[1091,857,611,461],[1171,911,661,511],[1273,997,715,535],[1367,1059,751,593],[1465,1125,805,625],[1528,1190,868,658],[1628,1264,908,698],[1732,1370,982,742],[1840,1452,1030,790],[1952,1538,1112,842],[2068,1628,1168,898],[2188,1722,1228,958],[2303,1809,1283,983],[2431,1911,1351,1051],[2563,1989,1423,1093],[2699,2099,1499,1139],[2809,2213,1579,1219],[2953,2331,1663,1273]],o=function(){var a=function(a,b){this._el=a,this._htOption=b};return a.prototype.draw=function(a){function g(a,b){var c=document.createElementNS("http://www.w3.org/2000/svg",a);for(var d in b)b.hasOwnProperty(d)&&c.setAttribute(d,b[d]);return c}var b=this._htOption,c=this._el,d=a.getModuleCount();Math.floor(b.width/d),Math.floor(b.height/d),this.clear();var h=g("svg",{viewBox:"0 0 "+String(d)+" "+String(d),width:"100%",height:"100%",fill:b.colorLight});h.setAttributeNS("http://www.w3.org/2000/xmlns/","xmlns:xlink","http://www.w3.org/1999/xlink"),c.appendChild(h),h.appendChild(g("rect",{fill:b.colorDark,width:"1",height:"1",id:"template"}));for(var i=0;d>i;i++)for(var j=0;d>j;j++)if(a.isDark(i,j)){var k=g("use",{x:String(i),y:String(j)});k.setAttributeNS("http://www.w3.org/1999/xlink","href","#template"),h.appendChild(k)}},a.prototype.clear=function(){for(;this._el.hasChildNodes();)this._el.removeChild(this._el.lastChild)},a}(),p="svg"===document.documentElement.tagName.toLowerCase(),q=p?o:m()?function(){function a(){this._elImage.src=this._elCanvas.toDataURL("image/png"),this._elImage.style.display="block",this._elCanvas.style.display="none"}function d(a,b){var c=this;if(c._fFail=b,c._fSuccess=a,null===c._bSupportDataURI){var d=document.createElement("img"),e=function(){c._bSupportDataURI=!1,c._fFail&&_fFail.call(c)},f=function(){c._bSupportDataURI=!0,c._fSuccess&&c._fSuccess.call(c)};return d.onabort=e,d.onerror=e,d.onload=f,d.src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==",void 0}c._bSupportDataURI===!0&&c._fSuccess?c._fSuccess.call(c):c._bSupportDataURI===!1&&c._fFail&&c._fFail.call(c)}if(this._android&&this._android<=2.1){var b=1/window.devicePixelRatio,c=CanvasRenderingContext2D.prototype.drawImage;CanvasRenderingContext2D.prototype.drawImage=function(a,d,e,f,g,h,i,j){if("nodeName"in a&&/img/i.test(a.nodeName))for(var l=arguments.length-1;l>=1;l--)arguments[l]=arguments[l]*b;else"undefined"==typeof j&&(arguments[1]*=b,arguments[2]*=b,arguments[3]*=b,arguments[4]*=b);c.apply(this,arguments)}}var e=function(a,b){this._bIsPainted=!1,this._android=n(),this._htOption=b,this._elCanvas=document.createElement("canvas"),this._elCanvas.width=b.width,this._elCanvas.height=b.height,a.appendChild(this._elCanvas),this._el=a,this._oContext=this._elCanvas.getContext("2d"),this._bIsPainted=!1,this._elImage=document.createElement("img"),this._elImage.style.display="none",this._el.appendChild(this._elImage),this._bSupportDataURI=null};return e.prototype.draw=function(a){var b=this._elImage,c=this._oContext,d=this._htOption,e=a.getModuleCount(),f=d.width/e,g=d.height/e,h=Math.round(f),i=Math.round(g);b.style.display="none",this.clear();for(var j=0;e>j;j++)for(var k=0;e>k;k++){var l=a.isDark(j,k),m=k*f,n=j*g;c.strokeStyle=l?d.colorDark:d.colorLight,c.lineWidth=1,c.fillStyle=l?d.colorDark:d.colorLight,c.fillRect(m,n,f,g),c.strokeRect(Math.floor(m)+.5,Math.floor(n)+.5,h,i),c.strokeRect(Math.ceil(m)-.5,Math.ceil(n)-.5,h,i)}this._bIsPainted=!0},e.prototype.makeImage=function(){this._bIsPainted&&d.call(this,a)},e.prototype.isPainted=function(){return this._bIsPainted},e.prototype.clear=function(){this._oContext.clearRect(0,0,this._elCanvas.width,this._elCanvas.height),this._bIsPainted=!1},e.prototype.round=function(a){return a?Math.floor(1e3*a)/1e3:a},e}():function(){var a=function(a,b){this._el=a,this._htOption=b};return a.prototype.draw=function(a){for(var b=this._htOption,c=this._el,d=a.getModuleCount(),e=Math.floor(b.width/d),f=Math.floor(b.height/d),g=['<table style="border:0;border-collapse:collapse;">'],h=0;d>h;h++){g.push("<tr>");for(var i=0;d>i;i++)g.push('<td style="border:0;border-collapse:collapse;padding:0;margin:0;width:'+e+"px;height:"+f+"px;background-color:"+(a.isDark(h,i)?b.colorDark:b.colorLight)+';"></td>');g.push("</tr>")}g.push("</table>"),c.innerHTML=g.join("");var j=c.childNodes[0],k=(b.width-j.offsetWidth)/2,l=(b.height-j.offsetHeight)/2;k>0&&l>0&&(j.style.margin=l+"px "+k+"px")},a.prototype.clear=function(){this._el.innerHTML=""},a}();QRCode=function(a,b){if(this._htOption={width:256,height:256,typeNumber:4,colorDark:"#000000",colorLight:"#ffffff",correctLevel:d.H},"string"==typeof b&&(b={text:b}),b)for(var c in b)this._htOption[c]=b[c];"string"==typeof a&&(a=document.getElementById(a)),this._android=n(),this._el=a,this._oQRCode=null,this._oDrawing=new q(this._el,this._htOption),this._htOption.text&&this.makeCode(this._htOption.text)},QRCode.prototype.makeCode=function(a){this._oQRCode=new b(r(a,this._htOption.correctLevel),this._htOption.correctLevel),this._oQRCode.addData(a),this._oQRCode.make(),this._el.title=a,this._oDrawing.draw(this._oQRCode),this.makeImage()},QRCode.prototype.makeImage=function(){"function"==typeof this._oDrawing.makeImage&&(!this._android||this._android>=3)&&this._oDrawing.makeImage()},QRCode.prototype.clear=function(){this._oDrawing.clear()},QRCode.CorrectLevel=d}();
+</script>
+<style>
+  :root{
+    --bg:#f7f6f1; --paper:#ffffff;
+    --ink:#1c1c1c; --soft:#3a3a3a; --muted:#8b8b8b;
+    --accent:#8a8a5c; --accent-2:#a3a376; --accent-bg:#f3f3ea;
+    --rule:#d9d9d4; --rule-soft:#ececea;
+    --amber:#9a7b34; --amber-bg:#f6efdd;
+    --green:#5f7148; --green-bg:#eef1e6;
+    --danger:#9a4a3c;
+    --serif:'Cormorant Garamond','Garamond','Times New Roman',serif;
+    --sans:'Inter','Helvetica Neue',Arial,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+  a{color:inherit}
+  h1,h2,h3{margin:0}
+  button{font-family:inherit}
+  input,select,textarea{font-family:inherit;font-size:14px}
+
+  .eyebrow{font-size:10px;letter-spacing:2.4px;text-transform:uppercase;color:var(--accent)}
+  .display{font-family:var(--serif);font-style:italic;font-weight:500}
+
+  /* ---------- App shell ---------- */
+  .app-shell{max-width:1080px;margin:0 auto;padding:0 20px 80px}
+  .topbar{display:flex;justify-content:space-between;align-items:center;padding:26px 0 18px}
+  .brand{display:flex;align-items:center;gap:14px}
+  .brand-dots{display:grid;grid-template-columns:repeat(2,5px);gap:4px}
+  .brand-dots span{width:5px;height:5px;border-radius:50%;background:var(--accent-2)}
+  .brand-name{font-family:var(--serif);font-style:italic;font-weight:500;font-size:26px;line-height:1;color:var(--ink)}
+  .brand-tag{font-size:9px;letter-spacing:2.6px;text-transform:uppercase;color:var(--soft);margin-top:4px}
+  .topbar .role{font-size:10px;letter-spacing:2.6px;text-transform:uppercase;color:var(--accent);text-align:right}
+
+  .nav{display:flex;gap:4px;border-bottom:1px solid var(--rule);margin-bottom:26px;overflow-x:auto}
+  .nav button{background:none;border:none;padding:11px 16px 13px;font-size:13px;color:var(--muted);cursor:pointer;white-space:nowrap;border-bottom:2px solid transparent;margin-bottom:-1px;letter-spacing:.2px}
+  .nav button:hover{color:var(--soft)}
+  .nav button.active{color:var(--ink);border-bottom-color:var(--accent)}
+
+  /* ---------- Cards ---------- */
+  .card{background:var(--paper);border:1px solid var(--rule);border-radius:10px;padding:22px 24px;margin-bottom:20px}
+  .card-head{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;border-bottom:1px solid var(--rule);padding-bottom:12px;margin-bottom:18px}
+  .card-head h2{font-family:var(--serif);font-style:italic;font-weight:500;font-size:23px;color:var(--ink);line-height:1.1}
+  .card-head .sub{font-size:12.5px;color:var(--muted);margin-top:3px}
+
+  /* ---------- Buttons ---------- */
+  .btn{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--accent);background:var(--accent);color:#fff;padding:8px 15px;border-radius:7px;font-size:13px;cursor:pointer;transition:filter .15s,background .15s}
+  .btn:hover{filter:brightness(1.06)}
+  .btn-ghost{background:transparent;color:var(--accent);border-color:var(--accent-2)}
+  .btn-ghost:hover{background:var(--accent-bg);filter:none}
+  .btn-sm{padding:5px 11px;font-size:12px}
+  .btn-link{background:none;border:none;color:var(--accent);cursor:pointer;font-size:12.5px;padding:4px 6px;border-radius:5px}
+  .btn-link:hover{background:var(--accent-bg)}
+  .btn-link.danger{color:var(--danger)}
+  .btn-link.danger:hover{background:#f6ece9}
+  .btn-row{display:flex;gap:8px;flex-wrap:wrap}
+  .seg{display:inline-flex;border:1px solid var(--rule);border-radius:8px;overflow:hidden;max-width:100%;flex-wrap:wrap}
+  .seg-btn{border:none;background:#fff;padding:9px 16px;font-size:13px;color:var(--muted);cursor:pointer}
+  .seg-btn+.seg-btn{border-left:1px solid var(--rule)}
+  .seg-btn.active{background:var(--accent-bg);color:var(--accent)}
+
+  /* ---------- Stats ---------- */
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:8px}
+  .stat{background:var(--paper);border:1px solid var(--rule);border-radius:10px;padding:18px 20px}
+  .stat .k{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--accent);margin-bottom:9px}
+  .stat .v{font-family:var(--serif);font-style:italic;font-size:30px;color:var(--ink);line-height:1}
+  .stat .d{font-size:12px;color:var(--muted);margin-top:6px}
+
+  /* ---------- Tables ---------- */
+  .table-wrap{overflow-x:auto}
+  table.tbl{width:100%;border-collapse:collapse;font-size:13.5px}
+  table.tbl th{text-align:left;font-weight:400;font-size:10px;letter-spacing:1.8px;text-transform:uppercase;color:var(--accent);padding:8px 10px;border-bottom:1px solid var(--rule);white-space:nowrap}
+  table.tbl th.num,table.tbl td.num{text-align:right}
+  table.tbl td{padding:11px 10px;border-bottom:1px solid var(--rule-soft);vertical-align:middle}
+  table.tbl tr:last-child td{border-bottom:none}
+  table.tbl td.tnum{font-variant-numeric:tabular-nums}
+  table.tbl .muted{color:var(--muted);font-size:12.5px}
+  table.tbl .strong{color:var(--ink)}
+  .row-actions{display:flex;gap:2px;justify-content:flex-end;flex-wrap:wrap}
+
+  .badge{display:inline-block;padding:2px 9px;border-radius:20px;font-size:11px;letter-spacing:.3px}
+  .badge.offen{background:var(--amber-bg);color:var(--amber)}
+  .badge.bezahlt{background:var(--green-bg);color:var(--green)}
+
+  .empty{text-align:center;color:var(--muted);padding:34px 20px;font-size:13.5px}
+  .empty .display{font-size:20px;color:var(--soft);font-style:italic;display:block;margin-bottom:6px}
+
+  /* ---------- Forms ---------- */
+  .field{margin-bottom:14px}
+  .field>label{display:block;font-size:10px;letter-spacing:1.6px;text-transform:uppercase;color:var(--accent);margin-bottom:5px}
+  .input,select.input,textarea.input{width:100%;border:1px solid var(--rule);border-radius:7px;padding:9px 11px;background:#fff;color:var(--ink)}
+  .input:focus,select.input:focus,textarea.input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(138,138,92,.12)}
+  textarea.input{resize:vertical;min-height:64px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:0 16px}
+  .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0 16px}
+  .hint{font-size:11.5px;color:var(--muted);margin-top:-8px;margin-bottom:12px}
+
+  .subhead{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--accent);margin:18px 0 8px;border-top:1px solid var(--rule-soft);padding-top:14px}
+
+  /* dynamic line rows */
+  .line-row{display:grid;gap:8px;align-items:center;margin-bottom:8px}
+  .line-row .input{margin:0}
+  .li-termin{grid-template-columns:1fr 130px 36px}
+  .li-pos{grid-template-columns:1fr 70px 110px 110px 36px}
+  .li-rezpos{grid-template-columns:1fr 70px 110px 110px 36px}
+  .line-head{font-size:9.5px;letter-spacing:1.4px;text-transform:uppercase;color:var(--muted)}
+  .icon-btn{border:1px solid var(--rule);background:#fff;color:var(--danger);border-radius:6px;width:34px;height:34px;cursor:pointer;font-size:15px;line-height:1}
+  .icon-btn:hover{background:#f6ece9}
+  .sum-line{display:flex;justify-content:space-between;align-items:baseline;border-top:1px solid var(--ink);margin-top:12px;padding-top:10px}
+  .sum-line .l{font-family:var(--serif);font-style:italic;font-size:18px}
+  .sum-line .v{font-family:var(--serif);font-style:italic;font-size:20px;font-variant-numeric:tabular-nums}
+
+  /* ---------- Modal ---------- */
+  .modal-bg{position:fixed;inset:0;background:rgba(28,28,28,.42);display:flex;align-items:flex-start;justify-content:center;padding:30px 16px;z-index:50;overflow-y:auto}
+  .modal{background:var(--paper);border-radius:12px;max-width:760px;width:100%;margin:auto;box-shadow:0 20px 60px rgba(0,0,0,.22)}
+  .modal-head{display:flex;justify-content:space-between;align-items:center;padding:20px 24px;border-bottom:1px solid var(--rule)}
+  .modal-head h3{font-family:var(--serif);font-style:italic;font-weight:500;font-size:22px}
+  .modal-head .x{border:none;background:none;font-size:24px;color:var(--muted);cursor:pointer;line-height:1;padding:0 4px}
+  .modal-head .x:hover{color:var(--ink)}
+  .modal-body{padding:22px 24px;max-height:none}
+  .modal-foot{display:flex;justify-content:space-between;gap:10px;padding:16px 24px;border-top:1px solid var(--rule);background:#fcfcfa;border-radius:0 0 12px 12px;flex-wrap:wrap}
+
+  .collapse-toggle{font-size:12px;color:var(--accent);cursor:pointer;user-select:none;display:inline-flex;align-items:center;gap:6px}
+  .note-box{background:var(--accent-bg);border-left:2px solid var(--accent);padding:12px 14px;border-radius:0 7px 7px 0;font-size:12.5px;color:var(--soft);margin:14px 0}
+  .gcal-row{display:flex;align-items:center;gap:12px;padding:9px 12px;border-bottom:1px solid var(--rule-soft);cursor:pointer}
+  .gcal-row:last-child{border-bottom:none}
+  .gcal-row:hover{background:var(--accent-bg)}
+  .gcal-row input{flex:0 0 auto;width:16px;height:16px;accent-color:var(--accent)}
+  .gcal-date{flex:0 0 auto;width:128px;font-size:12.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+  .gcal-title{flex:1 1 auto;font-size:13.5px;color:var(--ink)}
+
+  @media(max-width:680px){
+    .grid2,.grid3{grid-template-columns:1fr}
+    .li-pos,.li-rezpos{grid-template-columns:1fr 1fr;}
+    .li-pos .icon-btn,.li-rezpos .icon-btn{grid-column:span 2;width:100%}
+    .li-termin{grid-template-columns:1fr 110px 36px}
+  }
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+
+  /* ================= PRINT DOCUMENT ================= */
+  #print-root{display:none}
+  @media screen{
+    #print-root{display:none}
+  }
+  @media print{
+    .app-shell,#modal-root{display:none!important}
+    #print-root{display:block!important}
+    @page{size:A4;margin:0}
+    html,body{background:#fff}
+  }
+  .doc{width:210mm;min-height:297mm;padding:16mm 18mm 16mm;background:#fff;color:var(--ink);font-family:var(--sans);font-size:9.8pt;line-height:1.5;position:relative;margin:0 auto}
+  .doc-pagemark{position:absolute;top:9mm;right:18mm;font-size:7.5pt;letter-spacing:1.8pt;text-transform:uppercase;color:var(--accent)}
+  .doc-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:11mm}
+  .doc-logo{display:flex;align-items:center;gap:6mm}
+  .doc-logo .dots{display:grid;grid-template-columns:repeat(2,1.6mm);gap:1.3mm}
+  .doc-logo .dots span{width:1.6mm;height:1.6mm;border-radius:50%;background:var(--accent-2)}
+  .doc-logo .name{font-family:var(--serif);font-style:italic;font-weight:500;font-size:21pt;line-height:1;white-space:nowrap}
+  .doc-logo .tag{margin-top:1.6mm;font-size:7pt;letter-spacing:2.4pt;text-transform:uppercase;color:var(--soft);white-space:nowrap}
+  .doc-meta{text-align:right;font-size:8.5pt;color:var(--soft);line-height:1.5}
+  .doc-dots{position:absolute;left:9mm;top:56mm;display:flex;flex-direction:column;gap:4mm}
+  .doc-dots span{width:1.6mm;height:1.6mm;border-radius:50%;background:var(--accent-2);opacity:.85}
+  .doc-dots span:nth-child(3){opacity:1}
+  .doc-addr{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:8mm}
+  .doc-addr .rcpt{line-height:1.5}
+  .doc-addr .date{text-align:right;font-size:9pt;color:var(--soft)}
+  .doc-section{display:flex;justify-content:space-between;align-items:baseline;border-bottom:.5pt solid var(--rule);padding-bottom:2.5mm;margin-bottom:5mm}
+  .doc-section h1{font-family:var(--serif);font-style:italic;font-weight:500;font-size:22pt;line-height:1.1}
+  .doc-section .eb{font-size:7pt;letter-spacing:2.2pt;text-transform:uppercase;color:var(--accent)}
+  .doc-intro p{margin:0 0 2.5mm;color:var(--soft);font-size:9.4pt;line-height:1.5}
+  .doc-intro .an{color:var(--ink);margin-bottom:3mm}
+  .doc-dates{margin:3mm 0 5mm;columns:2;column-gap:12mm;font-variant-numeric:tabular-nums;font-size:9.4pt}
+  .doc-dates .t{display:flex;gap:4mm;padding:.7mm 0;border-bottom:.3pt dotted var(--rule);break-inside:avoid}
+  .doc-dates .t .n{color:var(--muted);min-width:16mm;font-size:8pt}
+  table.doc-srv{width:100%;border-collapse:collapse;margin-top:2mm;font-size:9.8pt}
+  table.doc-srv th{text-align:left;font-weight:400;font-size:7pt;letter-spacing:1.6pt;text-transform:uppercase;color:var(--accent);padding:2mm 0 1.5mm;border-bottom:.5pt solid var(--rule)}
+  table.doc-srv th.n,table.doc-srv td.n{text-align:right}
+  table.doc-srv td{padding:2.6mm 0;border-bottom:.4pt solid var(--rule-soft);vertical-align:top}
+  table.doc-srv td.pos{color:var(--muted);font-size:8.5pt;width:11mm}
+  table.doc-srv .ti{color:var(--ink)}
+  table.doc-srv .su{display:block;font-size:8.2pt;color:var(--muted);margin-top:.4mm}
+  table.doc-srv td.n{font-variant-numeric:tabular-nums}
+  table.doc-srv td.qty{color:var(--muted);width:14mm}
+  table.doc-srv td.pr{color:var(--muted);width:24mm;font-size:9.2pt}
+  table.doc-srv td.tot{color:var(--ink);width:26mm;font-size:10.5pt}
+  .doc-total{display:flex;justify-content:space-between;align-items:baseline;border-top:.6pt solid var(--ink);margin-top:4mm;padding-top:3mm}
+  .doc-total .l{font-family:var(--serif);font-style:italic;font-size:13pt}
+  .doc-total .v{font-size:13pt;font-variant-numeric:tabular-nums;letter-spacing:.3pt}
+  .doc-sub{display:flex;justify-content:space-between;font-size:9.4pt;color:var(--soft);padding:1.3mm 0}
+  .doc-pay{display:grid;grid-template-columns:26mm 1fr;gap:6mm;align-items:start;border-top:.5pt solid var(--rule);margin-top:5mm;padding-top:4mm}
+  .doc-pay .qr img,.doc-pay .qr canvas{width:26mm;height:26mm;display:block}
+  .doc-pay .qr .ql{margin-top:1.2mm;font-size:6.5pt;letter-spacing:2pt;text-transform:uppercase;color:var(--accent);text-align:center}
+  .doc-pay .det{font-size:9pt}
+  .doc-pay .det .nt{color:var(--ink);margin-bottom:2mm}
+  .doc-pay .det table{border-collapse:collapse;margin-top:1mm}
+  .doc-pay .det td{padding:.5mm 0;font-size:9pt;color:var(--ink)}
+  .doc-pay .det td.k{color:var(--accent);font-size:7pt;letter-spacing:2pt;text-transform:uppercase;padding-right:5mm;width:26mm;vertical-align:middle}
+  .doc-pay .det .iban{font-variant-numeric:tabular-nums;letter-spacing:.3pt}
+  .doc-tax{margin-top:3mm;padding-top:2mm;font-size:8pt;color:var(--muted);border-top:.3pt dotted var(--rule)}
+  .doc-sign{margin-top:4mm}
+  .doc-sign .g{font-size:9.5pt}
+  .doc-sign .s{font-family:var(--serif);font-style:italic;font-size:13pt;margin-top:.5mm}
+  .doc-footer{position:absolute;left:18mm;right:18mm;bottom:10mm;display:grid;grid-template-columns:repeat(3,1fr);gap:8mm;border-top:.4pt solid var(--rule);padding-top:3mm;font-size:8pt;color:var(--muted)}
+  .doc-footer .k{font-size:6.5pt;letter-spacing:2.2pt;text-transform:uppercase;color:var(--accent);margin-bottom:1.2mm;display:block}
+
+  /* ---- Behandlungsvertrag (mehrseitig) ---- */
+  .dc-page{break-after:page;page-break-after:always}
+  .dc-doc{height:296mm}
+  .doc .dc-intro p{margin:0 0 2.5mm;color:var(--soft);font-size:9.4pt;line-height:1.5}
+  .doc .dc-intro .an{color:var(--ink);margin-bottom:3mm}
+  .doc .dc-infobox{border-left:2pt solid var(--accent);padding:2.5mm 5mm;margin:3mm 0;font-size:9.2pt;color:var(--soft);line-height:1.45}
+  .doc .dc-infobox .k{display:block;font-size:7pt;letter-spacing:2.4pt;text-transform:uppercase;color:var(--accent);margin-bottom:1mm}
+  .doc .dc-patient{margin:5mm 0 6mm;border-top:.5pt solid var(--rule);border-bottom:.5pt solid var(--rule);padding:4mm 0;display:grid;grid-template-columns:1fr 1fr;gap:4mm 8mm;font-size:9pt}
+  .doc .dc-patient .f{display:flex;align-items:baseline;gap:3mm}
+  .doc .dc-patient .l{font-size:7pt;letter-spacing:2pt;text-transform:uppercase;color:var(--accent);min-width:24mm}
+  .doc .dc-patient .v{flex:1;border-bottom:.4pt solid var(--rule);min-height:5mm;color:var(--ink);font-size:9.5pt}
+  .doc .dc-clause{display:grid;grid-template-columns:14mm 1fr;margin:4mm 0;border-top:.4pt solid var(--rule-soft);padding-top:3mm;break-inside:avoid}
+  .doc .dc-clause .n{font-size:7pt;letter-spacing:2pt;text-transform:uppercase;color:var(--accent);padding-top:1.2mm}
+  .doc .dc-clause h2{margin:0 0 1.8mm;font-family:var(--serif);font-style:italic;font-weight:500;font-size:12.5pt;color:var(--ink);line-height:1.2}
+  .doc .dc-clause p{margin:0 0 2mm;font-size:9.3pt;color:var(--soft);line-height:1.5}
+  .doc .dc-clause ul{margin:0 0 1.5mm;padding-left:4mm;font-size:9.3pt;color:var(--soft);line-height:1.5}
+  .doc .dc-clause li{margin-bottom:1mm}
+  .doc .dc-highlight{border:.6pt solid var(--accent-2);background:var(--accent-bg);padding:4.5mm 5.5mm;margin:4mm 0 5mm;font-size:9.3pt;color:var(--soft);line-height:1.5;break-inside:avoid}
+  .doc .dc-highlight .k{display:block;font-size:7.2pt;letter-spacing:2.4pt;text-transform:uppercase;color:var(--accent);margin-bottom:2mm}
+  .doc .dc-highlight h3{margin:0 0 2.5mm;font-family:var(--serif);font-style:italic;font-weight:500;font-size:13.5pt;color:var(--ink)}
+  .doc .dc-highlight .stake{display:inline-block;margin:1.5mm 0;padding:1mm 3mm;font-size:9.6pt;color:var(--ink);background:#fff;border:.4pt solid var(--accent-2);font-variant-numeric:tabular-nums}
+  .doc .dc-highlight p{margin:0 0 2mm}
+  .doc .dc-sign{margin-top:2mm}
+  .doc .dc-sign .stmt{font-family:var(--serif);font-style:italic;font-size:12pt;color:var(--ink);line-height:1.45;margin-bottom:14mm}
+  .doc .dc-sign .grid{display:grid;grid-template-columns:1fr 1fr;gap:0 12mm}
+  .doc .dc-sign .col{border-top:.5pt solid var(--ink);padding-top:1.5mm;font-size:7.5pt;letter-spacing:2pt;text-transform:uppercase;color:var(--accent)}
+  .doc .dc-restate{border:.6pt solid var(--rule);background:var(--accent-bg);padding:3mm 5mm;margin:4mm 0}
+  .doc .dc-restate .doc-sub{color:var(--soft)}
+  .doc .dc-restate .doc-sub span:last-child{color:var(--ink)}
+
+</style>
+</head>
+<body>
+
+<div class="app-shell">
+  <div class="topbar">
+    <div class="brand">
+      <div class="brand-dots"><span></span><span></span><span></span><span></span><span></span><span></span></div>
+      <div>
+        <div class="brand-name">Sabrina Behringer</div>
+        <div class="brand-tag">Praxis für Physiotherapie</div>
+      </div>
+    </div>
+    <div class="role">Rechnungen &amp; Abrechnung</div>
+  </div>
+
+  <nav class="nav" id="nav"></nav>
+  <main id="view"></main>
+</div>
+
+<div id="modal-root"></div>
+<div id="print-root"></div>
+
+<script>
+/* ============================================================
+   Praxis Behringer · Abrechnungstool (single file, lokal)
+   Daten liegen ausschließlich im Browser (localStorage).
+   ============================================================ */
+
+/* Fallback für sehr alte Browser ohne structuredClone */
+if(typeof structuredClone!=='function'){ window.structuredClone=function(o){ return JSON.parse(JSON.stringify(o)); }; }
+
+
+/* ---------- Default-Stammdaten & Leistungskatalog ---------- */
+const DEFAULT_DATA = {
+  version: 1,
+  praxis: {
+    name: "Sabrina Behringer",
+    untertitel: "Praxis für Physiotherapie",
+    strasse: "Mühlenstraße 5",
+    plzOrt: "79227 Schallstadt",
+    telefon: "+49 152 22 76 37 47",
+    bank: "Deutsche Apotheker- und Ärztebank",
+    iban: "DE66 3006 0601 0055 9620 53",
+    bic: "DAAEDEDDXXX",
+    ustHinweis: "Steuerfreie Leistungen nach § 4 Nr. 14 UStG.",
+    zahlungszielTage: 14,
+    ausfallhonorar: 25,
+    absagefristStunden: 24,
+    gerichtsstand: "Freiburg im Breisgau"
+  },
+  abrechnendePraxis: {
+    name: "",
+    zusatz: "",
+    strasse: "",
+    plzOrt: "",
+    ansprechpartner: "",
+    anteilProzent: 100
+  },
+  google: { clientId: "" },
+  leistungen: [
+    {pos:"3a", name:"Physiotherapeutische Erstbefundung", sub:"Zur Behandlungsplanung · einmal je Behandlungsfall", beihilfe:16.50, praxis:21.00},
+    {pos:"3b", name:"Physiotherapeutischer Bericht", sub:"Auf schriftliche Anforderung", beihilfe:67.70, praxis:88.00},
+    {pos:"86", name:"Übermittlungsgebühr", sub:"Mitteilung oder Bericht an verordnende Person", beihilfe:1.40, praxis:2.00},
+    {pos:"4", name:"Krankengymnastik (KG)", sub:"Einzelbehandlung · Richtwert 15 – 25 min", beihilfe:29.70, praxis:39.00},
+    {pos:"5", name:"KG-ZNS Erwachsene", sub:"Bobath, Vojta, PNF · Richtwert 25 – 35 min", beihilfe:47.10, praxis:61.00},
+    {pos:"6", name:"KG-ZNS Kinder bis 18 Jahre", sub:"Bobath, Vojta · Richtwert 30 – 45 min", beihilfe:58.90, praxis:77.00},
+    {pos:"9", name:"KG-Atemtherapie bei Mukoviszidose", sub:"Richtwert 60 min", beihilfe:89.00, praxis:115.00},
+    {pos:"11", name:"Manuelle Therapie (MT)", sub:"Einzelbehandlung · Richtwert 15 – 25 min", beihilfe:35.60, praxis:46.00},
+    {pos:"12", name:"Chirogymnastik", sub:"Funktionelle Wirbelsäulengymnastik · Richtwert 15 – 20 min", beihilfe:20.50, praxis:27.00},
+    {pos:"13a", name:"Bewegungsübungen", sub:"Einzelbehandlung · Richtwert 10 – 20 min", beihilfe:13.70, praxis:18.00},
+    {pos:"16", name:"Gerätegestützte Krankengymnastik (KGG)", sub:"Einschließlich MAT / MTT · Richtwert 60 min", beihilfe:55.90, praxis:73.00},
+    {pos:"17", name:"Traktionsbehandlung", sub:"Schlingentisch / Extensionstisch · Richtwert 10 – 20 min", beihilfe:8.80, praxis:11.00},
+    {pos:"18a", name:"Klassische Massagetherapie (KMT)", sub:"Auch Segment-, Periost-, Reflexzonenmassage · Richtwert 15 – 20 min", beihilfe:21.70, praxis:28.00},
+    {pos:"18b", name:"Bindegewebsmassage (BGM)", sub:"Richtwert 30 min", beihilfe:26.00, praxis:34.00},
+    {pos:"19a", name:"Manuelle Lymphdrainage · Teilbehandlung", sub:"Richtwert 30 min", beihilfe:36.00, praxis:47.00},
+    {pos:"19b", name:"Manuelle Lymphdrainage · Großbehandlung", sub:"Richtwert 45 min", beihilfe:54.00, praxis:70.00},
+    {pos:"19c", name:"Manuelle Lymphdrainage · Ganzbehandlung", sub:"Richtwert 60 min", beihilfe:72.00, praxis:94.00},
+    {pos:"19d", name:"Kompressionsbandagierung", sub:"Einer Extremität · Bindenmaterial separat", beihilfe:23.00, praxis:30.00},
+    {pos:"22", name:"Heiße Rolle", sub:"Einschließlich erforderlicher Nachruhe", beihilfe:13.60, praxis:18.00},
+    {pos:"23", name:"Naturfango · Warmpackung", sub:"Naturmoor-/Naturfango-Peloid · einschließlich erforderlicher Nachruhe", beihilfe:36.20, praxis:36.00},
+    {pos:"25b", name:"Kaltpackung", sub:"Einmal verwendbares Peloid", beihilfe:20.30, praxis:26.00},
+    {pos:"39", name:"Kältetherapie", sub:"Eis, Kaltgas, Kaltluft · Richtwert 5 – 10 min", beihilfe:12.90, praxis:17.00},
+    {pos:"40", name:"Wärmetherapie mittels Heißluft", sub:"Richtwert 10 – 20 min", beihilfe:7.50, praxis:10.00},
+    {pos:"41", name:"Ultraschall-Wärmetherapie", sub:"Richtwert 10 – 20 min", beihilfe:14.70, praxis:19.00},
+    {pos:"42", name:"Elektrotherapie", sub:"Individuelle Stromstärken / Frequenzen · Richtwert 10 – 20 min", beihilfe:8.50, praxis:11.00},
+    {pos:"43", name:"Elektrostimulation bei Lähmungen", sub:"Richtwert 5 – 10 min je Muskel-Nerven-Einheit", beihilfe:18.70, praxis:24.00},
+    {pos:"44", name:"Iontophorese", sub:"Mit individuell eingestellter Stromstärke", beihilfe:8.20, praxis:11.00},
+    {pos:"83", name:"Ärztlich verordneter Hausbesuch", sub:"Pauschale einschließlich Fahrtkosten", beihilfe:27.60, praxis:36.00},
+    {pos:"84", name:"Besuch in sozialer Einrichtung", sub:"Pauschale einschließlich Fahrtkosten · je Patient", beihilfe:18.00, praxis:23.00}
+  ],
+  rechnungen: [],
+  rezepte: [],
+  praxisabrechnungen: [],
+  counters: { privat: 0 }
+};
+
+/* ---------- Persistenz ---------- */
+const STORE_KEY = 'sb_abrechnung_v1';
+let state = loadData();
+let ui = { view:'dashboard', rezeptMonth: currentYM(), vertragTyp:'gkv', vertragData:{name:'',geb:'',anschrift:'',kasse:''} };
+let gcal = { token:null, events:[], connecting:false, error:'', from:'', to:'' };
+let gcalTokenClient = null;
+
+function loadData(){
+  try{
+    const raw = localStorage.getItem(STORE_KEY);
+    if(raw){ const d = JSON.parse(raw); return Object.assign(structuredClone(DEFAULT_DATA), d); }
+  }catch(e){ console.warn('Laden fehlgeschlagen', e); }
+  return structuredClone(DEFAULT_DATA);
+}
+function saveData(){
+  try{ localStorage.setItem(STORE_KEY, JSON.stringify(state)); }
+  catch(e){ alert('Speichern fehlgeschlagen: '+e.message+'\n\nBitte exportieren Sie Ihre Daten als Sicherung.'); }
+}
+
+/* ---------- Helfer ---------- */
+const MONTHS=['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'];
+const eur = new Intl.NumberFormat('de-DE',{style:'currency',currency:'EUR'});
+function fmtEUR(n){ return eur.format(Number(n)||0); }
+function pad2(n){ return String(n).padStart(2,'0'); }
+function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function uid(){ return 'r'+Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
+function todayISO(){ const d=new Date(); return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`; }
+function currentYM(){ return todayISO().slice(0,7); }
+function fmtDate(iso){ if(!iso) return ''; const p=iso.split('-'); return p.length===3?`${p[2]}.${p[1]}.${p[0]}`:iso; }
+function fmtDateLong(iso){ if(!iso) return ''; const p=iso.split('-'); if(p.length!==3) return iso; return `${parseInt(p[2],10)}. ${MONTHS[parseInt(p[1],10)-1]} ${p[0]}`; }
+function monthLabel(ym){ if(!ym) return ''; const p=ym.split('-'); return `${MONTHS[parseInt(p[1],10)-1]} ${p[0]}`; }
+function addDays(iso,n){ const d=new Date(iso+'T00:00:00'); d.setDate(d.getDate()+n); return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`; }
+function parseNum(s){
+  if(typeof s==='number') return s;
+  if(s==null||s==='') return 0;
+  s=String(s).replace(/[€\s]/g,'').trim();
+  if(s.indexOf(',')>-1) s=s.replace(/\./g,'').replace(',','.');
+  const n=parseFloat(s); return isNaN(n)?0:n;
+}
+function el(id){ return document.getElementById(id); }
+function val(id){ const e=el(id); return e?e.value.trim():''; }
+
+function rechnungSumme(r){ return (r.positionen||[]).reduce((s,p)=>s+(Number(p.anzahl)||0)*(Number(p.einzel)||0),0); }
+function totalEinheiten(termine){ return (termine||[]).reduce((s,t)=>s+(Number(t.einheiten)||1),0); }
+function terminLabels(termine){
+  let c=0; const out=[];
+  (termine||[]).forEach(t=>{
+    const e=Number(t.einheiten)||1; const start=c+1; const end=c+e; c=end;
+    out.push({label: e>1?`${pad2(start)} – ${pad2(end)}`:pad2(start), datum:t.datum});
+  });
+  return out;
+}
+function nextPrivatNr(datum){
+  const yy=(datum||todayISO()).slice(2,4);
+  return `R${yy}-${pad2((state.counters.privat||0)+1).padStart(3,'0')}`;
+}
+function paNrFor(monat){
+  let base=`PA-${monat}`;
+  const existing=state.praxisabrechnungen.filter(p=>p.nummer===base||p.nummer.startsWith(base+'-')).length;
+  return existing?`${base}-${existing+1}`:base;
+}
+
+/* ============================================================
+   NAVIGATION
+   ============================================================ */
+const NAV=[
+  {id:'dashboard', label:'Übersicht'},
+  {id:'privat', label:'Privatrechnungen'},
+  {id:'kalender', label:'Kalender'},
+  {id:'rezepte', label:'Rezepte & Praxisabrechnung'},
+  {id:'vertraege', label:'Verträge'},
+  {id:'leistungen', label:'Leistungskatalog'},
+  {id:'einstellungen', label:'Einstellungen'}
+];
+function renderNav(){
+  return NAV.map(n=>`<button data-action="nav" data-view="${n.id}" class="${ui.view===n.id?'active':''}">${n.label}</button>`).join('');
+}
+
+/* ============================================================
+   VIEWS
+   ============================================================ */
+function render(){
+  el('nav').innerHTML=renderNav();
+  const v=ui.view;
+  let html='';
+  if(v==='dashboard') html=viewDashboard();
+  else if(v==='privat') html=viewPrivat();
+  else if(v==='kalender') html=viewKalender();
+  else if(v==='rezepte') html=viewRezepte();
+  else if(v==='vertraege') html=viewVertraege();
+  else if(v==='leistungen') html=viewLeistungen();
+  else if(v==='einstellungen') html=viewEinstellungen();
+  el('view').innerHTML=html;
+}
+
+/* ---------- Übersicht ---------- */
+function viewDashboard(){
+  const offen=state.rechnungen.filter(r=>r.status!=='bezahlt');
+  const offenSum=offen.reduce((s,r)=>s+rechnungSumme(r),0);
+  const ym=currentYM();
+  const rezMonat=state.rezepte.filter(r=>r.monat===ym);
+  const rezSum=rezMonat.reduce((s,r)=>s+(Number(r.betrag)||0),0);
+  const paOffen=state.praxisabrechnungen.filter(p=>p.status!=='bezahlt');
+  const paOffenSum=paOffen.reduce((s,p)=>s+(Number(p.betrag)||0),0);
+  return `
+  <div class="stats">
+    <div class="stat"><div class="k">Offene Privatrechnungen</div><div class="v">${offen.length}</div><div class="d">${fmtEUR(offenSum)} ausstehend</div></div>
+    <div class="stat"><div class="k">Rezepte · ${monthLabel(ym)}</div><div class="v">${rezMonat.length}</div><div class="d">${fmtEUR(rezSum)} Rezeptbeträge</div></div>
+    <div class="stat"><div class="k">Offene Praxisabrechnungen</div><div class="v">${paOffen.length}</div><div class="d">${fmtEUR(paOffenSum)} ausstehend</div></div>
+  </div>
+
+  <div class="card">
+    <div class="card-head">
+      <div><h2>Schnellzugriff</h2><div class="sub">Häufige Vorgänge direkt starten</div></div>
+    </div>
+    <div class="btn-row">
+      <button class="btn" data-action="neue-rechnung">＋ Neue Privatrechnung</button>
+      <button class="btn btn-ghost" data-action="neues-rezept">＋ Rezept erfassen</button>
+      <button class="btn btn-ghost" data-action="goto" data-view="rezepte">Monatsabrechnung erstellen</button>
+    </div>
+  </div>
+
+  ${offen.length?`
+  <div class="card">
+    <div class="card-head"><div><h2>Zuletzt offen</h2><div class="sub">Privatrechnungen ohne Zahlungseingang</div></div>
+      <button class="btn-link" data-action="goto" data-view="privat">Alle anzeigen →</button></div>
+    <div class="table-wrap"><table class="tbl">
+      <thead><tr><th>Nr.</th><th>Datum</th><th>Patient/in</th><th class="num">Betrag</th><th></th></tr></thead>
+      <tbody>${offen.slice(0,5).map(r=>`
+        <tr>
+          <td class="strong">${esc(r.nummer)}</td>
+          <td class="muted">${fmtDate(r.datum)}</td>
+          <td>${esc(r.name)}</td>
+          <td class="num tnum strong">${fmtEUR(rechnungSumme(r))}</td>
+          <td class="row-actions"><button class="btn-link" data-action="print-rechnung" data-id="${r.id}">Drucken</button></td>
+        </tr>`).join('')}
+      </tbody></table></div>
+  </div>`:''}
+  `;
+}
+
+/* ---------- Privatrechnungen ---------- */
+function viewPrivat(){
+  const list=[...state.rechnungen].sort((a,b)=> (b.datum||'').localeCompare(a.datum||'') || (b.nummer||'').localeCompare(a.nummer||''));
+  return `
+  <div class="card">
+    <div class="card-head">
+      <div><h2>Privatrechnungen</h2><div class="sub">Rechnungen an Privat-, Beihilfe- und Selbstzahler-Patientinnen und -Patienten</div></div>
+      <button class="btn" data-action="neue-rechnung">＋ Neue Rechnung</button>
+    </div>
+    ${list.length?`
+    <div class="table-wrap"><table class="tbl">
+      <thead><tr><th>Nr.</th><th>Datum</th><th>Patient/in</th><th>Diagnose</th><th class="num">Betrag</th><th>Status</th><th></th></tr></thead>
+      <tbody>${list.map(r=>`
+        <tr>
+          <td class="strong">${esc(r.nummer)}</td>
+          <td class="muted">${fmtDate(r.datum)}</td>
+          <td>${esc(r.name)}</td>
+          <td class="muted">${esc(r.diagnose||'—')}</td>
+          <td class="num tnum strong">${fmtEUR(rechnungSumme(r))}</td>
+          <td><span class="badge ${r.status==='bezahlt'?'bezahlt':'offen'}">${r.status==='bezahlt'?'Bezahlt':'Offen'}</span></td>
+          <td class="row-actions">
+            <button class="btn-link" data-action="print-rechnung" data-id="${r.id}">PDF</button>
+            <button class="btn-link" data-action="edit-rechnung" data-id="${r.id}">Bearbeiten</button>
+            ${r.status==='bezahlt'?'':`<button class="btn-link" data-action="mahnung-rechnung" data-id="${r.id}">Erinnerung</button>`}
+            <button class="btn-link" data-action="toggle-status" data-id="${r.id}">${r.status==='bezahlt'?'↺ Offen':'✓ Bezahlt'}</button>
+            <button class="btn-link" data-action="dup-rechnung" data-id="${r.id}">Kopieren</button>
+            <button class="btn-link danger" data-action="del-rechnung" data-id="${r.id}">Löschen</button>
+          </td>
+        </tr>`).join('')}
+      </tbody></table></div>`
+    :`<div class="empty"><span class="display">Noch keine Rechnungen</span>Legen Sie mit „Neue Rechnung“ die erste Privatrechnung an.</div>`}
+  </div>`;
+}
+
+/* ---------- Rezepte & Praxisabrechnung ---------- */
+function viewRezepte(){
+  const ym=ui.rezeptMonth;
+  const months = monthOptions();
+  const rez=state.rezepte.filter(r=>r.monat===ym).sort((a,b)=>(a.datum||'').localeCompare(b.datum||''));
+  const offeneRez=rez.filter(r=>!r.abgerechnet);
+  const sumAlle=rez.reduce((s,r)=>s+(Number(r.betrag)||0),0);
+  const sumOffen=offeneRez.reduce((s,r)=>s+(Number(r.betrag)||0),0);
+  const anteil=Number(state.abrechnendePraxis.anteilProzent)||100;
+  const pas=[...state.praxisabrechnungen].sort((a,b)=>(b.monat||'').localeCompare(a.monat||''));
+  const apName=state.abrechnendePraxis.name;
+
+  return `
+  ${!apName?`<div class="note-box">Hinterlegen Sie zuerst die <strong>abrechnende Praxis</strong> unter „Einstellungen“. Erst dann kann eine Monatsabrechnung adressiert werden.</div>`:''}
+
+  <div class="card">
+    <div class="card-head">
+      <div><h2>Rezepterfassung</h2><div class="sub">Über die Praxis abgerechnete Heilmittelverordnungen je Monat erfassen</div></div>
+      <button class="btn" data-action="neues-rezept">＋ Rezept erfassen</button>
+    </div>
+    <div class="field" style="max-width:240px">
+      <label>Monat</label>
+      <select class="input" data-action="set-monat" id="monat-select">
+        ${months.map(m=>`<option value="${m}" ${m===ym?'selected':''}>${monthLabel(m)}</option>`).join('')}
+      </select>
+    </div>
+
+    ${rez.length?`
+    <div class="table-wrap"><table class="tbl">
+      <thead><tr><th>Datum</th><th>Patient/in</th><th>Rezept-Nr.</th><th class="num">Rezeptbetrag</th><th>Status</th><th></th></tr></thead>
+      <tbody>${rez.map(r=>`
+        <tr>
+          <td class="muted">${fmtDate(r.datum)}</td>
+          <td>${esc(r.patient)}</td>
+          <td class="muted">${esc(r.rezeptNr||'—')}</td>
+          <td class="num tnum strong">${fmtEUR(r.betrag)}</td>
+          <td>${r.abgerechnet?`<span class="badge bezahlt">Abgerechnet</span>`:`<span class="badge offen">Offen</span>`}</td>
+          <td class="row-actions">
+            <button class="btn-link" data-action="edit-rezept" data-id="${r.id}">Bearbeiten</button>
+            <button class="btn-link danger" data-action="del-rezept" data-id="${r.id}">Löschen</button>
+          </td>
+        </tr>`).join('')}
+      </tbody></table></div>
+
+    <div class="sum-line"><span class="l">Summe ${monthLabel(ym)}</span><span class="v">${fmtEUR(sumAlle)}</span></div>
+    ${sumOffen>0?`
+    <div class="btn-row" style="margin-top:16px;align-items:center">
+      <button class="btn" data-action="monatsabrechnung" data-monat="${ym}" ${!apName?'disabled style="opacity:.5;cursor:not-allowed"':''}>Monatsabrechnung erstellen</button>
+      <span class="muted" style="font-size:12.5px">${offeneRez.length} offene Rezepte · ${fmtEUR(sumOffen)}${anteil!==100?` · Anteil ${anteil}% = ${fmtEUR(sumOffen*anteil/100)}`:''}</span>
+    </div>`:`<div class="hint" style="margin-top:14px">Alle Rezepte dieses Monats sind bereits abgerechnet.</div>`}
+    `:`<div class="empty"><span class="display">Keine Rezepte im ${monthLabel(ym)}</span>Erfassen Sie die in diesem Monat behandelten Verordnungen, um daraus eine Praxisabrechnung zu erstellen.<div class="btn-row" style="justify-content:center;margin-top:14px"><button class="btn-ghost btn" data-action="beispiel-rezepte" data-monat="${ym}">Beispieldaten laden</button></div></div>`}
+  </div>
+
+  <div class="card">
+    <div class="card-head"><div><h2>Praxisabrechnungen</h2><div class="sub">Sammelrechnungen an ${apName?esc(apName):'die abrechnende Praxis'}</div></div></div>
+    ${pas.length?`
+    <div class="table-wrap"><table class="tbl">
+      <thead><tr><th>Nr.</th><th>Monat</th><th>Datum</th><th class="num">Rezepte</th><th class="num">Rezeptsumme</th><th class="num">Rechnungsbetrag</th><th>Status</th><th></th></tr></thead>
+      <tbody>${pas.map(p=>`
+        <tr>
+          <td class="strong">${esc(p.nummer)}</td>
+          <td>${monthLabel(p.monat)}</td>
+          <td class="muted">${fmtDate(p.datum)}</td>
+          <td class="num">${(p.rezeptIds||[]).length}</td>
+          <td class="num tnum muted">${fmtEUR(p.summe)}</td>
+          <td class="num tnum strong">${fmtEUR(p.betrag)}</td>
+          <td><span class="badge ${p.status==='bezahlt'?'bezahlt':'offen'}">${p.status==='bezahlt'?'Bezahlt':'Offen'}</span></td>
+          <td class="row-actions">
+            <button class="btn-link" data-action="print-pa" data-id="${p.id}">PDF</button>
+            ${p.status==='bezahlt'?'':`<button class="btn-link" data-action="mahnung-pa" data-id="${p.id}">Erinnerung</button>`}
+            <button class="btn-link" data-action="toggle-pa-status" data-id="${p.id}">${p.status==='bezahlt'?'↺ Offen':'✓ Bezahlt'}</button>
+            <button class="btn-link danger" data-action="del-pa" data-id="${p.id}">Stornieren</button>
+          </td>
+        </tr>`).join('')}
+      </tbody></table></div>`
+    :`<div class="empty">Noch keine Praxisabrechnungen erstellt.</div>`}
+  </div>`;
+}
+function monthOptions(){
+  const set=new Set([currentYM(), ui.rezeptMonth]);
+  state.rezepte.forEach(r=>set.add(r.monat));
+  state.praxisabrechnungen.forEach(p=>set.add(p.monat));
+  // letzte 12 Monate ergänzen
+  const d=new Date(); d.setDate(1);
+  for(let i=0;i<12;i++){ set.add(`${d.getFullYear()}-${pad2(d.getMonth()+1)}`); d.setMonth(d.getMonth()-1); }
+  return [...set].filter(Boolean).sort().reverse();
+}
+
+/* ---------- Behandlungsverträge ---------- */
+function viewVertraege(){
+  const typ=ui.vertragTyp||'gkv';
+  const d=ui.vertragData||{};
+  const p=state.praxis;
+  const kasseLabel = typ==='gkv'?'Krankenkasse':'Private Versicherung / Beihilfe';
+  return `
+  <div class="card">
+    <div class="card-head"><div><h2>Behandlungsvertrag</h2><div class="sub">Vertrag zum Ausdrucken – für gesetzlich Versicherte oder Privat- und Selbstzahler-Patienten</div></div></div>
+
+    <div class="field"><label>Patiententyp</label>
+      <div class="seg">
+        <button class="seg-btn ${typ==='gkv'?'active':''}" data-action="set-vertrag-typ" data-typ="gkv">Kassenpatient/in · GKV</button>
+        <button class="seg-btn ${typ==='privat'?'active':''}" data-action="set-vertrag-typ" data-typ="privat">Privatpatient/in &amp; Selbstzahler</button>
+      </div>
+    </div>
+
+    <div class="subhead">Patientendaten <span style="text-transform:none;letter-spacing:0;color:var(--muted)">· optional – leer lassen zum handschriftlichen Ausfüllen</span></div>
+    <div class="grid2">
+      <div class="field"><label>Patient/in</label><input class="input" id="v-name" value="${esc(d.name||'')}"></div>
+      <div class="field"><label>Geburtsdatum</label><input class="input" id="v-geb" value="${esc(d.geb||'')}" placeholder="z. B. 27.12.1960"></div>
+      <div class="field"><label>Anschrift</label><input class="input" id="v-anschrift" value="${esc(d.anschrift||'')}" placeholder="Straße, PLZ Ort"></div>
+      <div class="field"><label>${kasseLabel}</label><input class="input" id="v-kasse" value="${esc(d.kasse||'')}"></div>
+    </div>
+
+    <div class="subhead">Vertragskonditionen</div>
+    <div class="grid3">
+      <div class="field"><label>Ausfallhonorar (€)</label><input class="input" inputmode="decimal" id="v-honorar" value="${String(p.ausfallhonorar!=null?p.ausfallhonorar:25).replace('.',',')}"></div>
+      <div class="field"><label>Absagefrist (Stunden)</label><input class="input" type="number" min="0" id="v-frist" value="${esc(p.absagefristStunden!=null?p.absagefristStunden:24)}"></div>
+      <div class="field"><label>Gerichtsstand</label><input class="input" id="v-gs" value="${esc(p.gerichtsstand||'Freiburg im Breisgau')}"></div>
+    </div>
+    <div class="hint">Änderungen werden für den Ausdruck übernommen und als Standard gespeichert.</div>
+
+    <div class="btn-row">
+      <button class="btn" data-action="print-vertrag">${typ==='gkv'?'GKV-':'Privat-'}Vertrag drucken / als PDF</button>
+    </div>
+    <div class="note-box">Der Vertrag wird dreiseitig erstellt: Vertragsbedingungen auf Seite 1–2, Unterschriftenfeld auf Seite 3. Bitte vor breitem Einsatz einmal anwaltlich oder über den Verband (z. B. VPT) prüfen lassen.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><div><h2>Datenschutz-Merkblatt</h2><div class="sub">Patienteninformation nach Art. 13 DSGVO – ergänzt § 7 des Behandlungsvertrags</div></div></div>
+    <p style="font-size:13.5px;color:var(--soft);margin:0 0 14px">Informiert Patientinnen und Patienten über die Verarbeitung ihrer Daten in der Praxis. Kann ausgehändigt oder mit Empfangsbestätigung unterschrieben werden. Ein oben eingetragener Patientenname wird übernommen.</p>
+    <div class="btn-row">
+      <button class="btn" data-action="print-merkblatt">Datenschutz-Merkblatt drucken / als PDF</button>
+    </div>
+  </div>`;
+}
+
+/* ---------- Leistungskatalog ---------- */
+/* ---------- Kalender (Google) ---------- */
+function viewKalender(){
+  const g = state.google||{};
+  const isFile = (typeof location!=='undefined' && location.protocol==='file:');
+
+  if(isFile){
+    return `<div class="card">
+      <div class="card-head"><div><h2>Kalender</h2><div class="sub">Google-Kalender-Anbindung</div></div></div>
+      <div class="note-box">Die Kalender-Anbindung funktioniert nur in der über das Internet (https) bereitgestellten App-Variante – nicht, wenn die Datei lokal geöffnet wurde. Bitte die App wie in der Anleitung beschrieben hosten und dort öffnen.</div>
+    </div>`;
+  }
+  if(!g.clientId){
+    return `<div class="card">
+      <div class="card-head"><div><h2>Kalender</h2><div class="sub">Google-Kalender-Anbindung (nur lesend)</div></div></div>
+      <p style="font-size:13.5px;color:var(--soft);margin:0 0 14px">Um Behandlungstermine aus Google Calendar zu übernehmen, wird einmalig eine Google&nbsp;OAuth-Client-ID benötigt. Diese tragen Sie in den Einstellungen ein; die nötigen Schritte stehen dort und in der Installationsanleitung.</p>
+      <div class="btn-row"><button class="btn" data-action="goto" data-view="einstellungen">Zu den Einstellungen</button></div>
+    </div>`;
+  }
+
+  const from = gcal.from || addDays(todayISO(),-60);
+  const to   = gcal.to   || addDays(todayISO(),14);
+  const connected = !!gcal.token;
+  const evs = gcal.events||[];
+
+  return `<div class="card">
+    <div class="card-head">
+      <div><h2>Kalender</h2><div class="sub">Termine aus Google Calendar ansehen und in eine Rechnung übernehmen</div></div>
+      <div class="btn-row">
+        ${connected
+          ? `<button class="btn btn-ghost" data-action="gcal-refresh" ${gcal.connecting?'disabled':''}>${gcal.connecting?'Lädt …':'Aktualisieren'}</button>`
+          : `<button class="btn" data-action="gcal-connect" ${gcal.connecting?'disabled':''}>${gcal.connecting?'Verbinde …':'Mit Google verbinden'}</button>`}
+      </div>
+    </div>
+
+    ${gcal.error?`<div class="note-box" style="border-left-color:var(--danger);color:var(--danger)">${esc(gcal.error)}</div>`:''}
+
+    <div class="grid3">
+      <div class="field"><label>Von</label><input class="input" type="date" id="gcal-from" value="${esc(from)}"></div>
+      <div class="field"><label>Bis</label><input class="input" type="date" id="gcal-to" value="${esc(to)}"></div>
+      <div class="field" style="display:flex;align-items:flex-end"><button class="btn btn-ghost" data-action="gcal-refresh" style="width:100%" ${connected?'':'disabled'}>Zeitraum laden</button></div>
+    </div>
+
+    ${connected ? (evs.length ? `
+      <div class="field"><label>Termine filtern</label><input class="input" id="gcal-filter" placeholder="z. B. Name tippen …"></div>
+      <div class="hint">Termine auswählen und unten in eine neue Rechnung übernehmen. Der Patientenname wird aus dem Termintitel vorbelegt und kann angepasst werden.</div>
+      <div class="table-wrap" style="border:1px solid var(--rule);border-radius:8px">
+        ${evs.map(e=>`
+          <label class="gcal-row" data-title="${esc((e.titel||'').toLowerCase())}">
+            <input type="checkbox" class="gcal-ev" data-date="${esc(e.datum)}" data-title="${esc(e.titel)}">
+            <span class="gcal-date">${esc(fmtDate(e.datum))}${e.zeit?` · ${esc(e.zeit)}`:''}</span>
+            <span class="gcal-title">${esc(e.titel)}</span>
+          </label>`).join('')}
+      </div>
+      <div class="btn-row" style="margin-top:14px">
+        <button class="btn" data-action="gcal-import">Ausgewählte Termine → neue Rechnung</button>
+      </div>`
+      : `<div class="empty">Keine Termine im gewählten Zeitraum gefunden.</div>`)
+    : `<div class="empty"><span class="display">Noch nicht verbunden</span>Mit Google verbinden, um Termine des gewählten Zeitraums anzuzeigen.</div>`}
+  </div>`;
+}
+
+function viewLeistungen(){
+  return `
+  <div class="card">
+    <div class="card-head">
+      <div><h2>Leistungskatalog</h2><div class="sub">Beihilfesatz (≈ GKV-Satz für Rezepte) und Praxispreis (Privatrechnung) je Position</div></div>
+      <div class="btn-row">
+        <button class="btn btn-ghost" data-action="neue-leistung">＋ Position</button>
+        <button class="btn-link" data-action="reset-leistungen">Auf Standard zurücksetzen</button>
+      </div>
+    </div>
+    <div class="table-wrap"><table class="tbl">
+      <thead><tr><th>Pos.</th><th>Leistung</th><th class="num">Beihilfe / GKV</th><th class="num">Praxispreis</th><th></th></tr></thead>
+      <tbody>${state.leistungen.map((l,i)=>`
+        <tr>
+          <td class="muted">${esc(l.pos)}</td>
+          <td><div class="strong">${esc(l.name)}</div><div class="muted">${esc(l.sub||'')}</div></td>
+          <td class="num tnum muted">${fmtEUR(l.beihilfe)}</td>
+          <td class="num tnum strong">${fmtEUR(l.praxis)}</td>
+          <td class="row-actions">
+            <button class="btn-link" data-action="edit-leistung" data-idx="${i}">Bearbeiten</button>
+            <button class="btn-link danger" data-action="del-leistung" data-idx="${i}">Löschen</button>
+          </td>
+        </tr>`).join('')}
+      </tbody></table></div>
+  </div>`;
+}
+
+/* ---------- Einstellungen ---------- */
+function viewEinstellungen(){
+  const p=state.praxis, a=state.abrechnendePraxis;
+  return `
+  <div class="card">
+    <div class="card-head"><div><h2>Praxis-Stammdaten</h2><div class="sub">Erscheinen im Briefkopf, Footer und auf dem GiroCode</div></div></div>
+    <div class="grid2">
+      <div class="field"><label>Name / Inhaberin</label><input class="input" id="p-name" value="${esc(p.name)}"></div>
+      <div class="field"><label>Untertitel</label><input class="input" id="p-untertitel" value="${esc(p.untertitel)}"></div>
+      <div class="field"><label>Straße</label><input class="input" id="p-strasse" value="${esc(p.strasse)}"></div>
+      <div class="field"><label>PLZ / Ort</label><input class="input" id="p-plzOrt" value="${esc(p.plzOrt)}"></div>
+      <div class="field"><label>Telefon</label><input class="input" id="p-telefon" value="${esc(p.telefon)}"></div>
+      <div class="field"><label>Zahlungsziel (Tage)</label><input class="input" id="p-zahlungsziel" type="number" min="0" value="${esc(p.zahlungszielTage)}"></div>
+    </div>
+    <div class="subhead">Bankverbindung</div>
+    <div class="grid2">
+      <div class="field"><label>Bank</label><input class="input" id="p-bank" value="${esc(p.bank)}"></div>
+      <div class="field"><label>BIC</label><input class="input" id="p-bic" value="${esc(p.bic)}"></div>
+      <div class="field"><label>IBAN</label><input class="input" id="p-iban" value="${esc(p.iban)}"></div>
+      <div class="field"><label>Umsatzsteuer-Hinweis</label><input class="input" id="p-ust" value="${esc(p.ustHinweis)}"></div>
+    </div>
+    <div class="btn-row"><button class="btn" data-action="save-praxis">Stammdaten speichern</button></div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><div><h2>Abrechnende Praxis</h2><div class="sub">Empfänger der monatlichen Praxisabrechnung</div></div></div>
+    <div class="grid2">
+      <div class="field"><label>Name der Praxis</label><input class="input" id="a-name" value="${esc(a.name)}"></div>
+      <div class="field"><label>Zusatz (optional)</label><input class="input" id="a-zusatz" value="${esc(a.zusatz||'')}"></div>
+      <div class="field"><label>Straße</label><input class="input" id="a-strasse" value="${esc(a.strasse)}"></div>
+      <div class="field"><label>PLZ / Ort</label><input class="input" id="a-plzOrt" value="${esc(a.plzOrt)}"></div>
+      <div class="field"><label>Ansprechpartner/in (optional)</label><input class="input" id="a-ansprech" value="${esc(a.ansprechpartner||'')}"></div>
+      <div class="field"><label>Anteil Therapeutin am Rezeptbetrag (%)</label><input class="input" id="a-anteil" type="number" min="0" max="100" step="0.1" value="${esc(a.anteilProzent)}"></div>
+    </div>
+    <div class="hint">Anteil = 100 %, wenn Sie den vollen Rezeptbetrag in Rechnung stellen. Bei einer Provision der Praxis (z. B. Praxis behält 30 %) tragen Sie hier Ihren Anteil ein (z. B. 70 %).</div>
+    <div class="btn-row"><button class="btn" data-action="save-abrechnende">Empfänger speichern</button></div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><div><h2>Google Kalender</h2><div class="sub">Nur lesender Zugriff – Termine in Rechnungen übernehmen (nur in der gehosteten App-Variante)</div></div></div>
+    <div class="field"><label>Google OAuth-Client-ID</label><input class="input" id="g-clientid" value="${esc((state.google||{}).clientId||'')}" placeholder="z. B. 1234567890-abc….apps.googleusercontent.com"></div>
+    <div class="note-box">
+      <strong>Einmalige Einrichtung in der Google Cloud Console:</strong><br>
+      1. Projekt anlegen (console.cloud.google.com) und die „Google Calendar API" aktivieren.<br>
+      2. Unter „APIs &amp; Dienste → OAuth-Zustimmungsbildschirm" einen externen Zustimmungsbildschirm anlegen; sich selbst als Testnutzer eintragen.<br>
+      3. Unter „Anmeldedaten" eine <strong>OAuth-Client-ID</strong> vom Typ „Webanwendung" erstellen.<br>
+      4. Bei „Autorisierte JavaScript-Quellen" die Internet-Adresse Ihrer App eintragen (z. B. https://ihr-name.github.io – ohne Pfad).<br>
+      5. Die erzeugte Client-ID oben einfügen und speichern.<br>
+      Datenschutz: Es wird ausschließlich lesend auf Termine zugegriffen; Kalenderdaten werden nicht dauerhaft in der App gespeichert.
+    </div>
+    <div class="btn-row"><button class="btn" data-action="save-google">Google-Einstellungen speichern</button></div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><div><h2>Daten &amp; Sicherung</h2><div class="sub">Alle Daten liegen ausschließlich in diesem Browser. Bitte regelmäßig sichern.</div></div></div>
+    <div class="note-box">Wird der Browser-Speicher gelöscht (z. B. Cache leeren), gehen nicht gesicherte Daten verloren. Exportieren Sie regelmäßig eine Sicherungsdatei.</div>
+    <div class="btn-row">
+      <button class="btn" data-action="export-daten">Sicherung exportieren (JSON)</button>
+      <button class="btn btn-ghost" data-action="import-daten">Sicherung importieren</button>
+      <button class="btn-link danger" data-action="reset-daten">Alle Daten zurücksetzen</button>
+    </div>
+    <input type="file" id="import-file" accept="application/json" style="display:none">
+  </div>`;
+}
+
+/* ============================================================
+   FORMULARE (Modal)
+   ============================================================ */
+let edRechnung=null, edRezept=null, edMahnung=null;
+
+function openModal(title, bodyHTML, footHTML){
+  el('modal-root').innerHTML=`
+    <div class="modal-bg" data-action="modal-bg">
+      <div class="modal" role="dialog" aria-modal="true">
+        <div class="modal-head"><h3>${title}</h3><button class="x" data-action="close-modal" aria-label="Schließen">×</button></div>
+        <div class="modal-body" id="modal-body">${bodyHTML}</div>
+        <div class="modal-foot">${footHTML}</div>
+      </div>
+    </div>`;
+}
+function closeModal(){ el('modal-root').innerHTML=''; edRechnung=null; edRezept=null; edMahnung=null; }
+
+/* ---------- Rechnungsformular ---------- */
+function openRechnungForm(existing, prefill){
+  if(existing){
+    edRechnung=structuredClone(existing);
+  }else{
+    const datum=todayISO();
+    edRechnung={
+      id:uid(), nummer:nextPrivatNr(datum), datum,
+      anrede:'Frau', name:'', strasse:'', plzOrt:'',
+      arzt:'', diagnose:'', verordnungDatum:'',
+      termine:[], positionen:[],
+      zahlungsziel:addDays(datum, state.praxis.zahlungszielTage||14), status:'offen', _new:true
+    };
+    if(prefill){
+      if(prefill.name) edRechnung.name=prefill.name;
+      if(prefill.termine && prefill.termine.length) edRechnung.termine=prefill.termine;
+    }
+  }
+  openModal(existing?'Rechnung bearbeiten':'Neue Privatrechnung', rechnungFormBody(),
+    `<button class="btn-link" data-action="close-modal">Abbrechen</button>
+     <button class="btn" data-action="save-rechnung">Rechnung speichern</button>`);
+}
+function rechnungFormBody(){
+  const e=edRechnung;
+  const catOpts=state.leistungen.map(l=>`<option value="${esc(l.pos)}">${esc(l.pos)} · ${esc(l.name)}</option>`).join('');
+  return `
+    <div class="grid3">
+      <div class="field"><label>Rechnungs-Nr.</label><input class="input" id="f-nummer" value="${esc(e.nummer)}"></div>
+      <div class="field"><label>Rechnungsdatum</label><input class="input" type="date" id="f-datum" value="${esc(e.datum)}"></div>
+      <div class="field"><label>Zahlungsziel</label><input class="input" type="date" id="f-zahlungsziel" value="${esc(e.zahlungsziel)}"></div>
+    </div>
+    <div class="subhead">Empfänger</div>
+    <div class="grid3">
+      <div class="field"><label>Anrede</label>
+        <select class="input" id="f-anrede">
+          <option ${e.anrede==='Frau'?'selected':''}>Frau</option>
+          <option ${e.anrede==='Herr'?'selected':''}>Herr</option>
+          <option ${e.anrede===''?'selected':''} value=""></option>
+        </select></div>
+      <div class="field" style="grid-column:span 2"><label>Name</label><input class="input" id="f-name" value="${esc(e.name)}"></div>
+    </div>
+    <div class="grid2">
+      <div class="field"><label>Straße / Hausnr.</label><input class="input" id="f-strasse" value="${esc(e.strasse)}"></div>
+      <div class="field"><label>PLZ / Ort</label><input class="input" id="f-plzOrt" value="${esc(e.plzOrt)}"></div>
+    </div>
+    <div class="subhead">Verordnung</div>
+    <div class="grid2">
+      <div class="field"><label>Verordnende Praxis / Arzt</label><input class="input" id="f-arzt" value="${esc(e.arzt)}"></div>
+      <div class="field"><label>Verordnungsdatum</label><input class="input" type="date" id="f-vdatum" value="${esc(e.verordnungDatum)}"></div>
+    </div>
+    <div class="field"><label>Diagnose</label><input class="input" id="f-diagnose" value="${esc(e.diagnose)}"></div>
+
+    <div class="subhead">Behandlungstermine <span style="text-transform:none;letter-spacing:0;color:var(--muted)">· Einheiten = 2 für Doppeltermine · gesamt ${totalEinheiten(e.termine)} Einheiten</span></div>
+    <div id="termine-list">${termineRows()}</div>
+    <button class="btn btn-ghost btn-sm" data-action="add-termin" style="margin-top:4px">＋ Termin</button>
+
+    <div class="subhead">Leistungen</div>
+    <div id="pos-list">${posRows()}</div>
+    <div class="line-row" style="grid-template-columns:1fr auto;margin-top:6px">
+      <select class="input" id="pos-cat">${catOpts}</select>
+      <button class="btn btn-ghost btn-sm" data-action="add-pos">＋ Hinzufügen</button>
+    </div>
+    <div class="sum-line"><span class="l">Rechnungsbetrag</span><span class="v" id="rech-sum">${fmtEUR(rechnungSumme(e))}</span></div>
+  `;
+}
+function termineRows(){
+  const e=edRechnung;
+  if(!e.termine.length) return `<div class="hint">Noch keine Termine erfasst.</div>`;
+  return `<div class="line-row li-termin line-head"><div>Datum</div><div>Einheiten</div><div></div></div>`+
+    e.termine.map((t,i)=>`
+    <div class="line-row li-termin">
+      <input class="input" type="date" data-tf="datum" data-i="${i}" value="${esc(t.datum)}">
+      <input class="input" type="number" min="1" max="9" data-tf="einheiten" data-i="${i}" value="${esc(t.einheiten||1)}">
+      <button class="icon-btn" data-action="del-termin" data-i="${i}" aria-label="Termin entfernen">×</button>
+    </div>`).join('');
+}
+function posRows(){
+  const e=edRechnung;
+  if(!e.positionen.length) return `<div class="hint">Noch keine Leistungen hinzugefügt.</div>`;
+  return `<div class="line-row li-pos line-head"><div>Leistung</div><div>Pos.</div><div>Anzahl</div><div>Einzelpreis</div><div></div></div>`+
+    e.positionen.map((p,i)=>`
+    <div class="line-row li-pos">
+      <div><input class="input" data-pf="name" data-i="${i}" value="${esc(p.name)}"><input class="input" data-pf="sub" data-i="${i}" value="${esc(p.sub||'')}" style="margin-top:5px;font-size:12px;color:var(--muted)" placeholder="Beschreibung"></div>
+      <input class="input" data-pf="pos" data-i="${i}" value="${esc(p.pos||'')}">
+      <input class="input" type="number" min="0" step="1" data-pf="anzahl" data-i="${i}" value="${esc(p.anzahl)}">
+      <input class="input" inputmode="decimal" data-pf="einzel" data-i="${i}" value="${String(p.einzel).replace('.',',')}">
+      <button class="icon-btn" data-action="del-pos" data-i="${i}" aria-label="Leistung entfernen">×</button>
+    </div>`).join('');
+}
+function syncRechnungForm(){
+  const e=edRechnung; if(!e) return;
+  e.nummer=val('f-nummer'); e.datum=val('f-datum'); e.zahlungsziel=val('f-zahlungsziel');
+  e.anrede=val('f-anrede'); e.name=val('f-name'); e.strasse=val('f-strasse'); e.plzOrt=val('f-plzOrt');
+  e.arzt=val('f-arzt'); e.verordnungDatum=val('f-vdatum'); e.diagnose=val('f-diagnose');
+  document.querySelectorAll('[data-tf]').forEach(inp=>{
+    const i=+inp.dataset.i, f=inp.dataset.tf;
+    if(!e.termine[i]) return;
+    e.termine[i][f]= f==='einheiten'?(parseInt(inp.value,10)||1):inp.value;
+  });
+  document.querySelectorAll('[data-pf]').forEach(inp=>{
+    const i=+inp.dataset.i, f=inp.dataset.pf;
+    if(!e.positionen[i]) return;
+    if(f==='anzahl') e.positionen[i][f]=parseInt(inp.value,10)||0;
+    else if(f==='einzel') e.positionen[i][f]=parseNum(inp.value);
+    else e.positionen[i][f]=inp.value;
+  });
+}
+function refreshRechnungForm(){ el('modal-body').innerHTML=rechnungFormBody(); }
+
+/* ---------- Rezeptformular ---------- */
+function openRezeptForm(existing){
+  if(existing){ edRezept=structuredClone(existing); }
+  else{
+    const datum=todayISO();
+    edRezept={ id:uid(), datum, monat:datum.slice(0,7), patient:'', rezeptNr:'', betrag:0, positionen:[], notiz:'', abgerechnet:false, _new:true };
+  }
+  openModal(existing?'Rezept bearbeiten':'Rezept erfassen', rezeptFormBody(),
+    `<button class="btn-link" data-action="close-modal">Abbrechen</button>
+     <button class="btn" data-action="save-rezept">Rezept speichern</button>`);
+}
+function rezeptFormBody(){
+  const e=edRezept;
+  const catOpts=state.leistungen.map(l=>`<option value="${esc(l.pos)}">${esc(l.pos)} · ${esc(l.name)} (${fmtEUR(l.beihilfe)})</option>`).join('');
+  const hasPos=e.positionen&&e.positionen.length;
+  return `
+    <div class="grid3">
+      <div class="field"><label>Behandlungsdatum</label><input class="input" type="date" id="rz-datum" value="${esc(e.datum)}"></div>
+      <div class="field"><label>Abrechnungsmonat</label><input class="input" type="month" id="rz-monat" value="${esc(e.monat)}"></div>
+      <div class="field"><label>Rezept-Nr. (optional)</label><input class="input" id="rz-nr" value="${esc(e.rezeptNr||'')}"></div>
+    </div>
+    <div class="field"><label>Patient/in</label><input class="input" id="rz-patient" value="${esc(e.patient)}"></div>
+
+    <div class="field"><label>Rezeptbetrag</label><input class="input" inputmode="decimal" id="rz-betrag" value="${e.betrag?String(e.betrag).replace('.',','):''}" placeholder="z. B. 356,00"></div>
+    <div class="hint">Direkt eingeben oder unten aus Positionen (Beihilfe-/GKV-Sätze) berechnen lassen.</div>
+
+    <div class="collapse-toggle" data-action="toggle-rezpos">▸ Aus Positionen berechnen ${hasPos?`(${e.positionen.length})`:''}</div>
+    <div id="rezpos-wrap" style="display:${hasPos?'block':'none'};margin-top:12px">
+      <div id="rezpos-list">${rezPosRows()}</div>
+      <div class="line-row" style="grid-template-columns:1fr auto;margin-top:6px">
+        <select class="input" id="rezpos-cat">${catOpts}</select>
+        <button class="btn btn-ghost btn-sm" data-action="add-rezpos">＋ Hinzufügen</button>
+      </div>
+      <div class="sum-line"><span class="l">Summe Positionen</span><span class="v" id="rezpos-sum">${fmtEUR(rezPosSum())}</span></div>
+      <div class="hint">„Übernehmen“ schreibt die Summe in das Feld Rezeptbetrag.</div>
+      <button class="btn btn-ghost btn-sm" data-action="rezpos-uebernehmen">Summe als Rezeptbetrag übernehmen</button>
+    </div>
+
+    <div class="field" style="margin-top:16px"><label>Notiz (optional)</label><textarea class="input" id="rz-notiz" placeholder="z. B. Verordnung Dr. … / Diagnose">${esc(e.notiz||'')}</textarea></div>
+  `;
+}
+function rezPosRows(){
+  const e=edRezept;
+  if(!e.positionen||!e.positionen.length) return `<div class="hint">Noch keine Positionen.</div>`;
+  return `<div class="line-row li-rezpos line-head"><div>Leistung</div><div>Pos.</div><div>Anzahl</div><div>Satz</div><div></div></div>`+
+    e.positionen.map((p,i)=>`
+    <div class="line-row li-rezpos">
+      <input class="input" data-rpf="name" data-i="${i}" value="${esc(p.name)}">
+      <input class="input" data-rpf="pos" data-i="${i}" value="${esc(p.pos||'')}">
+      <input class="input" type="number" min="0" data-rpf="anzahl" data-i="${i}" value="${esc(p.anzahl)}">
+      <input class="input" inputmode="decimal" data-rpf="satz" data-i="${i}" value="${String(p.satz).replace('.',',')}">
+      <button class="icon-btn" data-action="del-rezpos" data-i="${i}" aria-label="Position entfernen">×</button>
+    </div>`).join('');
+}
+function rezPosSum(){ const e=edRezept; return (e.positionen||[]).reduce((s,p)=>s+(Number(p.anzahl)||0)*(Number(p.satz)||0),0); }
+function syncRezeptForm(){
+  const e=edRezept; if(!e) return;
+  e.datum=val('rz-datum'); e.monat=val('rz-monat'); e.rezeptNr=val('rz-nr'); e.patient=val('rz-patient');
+  e.notiz=val('rz-notiz'); e.betrag=parseNum(val('rz-betrag'));
+  document.querySelectorAll('[data-rpf]').forEach(inp=>{
+    const i=+inp.dataset.i, f=inp.dataset.rpf; if(!e.positionen[i]) return;
+    if(f==='anzahl') e.positionen[i][f]=parseInt(inp.value,10)||0;
+    else if(f==='satz') e.positionen[i][f]=parseNum(inp.value);
+    else e.positionen[i][f]=inp.value;
+  });
+}
+function refreshRezeptForm(){ el('modal-body').innerHTML=rezeptFormBody(); }
+
+/* ---------- Leistungsformular ---------- */
+function openLeistungForm(idx){
+  const isNew=idx==null;
+  const l=isNew?{pos:'',name:'',sub:'',beihilfe:0,praxis:0}:state.leistungen[idx];
+  openModal(isNew?'Neue Position':'Position bearbeiten', `
+    <div class="grid2">
+      <div class="field"><label>Positionsnummer</label><input class="input" id="l-pos" value="${esc(l.pos)}"></div>
+      <div class="field"><label>Bezeichnung</label><input class="input" id="l-name" value="${esc(l.name)}"></div>
+    </div>
+    <div class="field"><label>Beschreibung</label><input class="input" id="l-sub" value="${esc(l.sub||'')}"></div>
+    <div class="grid2">
+      <div class="field"><label>Beihilfe / GKV-Satz (€)</label><input class="input" inputmode="decimal" id="l-beihilfe" value="${String(l.beihilfe).replace('.',',')}"></div>
+      <div class="field"><label>Praxispreis (€)</label><input class="input" inputmode="decimal" id="l-praxis" value="${String(l.praxis).replace('.',',')}"></div>
+    </div>`,
+    `<button class="btn-link" data-action="close-modal">Abbrechen</button>
+     <button class="btn" data-action="save-leistung" data-idx="${isNew?'':idx}">Speichern</button>`);
+}
+
+/* ============================================================
+   DRUCK / PDF
+   ============================================================ */
+function makeQR(text,sizePx){
+  if(typeof QRCode==='undefined') return '';
+  try{
+    const tmp=document.createElement('div');
+    new QRCode(tmp,{text,width:sizePx,height:sizePx,correctLevel:QRCode.CorrectLevel.M});
+    const c=tmp.querySelector('canvas');
+    if(c) return c.toDataURL('image/png');
+    const img=tmp.querySelector('img');
+    if(img&&img.src) return img.src;
+  }catch(e){ console.warn('QR-Fehler',e); }
+  return '';
+}
+function epcPayload(name,iban,bic,amount,text){
+  return ['BCD','002','1','SCT',(bic||'').replace(/\s+/g,''),name||'',(iban||'').replace(/\s+/g,''),'EUR'+(Number(amount)||0).toFixed(2),'','',text||''].join('\n');
+}
+function docHeader(){
+  const p=state.praxis;
+  return `
+  <div class="doc-head">
+    <div class="doc-logo">
+      <div class="dots"><span></span><span></span><span></span><span></span><span></span><span></span></div>
+      <div><div class="name">${esc(p.name)}</div><div class="tag">${esc(p.untertitel)}</div></div>
+    </div>
+    <div class="doc-meta">Praxis Behringer<br>${esc(p.strasse)} · ${esc(p.plzOrt)}<br>${esc(p.telefon)}</div>
+  </div>
+  <div class="doc-dots"><span></span><span></span><span></span><span></span><span></span></div>`;
+}
+function docFooter(standLabel){
+  const p=state.praxis;
+  return `<div class="doc-footer">
+    <div><span class="k">Praxis</span>${esc(p.strasse)}<br>${esc(p.plzOrt)}</div>
+    <div><span class="k">Kontakt</span>${esc(p.telefon)}<br>Termine nach Vereinbarung</div>
+    <div><span class="k">Stand</span>${esc(standLabel)}</div>
+  </div>`;
+}
+function docPay(amount, verwendung, frist){
+  const p=state.praxis;
+  const qr=makeQR(epcPayload(p.name,p.iban,p.bic,amount,verwendung),300);
+  return `<div class="doc-pay">
+    <div class="qr">${qr?`<img src="${qr}" alt="GiroCode">`:`<div style="font-size:7pt;color:#999">GiroCode nicht verfügbar (offline)</div>`}<div class="ql">GiroCode</div></div>
+    <div class="det">
+      <div class="nt">Bitte überweisen Sie den Rechnungsbetrag${frist?` bis zum <strong>${esc(fmtDateLong(frist))}</strong>`:''} auf das unten angegebene Konto.</div>
+      <table>
+        <tr><td class="k">Empfänger</td><td>${esc(p.name)}</td></tr>
+        <tr><td class="k">Bank</td><td>${esc(p.bank)}</td></tr>
+        <tr><td class="k">IBAN</td><td class="iban">${esc(p.iban)}</td></tr>
+        <tr><td class="k">BIC</td><td>${esc(p.bic)}</td></tr>
+        <tr><td class="k">Verwendung</td><td>${esc(verwendung)}</td></tr>
+      </table>
+    </div>
+  </div>`;
+}
+
+function renderRechnungDoc(r){
+  const labels=terminLabels(r.termine);
+  const sum=rechnungSumme(r);
+  return `<div class="doc">
+    <div class="doc-pagemark">Rechnung ${esc(r.nummer)} · 01 / 01</div>
+    ${docHeader()}
+    <div class="doc-addr">
+      <div class="rcpt">${r.anrede?esc(r.anrede)+'<br>':''}${esc(r.name)}<br>${esc(r.strasse)}<br>D ${esc(r.plzOrt)}</div>
+      <div class="date">${esc(fmtDateLong(r.datum))}</div>
+    </div>
+    <div class="doc-section"><h1>Rechnung Nr. ${esc(r.nummer)}</h1><span class="eb">Honorar Physiotherapie · Privat</span></div>
+    <div class="doc-intro">
+      <p class="an">${r.anrede==='Herr'?'Sehr geehrter Herr':'Sehr geehrte Frau'} ${esc(lastName(r.name))},</p>
+      <p>ich erlaube mir, Ihnen folgende Leistungen zu berechnen.${r.arzt?` Die Behandlungen erfolgten aufgrund der ärztlichen Verordnung von <strong>${esc(r.arzt)}</strong>${r.verordnungDatum?` vom ${esc(fmtDateLong(r.verordnungDatum))}`:''}${r.diagnose?` mit der Diagnose <em>${esc(r.diagnose)}</em>`:''}.`:''}</p>
+      ${labels.length?`<p>Behandlungstermine für ${esc(r.name)}:</p>`:''}
+    </div>
+    ${labels.length?`<div class="doc-dates">${labels.map(t=>`<div class="t"><span class="n">${esc(t.label)}</span><span>${esc(fmtDate(t.datum))}</span></div>`).join('')}</div>`:''}
+    <table class="doc-srv">
+      <thead><tr><th>Pos.</th><th>Leistung</th><th class="n">Anzahl</th><th class="n">Einzelpreis</th><th class="n">Gesamtpreis</th></tr></thead>
+      <tbody>${r.positionen.map(p=>`
+        <tr>
+          <td class="pos">${esc(p.pos||'')}</td>
+          <td><span class="ti">${esc(p.name)}</span>${p.sub?`<span class="su">${esc(p.sub)}</span>`:''}</td>
+          <td class="n qty">${esc(p.anzahl)}</td>
+          <td class="n pr">${fmtEUR(p.einzel)}</td>
+          <td class="n tot">${fmtEUR((Number(p.anzahl)||0)*(Number(p.einzel)||0))}</td>
+        </tr>`).join('')}
+      </tbody>
+    </table>
+    <div class="doc-total"><span class="l">Rechnungsbetrag</span><span class="v">${fmtEUR(sum)}</span></div>
+    ${docPay(sum, `Rechnung ${r.nummer} · ${initialsName(r.name)}`, r.zahlungsziel)}
+    <div class="doc-tax">${esc(state.praxis.ustHinweis)}</div>
+    <div class="doc-sign"><div class="g">Mit freundlichen Grüßen</div><div class="s">${esc(state.praxis.name)}</div></div>
+    ${docFooter(`${fmtDateLong(r.datum)}\u2003·\u2003Seite 01 von 01`)}
+  </div>`;
+}
+
+function renderPraxisabrechnungDoc(pa){
+  const a=state.abrechnendePraxis;
+  const rez=pa.rezeptIds.map(id=>state.rezepte.find(r=>r.id===id)).filter(Boolean)
+            .sort((x,y)=>(x.datum||'').localeCompare(y.datum||''));
+  const anteil=Number(pa.anteilProzent)||100;
+  const hasAnteil=anteil!==100;
+  return `<div class="doc">
+    <div class="doc-pagemark">Abrechnung ${esc(pa.nummer)}</div>
+    ${docHeader()}
+    <div class="doc-addr">
+      <div class="rcpt">${esc(a.name)}${a.zusatz?'<br>'+esc(a.zusatz):''}${a.ansprechpartner?'<br>z. Hd. '+esc(a.ansprechpartner):''}<br>${esc(a.strasse)}<br>D ${esc(a.plzOrt)}</div>
+      <div class="date">${esc(fmtDateLong(pa.datum))}</div>
+    </div>
+    <div class="doc-section"><h1>Honorarabrechnung</h1><span class="eb">Heilmittel · ${esc(monthLabel(pa.monat))}</span></div>
+    <div class="doc-intro">
+      <p class="an">Sehr geehrte Damen und Herren,</p>
+      <p>hiermit stelle ich Ihnen die im Monat <strong>${esc(monthLabel(pa.monat))}</strong> über Ihre Praxis abgerechneten physiotherapeutischen Heilmittelverordnungen in Rechnung. Die Aufstellung der einzelnen Verordnungen entnehmen Sie bitte der folgenden Übersicht.</p>
+    </div>
+    <table class="doc-srv">
+      <thead><tr><th>Datum</th><th>Patient/in</th><th>Rezept-Nr.</th><th class="n">Rezeptbetrag</th></tr></thead>
+      <tbody>${rez.map(r=>`
+        <tr>
+          <td class="pos" style="width:20mm">${esc(fmtDate(r.datum))}</td>
+          <td><span class="ti">${esc(r.patient)}</span>${r.notiz?`<span class="su">${esc(r.notiz)}</span>`:''}</td>
+          <td class="pr" style="text-align:left">${esc(r.rezeptNr||'—')}</td>
+          <td class="n tot">${fmtEUR(r.betrag)}</td>
+        </tr>`).join('')}
+      </tbody>
+    </table>
+    ${hasAnteil?`
+      <div class="doc-sub" style="border-top:.5pt solid var(--rule);margin-top:3mm;padding-top:2.5mm"><span>Summe Rezeptbeträge (${rez.length} Verordnungen)</span><span>${fmtEUR(pa.summe)}</span></div>
+      <div class="doc-sub"><span>Anteil gemäß Vereinbarung · ${anteil.toLocaleString('de-DE')} %</span><span>${fmtEUR(pa.betrag)}</span></div>
+      <div class="doc-total"><span class="l">Rechnungsbetrag</span><span class="v">${fmtEUR(pa.betrag)}</span></div>
+    `:`
+      <div class="doc-total"><span class="l">Rechnungsbetrag · ${rez.length} Verordnungen</span><span class="v">${fmtEUR(pa.betrag)}</span></div>
+    `}
+    ${docPay(pa.betrag, `${pa.nummer} · ${monthLabel(pa.monat)}`, addDays(pa.datum, state.praxis.zahlungszielTage||14))}
+    <div class="doc-tax">${esc(state.praxis.ustHinweis)}</div>
+    <div class="doc-sign"><div class="g">Mit freundlichen Grüßen</div><div class="s">${esc(state.praxis.name)}</div></div>
+    ${docFooter(`${fmtDateLong(pa.datum)}`)}
+  </div>`;
+}
+
+function lastName(full){ const parts=String(full||'').trim().split(/\s+/); return parts.length>1?parts[parts.length-1]:full; }
+function initialsName(full){ const parts=String(full||'').trim().split(/\s+/); if(parts.length<2) return full; return parts[0].charAt(0)+'. '+parts[parts.length-1]; }
+
+/* ---------- Behandlungsvertrag (Druck) ---------- */
+function vertragText(typ){
+  const p=state.praxis;
+  const tage=p.zahlungszielTage||14;
+  const std=p.absagefristStunden!=null?p.absagefristStunden:24;
+  const honorar=fmtEUR(p.ausfallhonorar!=null?p.ausfallhonorar:25);
+  const gs=esc(p.gerichtsstand||'Freiburg im Breisgau');
+  const nm=esc(p.name), str=esc(p.strasse), plz=esc(p.plzOrt);
+  const gkv = typ==='gkv';
+  return {
+    eyebrow: gkv?'Gesetzlich Versicherte · Heilmittel':'Privatpatientinnen & Selbstzahler',
+    introAn:'Sehr geehrte Patientin, sehr geehrter Patient,',
+    introP: gkv
+      ? 'vielen Dank für Ihr Vertrauen in meine Praxis. Mit diesem Vertrag werden die wesentlichen Rahmenbedingungen für Ihre physiotherapeutische Behandlung als gesetzlich versicherte Patientin oder gesetzlich versicherter Patient festgehalten. Bitte lesen Sie die folgenden Punkte aufmerksam durch und bestätigen Sie diese mit Ihrer Unterschrift auf der letzten Seite.'
+      : 'vielen Dank für Ihr Vertrauen in meine Praxis. Mit diesem Vertrag werden die wesentlichen Rahmenbedingungen für Ihre physiotherapeutische Behandlung als Privatpatientin, Privatpatient oder Selbstzahlerin bzw. Selbstzahler festgehalten. Bitte lesen Sie die folgenden Punkte aufmerksam durch und bestätigen Sie diese mit Ihrer Unterschrift auf der letzten Seite.',
+    grundlageK:'Vertragsgrundlage',
+    grundlage: gkv
+      ? `Behandlungsvertrag gemäß §§ 630a ff. BGB in Verbindung mit § 32 SGB V (Heilmittelversorgung). Vertragspartner sind ausschließlich die Praxis ${nm}, ${str}, ${plz}, und die Patientin / der Patient.`
+      : `Behandlungsvertrag gemäß §§ 630a ff. BGB. Vertragspartner sind ausschließlich die Praxis ${nm}, ${str}, ${plz}, und die Patientin / der Patient.`,
+    kasseLabel: gkv?'Krankenkasse':'Versicherung',
+    s1h:'Vertragsgegenstand',
+    s1: gkv
+      ? 'Die Praxis erbringt physiotherapeutische Heilmittelleistungen auf Grundlage einer ärztlichen Verordnung gemäß § 32 SGB V. Die Leistungen werden, soweit verordnungsfähig, direkt mit der zuständigen gesetzlichen Krankenversicherung abgerechnet. Bestandteil dieses Vertrages sind die gesetzlichen Bestimmungen des Sozialgesetzbuches V sowie die jeweils gültigen Rahmenverträge zwischen den Heilmittelverbänden und dem GKV-Spitzenverband.'
+      : 'Die Praxis erbringt physiotherapeutische Leistungen auf Grundlage einer ärztlichen oder heilpraktischen Verordnung oder als Selbstzahlerleistung. Die Leistungen werden nach der gültigen Privatpreisliste der Praxis berechnet und sind von der Patientin / dem Patienten selbst zu tragen. Eine etwaige Erstattung durch eine private Krankenversicherung, Beihilfe oder Zusatzversicherung erfolgt im Verhältnis zwischen der Patientin / dem Patienten und dem jeweiligen Kostenträger; sie berührt die Zahlungspflicht gegenüber der Praxis nicht.',
+    s2h: gkv?'Heilmittelverordnung':'Behandlungsgrundlage und Verordnung',
+    s2: gkv
+      ? 'Voraussetzung für den Behandlungsbeginn ist die Vorlage einer gültigen Heilmittelverordnung (Rezept). Diese muss innerhalb der gesetzlich vorgesehenen Frist – im Regelfall 28 Tage ab Ausstellungsdatum – eingelöst werden. Für die rechtzeitige Beschaffung von Folgeverordnungen sorgt die Patientin / der Patient eigenverantwortlich. Behandlungen ohne gültige Verordnung können nicht mit der Krankenkasse abgerechnet werden und müssen ggf. als Selbstzahlerleistung erbracht werden.'
+      : 'Liegt eine ärztliche oder heilpraktische Verordnung vor, bildet diese die fachliche Grundlage der Behandlung. Bei Selbstzahlerleistungen ohne Verordnung erfolgt die Behandlung auf Wunsch der Patientin / des Patienten nach physiotherapeutischer Befunderhebung. Über Art, Umfang und voraussichtliche Kosten der Behandlung wird vor deren Beginn aufgeklärt.',
+    s3h:'Termine und Pünktlichkeit',
+    s3:'Behandlungstermine werden individuell vereinbart und sind für beide Vertragsparteien verbindlich. Bei verspätetem Erscheinen verkürzt sich die Behandlungszeit entsprechend; eine Verlängerung über den vereinbarten Endzeitpunkt hinaus ist aus organisatorischen Gründen nicht möglich. Die volle vereinbarte Behandlungseinheit gilt dennoch als erbracht.',
+    s4k:'§ 4 · Absageregelung und Ausfallhonorar',
+    s4h:`Termine müssen spätestens ${std} Stunden vorher abgesagt werden.`,
+    s4p1:`Vereinbarte Behandlungstermine sind verbindlich reservierte Zeitfenster. Eine Absage hat spätestens <strong>${std} Stunden vor dem vereinbarten Termin</strong> telefonisch oder schriftlich zu erfolgen (für Termine am Montag entsprechend bis Freitag der Vorwoche). Bei nicht rechtzeitiger Absage oder Nichterscheinen wird ein Ausfallhonorar berechnet:`,
+    s4stake:`<strong>Ausfallhonorar: ${honorar}</strong> je versäumter Behandlungseinheit`,
+    s4p2: gkv
+      ? 'Das Ausfallhonorar ist ein zivilrechtlicher Schadenersatzanspruch (§§ 280, 615 BGB) für den nicht anderweitig vergebbaren Termin und wird <strong>nicht</strong> von der gesetzlichen Krankenversicherung erstattet. Es ist von der Patientin / dem Patienten persönlich zu tragen.'
+      : 'Das Ausfallhonorar ist ein zivilrechtlicher Schadenersatzanspruch (§§ 280, 615 BGB) für den nicht anderweitig vergebbaren Termin und wird <strong>nicht</strong> von einer Krankenversicherung oder Beihilfe erstattet. Es ist von der Patientin / dem Patienten persönlich zu tragen.',
+    s4p3:'Bei nachweislich unverschuldeter Verhinderung – insbesondere akuter Erkrankung mit ärztlichem Attest, schwerer Erkrankung oder Tod naher Angehöriger oder Unfall – entfällt das Ausfallhonorar.',
+    s5h: gkv?'Zuzahlung gesetzlich Versicherter':'Honorar und Zahlung',
+    s5: gkv
+      ? 'Erwachsene gesetzlich Versicherte leisten gemäß § 32 Abs. 4 i.V.m. § 61 SGB V eine gesetzliche Zuzahlung von <strong>10 % der Behandlungskosten zuzüglich 10,00 € je Verordnung</strong>. Die Zuzahlung ist spätestens nach Abschluss der Behandlungsserie fällig und kann auf Wunsch auch zu Behandlungsbeginn entrichtet werden. Bescheinigungen über die Befreiung von der Zuzahlungspflicht sind unaufgefordert vor Behandlungsbeginn vorzulegen. Patientinnen und Patienten bis zur Vollendung des 18. Lebensjahres sind von der Zuzahlung befreit.'
+      : `Die Vergütung richtet sich nach der zum Behandlungszeitpunkt gültigen Privatpreisliste der Praxis, die der Patientin / dem Patienten zugänglich ist. Die Rechnungsstellung erfolgt in der Regel nach Abschluss der Behandlungsserie. Der Rechnungsbetrag ist innerhalb von ${tage} Tagen nach Rechnungsdatum ohne Abzug auf das in der Rechnung angegebene Konto zu zahlen. Bei Zahlungsverzug können Verzugszinsen sowie angemessene Mahnkosten nach den gesetzlichen Bestimmungen berechnet werden.`,
+    s6h:'Mitwirkungspflichten',
+    s6intro:'Eine erfolgreiche Therapie setzt die aktive Mitwirkung der Patientin / des Patienten voraus. Hierzu gehören insbesondere:',
+    s6li:[
+      'vollständige und wahrheitsgemäße Angaben zu Vorerkrankungen, Operationen, Schwangerschaft, Medikation und sonstigen behandlungsrelevanten Umständen,',
+      'unverzügliche Mitteilung von Schmerzen, Unverträglichkeiten oder Beschwerden während oder nach der Behandlung,',
+      'aktive Mitarbeit während der Behandlung sowie Durchführung der vereinbarten Eigenübungen zwischen den Therapieterminen.'
+    ],
+    s7h:'Datenschutz und Schweigepflicht',
+    s7:`Die Erhebung, Verarbeitung und Speicherung Ihrer personen- und behandlungsbezogenen Daten erfolgt ausschließlich zum Zweck der Therapiedurchführung, Dokumentation und Abrechnung gemäß DSGVO und BDSG. Die Praxis und ihre Mitarbeitenden unterliegen der Schweigepflicht nach § 203 StGB. Eine Datenweitergabe erfolgt ausschließlich an ${gkv?'die zuständige Krankenkasse, ':''}die verordnende Ärztin / den verordnenden Arzt sowie die mit der Abrechnung beauftragte Stelle. Über Ihre Betroffenenrechte nach Art. 12 ff. DSGVO informiert Sie ein gesondertes Merkblatt.`,
+    s8h:'Vertragsdauer und Schlussbestimmungen',
+    s8:`Diese Vereinbarung gilt für die laufende ${gkv?'Verordnung':'Behandlung'} sowie für alle Folgebehandlungen, bis sie schriftlich widerrufen wird. Mündliche Nebenabreden bestehen nicht. Sollte eine Bestimmung unwirksam sein, bleibt die Wirksamkeit der übrigen unberührt. Es gilt deutsches Recht; Gerichtsstand ist – soweit gesetzlich zulässig – ${gs}.`,
+    signStmt:`Die vorstehenden Vertragsbedingungen habe ich erhalten und zur Kenntnis genommen. Ich erkenne sie als verbindliche Grundlage der Behandlung an und stimme insbesondere der ${std}-Stunden-Absageregelung und dem damit verbundenen Ausfallhonorar von ${honorar} zu.${gkv?'':' Mir ist bekannt, dass die Behandlungskosten von mir selbst zu tragen sind.'}`
+  };
+}
+function dcClause(num,h,bodyHTML){
+  return `<div class="dc-clause"><div class="n">${esc(num)}</div><div><h2>${esc(h)}</h2>${bodyHTML}</div></div>`;
+}
+function renderVertragDoc(typ, d){
+  d=d||{};
+  const T=vertragText(typ);
+  const pm=n=>`<div class="doc-pagemark">Behandlungsvertrag · Seite ${n} / 3</div>`;
+  const foot=docFooter('Praxis Behringer');
+  const page1=`<div class="doc dc-doc dc-page">
+    ${pm(1)}
+    ${docHeader()}
+    <div class="doc-section"><h1>Behandlungsvertrag</h1><span class="eb">${esc(T.eyebrow)}</span></div>
+    <div class="dc-intro"><p class="an">${esc(T.introAn)}</p><p>${esc(T.introP)}</p></div>
+    <div class="dc-infobox"><span class="k">${esc(T.grundlageK)}</span>${T.grundlage}</div>
+    <div class="dc-patient">
+      <div class="f"><span class="l">Patient/in</span><span class="v">${esc(d.name||'')}</span></div>
+      <div class="f"><span class="l">geboren am</span><span class="v">${esc(d.geb||'')}</span></div>
+      <div class="f"><span class="l">Anschrift</span><span class="v">${esc(d.anschrift||'')}</span></div>
+      <div class="f"><span class="l">${esc(T.kasseLabel)}</span><span class="v">${esc(d.kasse||'')}</span></div>
+    </div>
+    ${dcClause('§ 1', T.s1h, `<p>${T.s1}</p>`)}
+    ${dcClause('§ 2', T.s2h, `<p>${T.s2}</p>`)}
+    ${dcClause('§ 3', T.s3h, `<p>${T.s3}</p>`)}
+    ${foot}
+  </div>`;
+  const page2=`<div class="doc dc-doc dc-page">
+    ${pm(2)}
+    <div class="dc-highlight">
+      <span class="k">${esc(T.s4k)}</span>
+      <h3>${esc(T.s4h)}</h3>
+      <p>${T.s4p1}</p>
+      <span class="stake">${T.s4stake}</span>
+      <p style="margin-top:2.5mm">${T.s4p2}</p>
+      <p>${T.s4p3}</p>
+    </div>
+    ${dcClause('§ 5', T.s5h, `<p>${T.s5}</p>`)}
+    ${dcClause('§ 6', T.s6h, `<p>${T.s6intro}</p><ul>${T.s6li.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`)}
+    ${dcClause('§ 7', T.s7h, `<p>${T.s7}</p>`)}
+    ${foot}
+  </div>`;
+  const page3=`<div class="doc dc-doc">
+    ${pm(3)}
+    ${dcClause('§ 8', T.s8h, `<p>${T.s8}</p>`)}
+    <div class="dc-sign">
+      <p class="stmt">${esc(T.signStmt)}</p>
+      <div class="grid">
+        <div class="col">Ort, Datum</div>
+        <div class="col">Unterschrift Patient/in (bzw. gesetzliche Vertretung)</div>
+      </div>
+    </div>
+    ${foot}
+  </div>`;
+  return page1+page2+page3;
+}
+
+function renderMerkblattDoc(d){
+  d=d||{};
+  const p=state.praxis;
+  const pm=n=>`<div class="doc-pagemark">Datenschutz-Merkblatt · Seite ${n} / 2</div>`;
+  const foot=docFooter('Praxis Behringer');
+  const point=(n,h,body)=>`<div class="dc-clause"><div class="n">${esc(n)}</div><div><h2>${esc(h)}</h2>${body}</div></div>`;
+  const nm=esc(p.name), ut=esc(p.untertitel), str=esc(p.strasse), plz=esc(p.plzOrt), tel=esc(p.telefon);
+  const page1=`<div class="doc dc-doc dc-page">
+    ${pm(1)}
+    ${docHeader()}
+    <div class="doc-section"><h1>Datenschutz-Information</h1><span class="eb">Patienteninformation · Art. 13 DSGVO</span></div>
+    <div class="dc-intro">
+      <p class="an">Information über die Verarbeitung Ihrer personenbezogenen Daten</p>
+      <p>Der Schutz Ihrer persönlichen und gesundheitsbezogenen Daten ist mir ein wichtiges Anliegen. Nachfolgend informiere ich Sie gemäß Artikel 13 der Datenschutz-Grundverordnung (DSGVO) darüber, welche Daten ich zu welchem Zweck verarbeite und welche Rechte Ihnen zustehen.</p>
+    </div>
+    ${d.name?`<div class="dc-patient"><div class="f"><span class="l">Patient/in</span><span class="v">${esc(d.name)}</span></div><div class="f"><span class="l">Stand</span><span class="v">${esc(fmtDate(todayISO()))}</span></div></div>`:''}
+    ${point('1','Verantwortliche Stelle',`<p>Verantwortlich für die Datenverarbeitung im Sinne der DSGVO ist:</p><p><strong>${nm}</strong> · ${ut}<br>${str}, ${plz}<br>Telefon ${tel}</p>`)}
+    ${point('2','Zwecke und Rechtsgrundlagen',`<p>Ihre Daten werden zum Zweck der physiotherapeutischen Behandlung, deren Dokumentation sowie zur Abrechnung verarbeitet. Rechtsgrundlagen sind der Behandlungsvertrag (Art. 6 Abs. 1 lit. b DSGVO), die Verarbeitung von Gesundheitsdaten zum Zweck der Gesundheitsversorgung (Art. 9 Abs. 2 lit. h DSGVO i. V. m. § 22 BDSG) sowie die Erfüllung gesetzlicher Aufbewahrungs- und Nachweispflichten (Art. 6 Abs. 1 lit. c DSGVO).</p>`)}
+    ${point('3','Kategorien verarbeiteter Daten',`<p>Verarbeitet werden insbesondere Stamm- und Kontaktdaten, Angaben zur Kostenträgerschaft sowie behandlungsbezogene Gesundheitsdaten (Diagnosen, ärztliche Verordnungen, Befunde und Behandlungsverläufe).</p>`)}
+    ${point('4','Empfänger der Daten',`<p>Eine Weitergabe erfolgt ausschließlich, soweit dies zur Behandlung und Abrechnung erforderlich ist – insbesondere an die zuständige Krankenkasse bzw. die abrechnende Praxis, an die verordnende Ärztin oder den verordnenden Arzt sowie ggf. an einen mit der Abrechnung beauftragten Dienstleister als Auftragsverarbeiter. Eine Übermittlung in Drittländer findet nicht statt.</p>`)}
+    ${foot}
+  </div>`;
+  const page2=`<div class="doc dc-doc">
+    ${pm(2)}
+    ${point('5','Speicherdauer',`<p>Ihre Behandlungsdaten werden so lange gespeichert, wie dies für die Behandlung und zur Erfüllung gesetzlicher Aufbewahrungspflichten erforderlich ist – in der Regel zehn Jahre nach Abschluss der Behandlung. Anschließend werden die Daten gelöscht, sofern keine längeren gesetzlichen Fristen bestehen.</p>`)}
+    ${point('6','Ihre Rechte',`<p>Sie haben das Recht auf Auskunft (Art. 15), Berichtigung (Art. 16), Löschung (Art. 17), Einschränkung der Verarbeitung (Art. 18), Datenübertragbarkeit (Art. 20) sowie Widerspruch gegen die Verarbeitung (Art. 21 DSGVO). Zur Ausübung genügt eine formlose Mitteilung an die oben genannte verantwortliche Stelle.</p>`)}
+    ${point('7','Widerruf von Einwilligungen',`<p>Soweit eine Verarbeitung auf Ihrer Einwilligung beruht, können Sie diese jederzeit mit Wirkung für die Zukunft widerrufen (Art. 7 Abs. 3 DSGVO). Die Rechtmäßigkeit der bis zum Widerruf erfolgten Verarbeitung bleibt unberührt.</p>`)}
+    ${point('8','Beschwerderecht',`<p>Ihnen steht ein Beschwerderecht bei einer Datenschutz-Aufsichtsbehörde zu, insbesondere beim Landesbeauftragten für den Datenschutz und die Informationsfreiheit Baden-Württemberg, Lautenschlagerstraße 20, 70173 Stuttgart.</p>`)}
+    ${point('9','Keine automatisierte Entscheidungsfindung',`<p>Eine ausschließlich automatisierte Entscheidungsfindung einschließlich Profiling im Sinne des Art. 22 DSGVO findet nicht statt.</p>`)}
+    ${point('10','Erforderlichkeit der Bereitstellung',`<p>Die Bereitstellung Ihrer Daten ist für die Durchführung der Behandlung erforderlich. Ohne diese Angaben kann eine ordnungsgemäße physiotherapeutische Versorgung nicht erfolgen.</p>`)}
+    <div class="dc-sign">
+      <p class="stmt">Ich habe das Datenschutz-Merkblatt erhalten und die Information zur Kenntnis genommen.</p>
+      <div class="grid"><div class="col">Ort, Datum</div><div class="col">Unterschrift Patient/in (bzw. gesetzliche Vertretung)</div></div>
+    </div>
+    ${foot}
+  </div>`;
+  return page1+page2;
+}
+
+/* ---------- Zahlungserinnerung / Mahnung ---------- */
+function daysBetween(aIso,bIso){
+  const a=new Date(aIso+'T00:00:00'), b=new Date(bIso+'T00:00:00');
+  return Math.round((b-a)/86400000);
+}
+function mahnDataFromRechnung(r){
+  return {
+    empfaenger: [r.anrede, r.name, r.strasse, 'D '+r.plzOrt].filter(Boolean),
+    anrede: (r.anrede==='Herr'?'Sehr geehrter Herr ':'Sehr geehrte Frau ')+esc(lastName(r.name))+',',
+    nummer: r.nummer, rechnungDatum: r.datum, faelligkeit: r.zahlungsziel||'', betrag: rechnungSumme(r),
+    verwendung: 'Rechnung '+r.nummer+' · '+initialsName(r.name)
+  };
+}
+function mahnDataFromPA(pa){
+  const a=state.abrechnendePraxis;
+  return {
+    empfaenger: [a.name, a.zusatz, a.ansprechpartner?('z. Hd. '+a.ansprechpartner):'', a.strasse, 'D '+a.plzOrt].filter(Boolean),
+    anrede: 'Sehr geehrte Damen und Herren,',
+    nummer: pa.nummer, rechnungDatum: pa.datum, faelligkeit: addDays(pa.datum, state.praxis.zahlungszielTage||14), betrag: pa.betrag,
+    verwendung: pa.nummer+' · '+monthLabel(pa.monat)
+  };
+}
+function renderMahnungDoc(m){
+  const titel = m.level==='mahnung2' ? '2. Mahnung' : (m.level==='mahnung1' ? '1. Mahnung' : 'Zahlungserinnerung');
+  const gebuehr = Number(m.gebuehr)||0;
+  const gesamt = (Number(m.betrag)||0) + gebuehr;
+  const ueberfaellig = (m.faelligkeit && m.datum) ? daysBetween(m.faelligkeit, m.datum) : 0;
+  let intro;
+  if(m.level==='mahnung2'){
+    intro = 'leider konnte ich auch nach erneuter Erinnerung keinen Zahlungseingang für die unten aufgeführte Rechnung feststellen. Ich fordere Sie hiermit letztmalig auf, den offenen Betrag bis zum unten genannten Termin zu begleichen. Andernfalls behalte ich mir weitere Schritte vor.';
+  } else if(m.level==='mahnung1'){
+    intro = 'trotz meiner Zahlungserinnerung konnte ich bislang keinen Zahlungseingang für die unten aufgeführte Rechnung feststellen. Ich bitte Sie, den offenen Betrag nunmehr zeitnah auszugleichen.';
+  } else {
+    intro = 'sicher ist es Ihrer Aufmerksamkeit entgangen: Die unten aufgeführte Rechnung ist bislang noch offen. Ich möchte Sie freundlich an den Ausgleich erinnern.';
+  }
+  const crossNote = (m.level==='erinnerung')
+    ? '<p>Sollte sich Ihre Zahlung mit diesem Schreiben überschnitten haben, betrachten Sie diese Erinnerung bitte als gegenstandslos.</p>' : '';
+  const breakdown = gebuehr>0
+    ? `<div class="doc-sub" style="border-top:.5pt solid var(--rule);margin-top:3mm;padding-top:2.5mm"><span>Offener Rechnungsbetrag</span><span>${fmtEUR(m.betrag)}</span></div>
+       <div class="doc-sub"><span>Mahngebühr</span><span>${fmtEUR(gebuehr)}</span></div>
+       <div class="doc-total"><span class="l">Offener Gesamtbetrag</span><span class="v">${fmtEUR(gesamt)}</span></div>`
+    : `<div class="doc-total"><span class="l">Offener Betrag</span><span class="v">${fmtEUR(gesamt)}</span></div>`;
+  return `<div class="doc dc-doc">
+    <div class="doc-pagemark">${esc(titel)} · 01 / 01</div>
+    ${docHeader()}
+    <div class="doc-addr">
+      <div class="rcpt">${m.empfaenger.map(x=>esc(x)).join('<br>')}</div>
+      <div class="date">${esc(fmtDateLong(m.datum))}</div>
+    </div>
+    <div class="doc-section"><h1>${esc(titel)}</h1><span class="eb">Zu Rechnung ${esc(m.nummer)}</span></div>
+    <div class="doc-intro">
+      <p class="an">${m.anrede}</p>
+      <p>${intro}</p>
+    </div>
+    <div class="dc-restate">
+      <div class="doc-sub"><span>Rechnungsnummer</span><span>${esc(m.nummer)}</span></div>
+      <div class="doc-sub"><span>Rechnungsdatum</span><span>${esc(fmtDate(m.rechnungDatum))}</span></div>
+      ${m.faelligkeit?`<div class="doc-sub"><span>Ursprünglich fällig am</span><span>${esc(fmtDate(m.faelligkeit))}${ueberfaellig>0?` · seit ${ueberfaellig} Tagen überfällig`:''}</span></div>`:''}
+    </div>
+    ${breakdown}
+    ${crossNote?`<div class="doc-intro" style="margin-top:3mm">${crossNote}</div>`:''}
+    ${docPay(gesamt, m.verwendung, m.frist)}
+    <div class="doc-sign"><div class="g">Mit freundlichen Grüßen</div><div class="s">${esc(state.praxis.name)}</div></div>
+    ${docFooter(`${fmtDateLong(m.datum)}\u2003·\u2003${esc(titel)}`)}
+  </div>`;
+}
+
+function doPrint(html){
+  el('print-root').innerHTML=html;
+  // QR-Bilder sind data-URLs (synchron). Kurzer Timeout für Font-Layout.
+  setTimeout(()=>{ window.print(); }, 120);
+}
+
+/* ============================================================
+   AKTIONEN
+   ============================================================ */
+document.addEventListener('change', e=>{
+  const t=e.target;
+  if(t.id==='monat-select'){ ui.rezeptMonth=t.value; render(); }
+  if(t.id==='import-file'){ handleImportFile(t.files[0]); }
+});
+document.addEventListener('input', e=>{
+  const t=e.target;
+  // Rechnungsbetrag live aktualisieren
+  if(t.dataset && (t.dataset.pf==='anzahl'||t.dataset.pf==='einzel')){
+    syncRechnungForm(); const s=el('rech-sum'); if(s) s.textContent=fmtEUR(rechnungSumme(edRechnung));
+  }
+  if(t.dataset && (t.dataset.rpf==='anzahl'||t.dataset.rpf==='satz')){
+    syncRezeptForm(); const s=el('rezpos-sum'); if(s) s.textContent=fmtEUR(rezPosSum());
+  }
+  if(t.id==='gcal-filter'){ gcalFilter(t.value); }
+});
+
+document.addEventListener('click', e=>{
+  const t=e.target.closest('[data-action]');
+  if(!t) return;
+  const a=t.dataset.action;
+
+  switch(a){
+    case 'nav': ui.view=t.dataset.view; render(); window.scrollTo(0,0); break;
+    case 'goto': ui.view=t.dataset.view; render(); window.scrollTo(0,0); break;
+
+    /* Rechnungen */
+    case 'neue-rechnung': openRechnungForm(null); break;
+    case 'edit-rechnung': openRechnungForm(state.rechnungen.find(r=>r.id===t.dataset.id)); break;
+    case 'add-termin': syncRechnungForm(); edRechnung.termine.push({datum: edRechnung.datum||todayISO(), einheiten:1}); refreshRechnungForm(); break;
+    case 'del-termin': syncRechnungForm(); edRechnung.termine.splice(+t.dataset.i,1); refreshRechnungForm(); break;
+    case 'add-pos': {
+      syncRechnungForm();
+      const sel=el('pos-cat'); const l=state.leistungen.find(x=>x.pos===sel.value);
+      if(l){ const tot=totalEinheiten(edRechnung.termine); edRechnung.positionen.push({pos:l.pos,name:l.name,sub:l.sub,anzahl:tot||1,einzel:l.praxis}); refreshRechnungForm(); }
+      break;
+    }
+    case 'del-pos': syncRechnungForm(); edRechnung.positionen.splice(+t.dataset.i,1); refreshRechnungForm(); break;
+    case 'save-rechnung': saveRechnung(); break;
+    case 'toggle-status': {
+      const r=state.rechnungen.find(x=>x.id===t.dataset.id); if(r){ r.status=r.status==='bezahlt'?'offen':'bezahlt'; saveData(); render(); }
+      break;
+    }
+    case 'dup-rechnung': {
+      const r=state.rechnungen.find(x=>x.id===t.dataset.id);
+      if(r){ const c=structuredClone(r); c.id=uid(); c.datum=todayISO(); c.nummer=nextPrivatNr(c.datum); c.status='offen'; c.zahlungsziel=addDays(c.datum,state.praxis.zahlungszielTage||14); state.counters.privat=(state.counters.privat||0)+1; state.rechnungen.push(c); saveData(); render(); }
+      break;
+    }
+    case 'del-rechnung': {
+      const r=state.rechnungen.find(x=>x.id===t.dataset.id);
+      if(r && confirm(`Rechnung ${r.nummer} (${r.name}) wirklich löschen?`)){ state.rechnungen=state.rechnungen.filter(x=>x.id!==r.id); saveData(); render(); }
+      break;
+    }
+    case 'print-rechnung': { const r=state.rechnungen.find(x=>x.id===t.dataset.id); if(r) doPrint(renderRechnungDoc(r)); break; }
+
+    /* Rezepte */
+    case 'neues-rezept': openRezeptForm(null); break;
+    case 'edit-rezept': openRezeptForm(state.rezepte.find(r=>r.id===t.dataset.id)); break;
+    case 'toggle-rezpos': {
+      syncRezeptForm();
+      if(!edRezept.positionen) edRezept.positionen=[];
+      if(!edRezept.positionen.length) edRezept.positionen.push(blankRezPos());
+      refreshRezeptForm();
+      const w=el('rezpos-wrap'); if(w) w.style.display='block';
+      break;
+    }
+    case 'add-rezpos': {
+      syncRezeptForm();
+      const sel=el('rezpos-cat'); const l=state.leistungen.find(x=>x.pos===sel.value);
+      if(l){ edRezept.positionen.push({pos:l.pos,name:l.name,anzahl:1,satz:l.beihilfe}); refreshRezeptForm(); el('rezpos-wrap').style.display='block'; }
+      break;
+    }
+    case 'del-rezpos': syncRezeptForm(); edRezept.positionen.splice(+t.dataset.i,1); refreshRezeptForm(); el('rezpos-wrap').style.display='block'; break;
+    case 'rezpos-uebernehmen': { syncRezeptForm(); edRezept.betrag=rezPosSum(); refreshRezeptForm(); el('rezpos-wrap').style.display='block'; break; }
+    case 'save-rezept': saveRezept(); break;
+    case 'del-rezept': {
+      const r=state.rezepte.find(x=>x.id===t.dataset.id);
+      if(r){ if(r.abgerechnet){ alert('Dieses Rezept ist bereits Teil einer Praxisabrechnung. Bitte zuerst die betreffende Abrechnung stornieren.'); break; } if(confirm(`Rezept (${r.patient}, ${fmtDate(r.datum)}) löschen?`)){ state.rezepte=state.rezepte.filter(x=>x.id!==r.id); saveData(); render(); } }
+      break;
+    }
+    case 'set-monat': break;
+    case 'beispiel-rezepte': loadBeispielRezepte(t.dataset.monat); break;
+    case 'monatsabrechnung': erstelleMonatsabrechnung(t.dataset.monat); break;
+    case 'print-pa': { const p=state.praxisabrechnungen.find(x=>x.id===t.dataset.id); if(p) doPrint(renderPraxisabrechnungDoc(p)); break; }
+    case 'toggle-pa-status': { const p=state.praxisabrechnungen.find(x=>x.id===t.dataset.id); if(p){ p.status=p.status==='bezahlt'?'offen':'bezahlt'; saveData(); render(); } break; }
+    case 'del-pa': {
+      const p=state.praxisabrechnungen.find(x=>x.id===t.dataset.id);
+      if(p && confirm(`Praxisabrechnung ${p.nummer} stornieren? Die enthaltenen Rezepte werden wieder als „offen“ markiert.`)){
+        (p.rezeptIds||[]).forEach(id=>{ const r=state.rezepte.find(x=>x.id===id); if(r){ r.abgerechnet=false; delete r.abrechnungId; } });
+        state.praxisabrechnungen=state.praxisabrechnungen.filter(x=>x.id!==p.id); saveData(); render();
+      }
+      break;
+    }
+
+    /* Leistungen */
+    case 'neue-leistung': openLeistungForm(null); break;
+    case 'edit-leistung': openLeistungForm(+t.dataset.idx); break;
+    case 'save-leistung': saveLeistung(t.dataset.idx); break;
+    case 'del-leistung': { const i=+t.dataset.idx; if(confirm(`Position „${state.leistungen[i].name}“ löschen?`)){ state.leistungen.splice(i,1); saveData(); render(); } break; }
+    case 'reset-leistungen': if(confirm('Leistungskatalog auf den Standard zurücksetzen? Eigene Änderungen gehen verloren.')){ state.leistungen=structuredClone(DEFAULT_DATA.leistungen); saveData(); render(); } break;
+
+    /* Verträge */
+    case 'set-vertrag-typ': syncVertragForm(); ui.vertragTyp=t.dataset.typ; render(); break;
+    case 'print-vertrag': printVertrag(); break;
+    case 'print-merkblatt': printMerkblatt(); break;
+    case 'mahnung-rechnung': openMahnungForm('privat', t.dataset.id); break;
+    case 'mahnung-pa': openMahnungForm('pa', t.dataset.id); break;
+    case 'print-mahnung': printMahnung(); break;
+    case 'gcal-connect': gcalConnect(); break;
+    case 'gcal-refresh': gcalFetch(); break;
+    case 'gcal-import': gcalImport(); break;
+    case 'save-google': saveGoogle(); break;
+
+    /* Einstellungen */
+    case 'save-praxis': saveePraxis(); break;
+    case 'save-abrechnende': saveAbrechnende(); break;
+    case 'export-daten': exportDaten(); break;
+    case 'import-daten': el('import-file').click(); break;
+    case 'reset-daten': if(confirm('Wirklich ALLE Daten zurücksetzen (Rechnungen, Rezepte, Einstellungen)? Dies kann nicht rückgängig gemacht werden.')){ state=structuredClone(DEFAULT_DATA); saveData(); ui.view='dashboard'; render(); } break;
+
+    /* Modal */
+    case 'close-modal': closeModal(); break;
+    case 'modal-bg': if(e.target===t) closeModal(); break;
+  }
+});
+
+function blankRezPos(){ const l=state.leistungen.find(x=>x.pos==='11')||state.leistungen[0]; return {pos:l.pos,name:l.name,anzahl:1,satz:l.beihilfe}; }
+
+function saveRechnung(){
+  syncRechnungForm();
+  const e=edRechnung;
+  if(!e.name.trim()){ alert('Bitte einen Namen für den Empfänger angeben.'); return; }
+  if(!e.positionen.length){ alert('Bitte mindestens eine Leistung hinzufügen.'); return; }
+  const idx=state.rechnungen.findIndex(r=>r.id===e.id);
+  const wasNew=e._new; delete e._new;
+  if(idx>=0) state.rechnungen[idx]=e; else state.rechnungen.push(e);
+  if(wasNew){ const m=String(e.nummer).match(/-(\d+)$/); const seq=m?parseInt(m[1],10):0; state.counters.privat=Math.max(state.counters.privat||0, seq); }
+  saveData(); closeModal(); render();
+}
+
+function saveRezept(){
+  syncRezeptForm();
+  const e=edRezept;
+  if(!e.patient.trim()){ alert('Bitte den Namen der Patientin / des Patienten angeben.'); return; }
+  if(!e.betrag||e.betrag<=0){ alert('Bitte einen Rezeptbetrag größer 0 erfassen (direkt oder über Positionen).'); return; }
+  if(!e.monat){ e.monat=(e.datum||todayISO()).slice(0,7); }
+  delete e._new;
+  const idx=state.rezepte.findIndex(r=>r.id===e.id);
+  if(idx>=0) state.rezepte[idx]=e; else state.rezepte.push(e);
+  saveData(); closeModal(); ui.rezeptMonth=e.monat; render();
+}
+
+function saveLeistung(idxStr){
+  const l={ pos:val('l-pos'), name:val('l-name'), sub:val('l-sub'), beihilfe:parseNum(val('l-beihilfe')), praxis:parseNum(val('l-praxis')) };
+  if(!l.name){ alert('Bitte eine Bezeichnung angeben.'); return; }
+  if(idxStr==='') state.leistungen.push(l); else state.leistungen[+idxStr]=l;
+  saveData(); closeModal(); render();
+}
+
+function saveePraxis(){
+  Object.assign(state.praxis,{
+    name:val('p-name'), untertitel:val('p-untertitel'), strasse:val('p-strasse'), plzOrt:val('p-plzOrt'),
+    telefon:val('p-telefon'), bank:val('p-bank'), bic:val('p-bic'), iban:val('p-iban'), ustHinweis:val('p-ust'),
+    zahlungszielTage:parseInt(val('p-zahlungsziel'),10)||14
+  });
+  saveData(); toast('Stammdaten gespeichert');
+}
+function saveAbrechnende(){
+  Object.assign(state.abrechnendePraxis,{
+    name:val('a-name'), zusatz:val('a-zusatz'), strasse:val('a-strasse'), plzOrt:val('a-plzOrt'),
+    ansprechpartner:val('a-ansprech'), anteilProzent:parseNum(val('a-anteil'))||100
+  });
+  saveData(); toast('Empfänger gespeichert'); render();
+}
+function saveGoogle(){
+  if(!state.google) state.google={};
+  state.google.clientId = val('g-clientid');
+  // Token verwerfen, falls Client-ID geändert wurde
+  gcal.token=null; gcal.events=[]; gcalTokenClient=null;
+  saveData(); toast('Google-Einstellungen gespeichert'); render();
+}
+
+function syncVertragForm(){
+  if(!el('v-name')) return;
+  ui.vertragData={ name:val('v-name'), geb:val('v-geb'), anschrift:val('v-anschrift'), kasse:val('v-kasse') };
+  const h=parseNum(val('v-honorar')); state.praxis.ausfallhonorar=h;
+  const f=parseInt(val('v-frist'),10); if(!isNaN(f)) state.praxis.absagefristStunden=f;
+  state.praxis.gerichtsstand=val('v-gs')||'Freiburg im Breisgau';
+}
+function printVertrag(){
+  syncVertragForm(); saveData();
+  doPrint(renderVertragDoc(ui.vertragTyp||'gkv', ui.vertragData||{}));
+}
+function printMerkblatt(){
+  syncVertragForm(); saveData();
+  doPrint(renderMerkblattDoc(ui.vertragData||{}));
+}
+
+function openMahnungForm(srcType, id){
+  let base;
+  if(srcType==='privat'){
+    const r=state.rechnungen.find(x=>x.id===id); if(!r) return;
+    base=mahnDataFromRechnung(r);
+  } else {
+    const pa=state.praxisabrechnungen.find(x=>x.id===id); if(!pa) return;
+    if(!state.abrechnendePraxis.name){ alert('Bitte zuerst die abrechnende Praxis unter „Einstellungen“ hinterlegen.'); return; }
+    base=mahnDataFromPA(pa);
+  }
+  edMahnung={ srcType, id, base, level:'erinnerung', datum:todayISO(), frist:addDays(todayISO(),10), gebuehr:0 };
+  const empfName = base.empfaenger.find(x=>x && x!=='Frau' && x!=='Herr') || base.empfaenger[0] || '';
+  openModal('Zahlungserinnerung erstellen', `
+    <div class="note-box" style="margin-top:0">Zu Rechnung <strong>${esc(base.nummer)}</strong> · ${esc(empfName)} · offener Betrag <strong>${fmtEUR(base.betrag)}</strong>${base.faelligkeit?` · fällig war ${esc(fmtDate(base.faelligkeit))}`:''}</div>
+    <div class="field"><label>Stufe</label>
+      <select class="input" id="m-level">
+        <option value="erinnerung">Zahlungserinnerung (freundlich, ohne Gebühr)</option>
+        <option value="mahnung1">1. Mahnung</option>
+        <option value="mahnung2">2. Mahnung (letzte Aufforderung)</option>
+      </select>
+    </div>
+    <div class="grid2">
+      <div class="field"><label>Datum des Schreibens</label><input class="input" type="date" id="m-datum" value="${esc(edMahnung.datum)}"></div>
+      <div class="field"><label>Zahlbar bis</label><input class="input" type="date" id="m-frist" value="${esc(edMahnung.frist)}"></div>
+    </div>
+    <div class="field"><label>Mahngebühr (€) · optional</label><input class="input" inputmode="decimal" id="m-gebuehr" value="0"></div>
+    <div class="hint">Eine erste Zahlungserinnerung sollte ohne Gebühr erfolgen. Gebühren und Verzugszinsen sind erst nach Verzugseintritt und nur in angemessener Höhe zulässig.</div>
+  `,
+  `<button class="btn-link" data-action="close-modal">Abbrechen</button>
+   <button class="btn" data-action="print-mahnung">Drucken / als PDF</button>`);
+}
+function printMahnung(){
+  if(!edMahnung) return;
+  const m=Object.assign({}, edMahnung.base, {
+    level: val('m-level')||'erinnerung',
+    datum: val('m-datum')||todayISO(),
+    frist: val('m-frist')||addDays(todayISO(),10),
+    gebuehr: parseNum(val('m-gebuehr'))
+  });
+  closeModal();
+  doPrint(renderMahnungDoc(m));
+}
+
+/* ---------- Google Kalender (nur lesend) ---------- */
+function loadGIS(){
+  return new Promise((resolve,reject)=>{
+    if(window.google && google.accounts && google.accounts.oauth2) return resolve();
+    let s=document.getElementById('gis-script');
+    if(s){ s.addEventListener('load',()=>resolve()); s.addEventListener('error',()=>reject(new Error('Google-Anmeldedienst konnte nicht geladen werden.'))); return; }
+    s=document.createElement('script');
+    s.id='gis-script'; s.src='https://accounts.google.com/gsi/client'; s.async=true; s.defer=true;
+    s.onload=()=>resolve();
+    s.onerror=()=>reject(new Error('Google-Anmeldedienst konnte nicht geladen werden (Internetverbindung?).'));
+    document.head.appendChild(s);
+  });
+}
+function gcalConnect(){
+  const g=state.google||{};
+  if(!g.clientId){ alert('Bitte zuerst die Google OAuth-Client-ID in den Einstellungen hinterlegen.'); return; }
+  // Zeitraum aus den Feldern übernehmen, falls vorhanden
+  if(el('gcal-from')) gcal.from=val('gcal-from');
+  if(el('gcal-to'))   gcal.to=val('gcal-to');
+  gcal.connecting=true; gcal.error=''; render();
+  loadGIS().then(()=>{
+    if(!gcalTokenClient){
+      gcalTokenClient = google.accounts.oauth2.initTokenClient({
+        client_id: g.clientId,
+        scope: 'https://www.googleapis.com/auth/calendar.events.readonly',
+        callback: (resp)=>{
+          if(resp && resp.access_token){ gcal.token=resp.access_token; gcalFetch(); }
+          else { gcal.connecting=false; gcal.error='Anmeldung wurde nicht abgeschlossen.'; render(); }
+        },
+        error_callback: ()=>{ gcal.connecting=false; gcal.error='Anmeldung abgebrochen oder fehlgeschlagen.'; render(); }
+      });
+    }
+    try{ gcalTokenClient.requestAccessToken({ prompt: gcal.token?'':'consent' }); }
+    catch(e){ gcal.connecting=false; gcal.error=e.message; render(); }
+  }).catch(e=>{ gcal.connecting=false; gcal.error=e.message; render(); });
+}
+function gcalFetch(){
+  if(!gcal.token){ gcalConnect(); return; }
+  if(el('gcal-from')) gcal.from=val('gcal-from');
+  if(el('gcal-to'))   gcal.to=val('gcal-to');
+  const from = gcal.from || addDays(todayISO(),-60);
+  const to   = gcal.to   || addDays(todayISO(),14);
+  gcal.connecting=true; gcal.error=''; render();
+  const timeMin = new Date(from+'T00:00:00').toISOString();
+  const timeMax = new Date(to+'T23:59:59').toISOString();
+  const url = 'https://www.googleapis.com/calendar/v3/calendars/primary/events?singleEvents=true&orderBy=startTime&maxResults=250'
+    + '&timeMin='+encodeURIComponent(timeMin) + '&timeMax='+encodeURIComponent(timeMax);
+  fetch(url, { headers:{ Authorization:'Bearer '+gcal.token } }).then(res=>{
+    if(res.status===401){ gcal.token=null; throw new Error('Sitzung abgelaufen – bitte erneut „Mit Google verbinden“.'); }
+    if(!res.ok){ throw new Error('Kalender konnte nicht geladen werden (Status '+res.status+').'); }
+    return res.json();
+  }).then(data=>{
+    gcal.events = (data.items||[]).map(ev=>{
+      const sd = (ev.start && (ev.start.dateTime||ev.start.date)) || '';
+      return { id:ev.id, datum: sd.slice(0,10), zeit: (ev.start&&ev.start.dateTime)? sd.slice(11,16):'', titel: ev.summary||'(ohne Titel)' };
+    }).filter(e=>e.datum);
+    gcal.connecting=false; render();
+  }).catch(e=>{ gcal.connecting=false; gcal.error=e.message; render(); });
+}
+function gcalImport(){
+  const checked = Array.prototype.slice.call(document.querySelectorAll('.gcal-ev:checked'));
+  if(!checked.length){ alert('Bitte mindestens einen Termin auswählen.'); return; }
+  const termine = checked.map(c=>({datum:c.getAttribute('data-date'), einheiten:1}))
+    .sort((a,b)=>a.datum.localeCompare(b.datum));
+  const titles = checked.map(c=>c.getAttribute('data-title')).filter(Boolean);
+  const counts={}; let name='', best=0;
+  titles.forEach(t=>{ counts[t]=(counts[t]||0)+1; if(counts[t]>best){best=counts[t]; name=t;} });
+  openRechnungForm(null, { name, termine });
+}
+function gcalFilter(q){
+  q=(q||'').toLowerCase();
+  document.querySelectorAll('.gcal-row').forEach(row=>{
+    const t=row.getAttribute('data-title')||'';
+    row.style.display = (!q || t.indexOf(q)>-1) ? '' : 'none';
+  });
+}
+
+
+function erstelleMonatsabrechnung(monat){
+  const a=state.abrechnendePraxis;
+  if(!a.name){ alert('Bitte zuerst die abrechnende Praxis unter „Einstellungen“ hinterlegen.'); return; }
+  const offene=state.rezepte.filter(r=>r.monat===monat && !r.abgerechnet);
+  if(!offene.length){ alert('Keine offenen Rezepte in diesem Monat.'); return; }
+  const summe=offene.reduce((s,r)=>s+(Number(r.betrag)||0),0);
+  const anteil=Number(a.anteilProzent)||100;
+  const betragFinal=Math.round(summe*anteil/100*100)/100;
+  if(!confirm(`Monatsabrechnung ${monthLabel(monat)} erstellen?\n\n${offene.length} Rezepte · Rezeptsumme ${fmtEUR(summe)}${anteil!==100?`\nAnteil ${anteil}% = ${fmtEUR(betragFinal)}`:''}`)) return;
+  const pa={
+    id:uid(), nummer:paNrFor(monat), monat, datum:todayISO(),
+    rezeptIds:offene.map(r=>r.id), summe, anteilProzent:anteil, betrag:betragFinal, status:'offen'
+  };
+  offene.forEach(r=>{ r.abgerechnet=true; r.abrechnungId=pa.id; });
+  state.praxisabrechnungen.push(pa);
+  saveData(); render();
+  doPrint(renderPraxisabrechnungDoc(pa));
+}
+
+function loadBeispielRezepte(monat){
+  const m=monat||currentYM();
+  const ex=[
+    {patient:'Maria Hofmann', rezeptNr:'A-2041', betrag:178.00, notiz:'KG · LWS-Syndrom'},
+    {patient:'Jonas Keller', rezeptNr:'A-2042', betrag:213.60, notiz:'MT · Z. n. Knie-TEP'},
+    {patient:'Renate Bauer', rezeptNr:'A-2043', betrag:144.00, notiz:'MLD · Lymphödem Arm rechts'}
+  ];
+  ex.forEach((x,i)=>{ state.rezepte.push({ id:uid(), datum:`${m}-${pad2(5+i*4)}`, monat:m, patient:x.patient, rezeptNr:x.rezeptNr, betrag:x.betrag, positionen:[], notiz:x.notiz, abgerechnet:false }); });
+  saveData(); ui.rezeptMonth=m; render();
+}
+
+/* ---------- Export / Import ---------- */
+function exportDaten(){
+  const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url; a.download=`Abrechnung_Behringer_Sicherung_${todayISO()}.json`;
+  document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+}
+function handleImportFile(file){
+  if(!file) return;
+  const fr=new FileReader();
+  fr.onload=()=>{
+    try{
+      const d=JSON.parse(fr.result);
+      if(!d || !d.praxis){ throw new Error('Unerwartetes Format'); }
+      if(!confirm('Sicherung importieren? Die aktuellen Daten werden ersetzt.')) return;
+      state=Object.assign(structuredClone(DEFAULT_DATA), d);
+      saveData(); ui.view='dashboard'; render(); toast('Sicherung importiert');
+    }catch(err){ alert('Import fehlgeschlagen: '+err.message); }
+  };
+  fr.readAsText(file);
+}
+
+/* ---------- Toast ---------- */
+let toastTimer=null;
+function toast(msg){
+  let t=el('toast');
+  if(!t){ t=document.createElement('div'); t.id='toast';
+    t.style.cssText='position:fixed;left:50%;bottom:28px;transform:translateX(-50%);background:#1c1c1c;color:#fff;padding:11px 20px;border-radius:8px;font-size:13px;z-index:80;box-shadow:0 8px 28px rgba(0,0,0,.25);opacity:0;transition:opacity .2s';
+    document.body.appendChild(t);
+  }
+  t.textContent=msg; requestAnimationFrame(()=>{ t.style.opacity='1'; });
+  clearTimeout(toastTimer); toastTimer=setTimeout(()=>{ t.style.opacity='0'; },1800);
+}
+
+window.addEventListener('afterprint', ()=>{ el('print-root').innerHTML=''; });
+
+/* ---------- PWA: Service Worker (nur über http/https, nicht bei lokalem file://) ---------- */
+if('serviceWorker' in navigator && location.protocol.indexOf('http')===0){
+  window.addEventListener('load', function(){ navigator.serviceWorker.register('sw.js').catch(function(){}); });
+}
+
+/* ---------- Init ---------- */
+render();
+</script>
+</body>
+</html>
