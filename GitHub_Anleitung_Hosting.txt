@@ -1,0 +1,130 @@
+===========================================================
+APP MIT GITHUB PAGES INS INTERNET STELLEN
+Klick-für-Klick-Anleitung (kostenlos, dauerhaft)
+===========================================================
+
+Ziel: Die Dateien aus „PraxisBehringerApp_Hosting.zip" unter einer
+https-Adresse bereitstellen, damit die App auf iPad und iPhone
+installiert werden kann.
+
+Vorbereitung: Das ZIP auf dem Computer entpacken. Darin liegt der Ordner
+„PraxisBehringerApp" mit 7 Dateien:
+   index.html, manifest.webmanifest, sw.js,
+   icon-180.png, icon-192.png, icon-512.png, ANLEITUNG_iPhone_App.txt
+
+
+-----------------------------------------------------------
+TEIL 1  —  GitHub-Konto anlegen (einmalig)
+-----------------------------------------------------------
+1. Im Browser github.com öffnen.
+2. Oben rechts auf „Sign up" klicken.
+3. E-Mail-Adresse, Passwort und einen Benutzernamen wählen.
+   >> Der Benutzername wird später Teil deiner Internet-Adresse,
+      also etwas Sinnvolles nehmen (z. B. praxisbehringer).
+4. E-Mail bestätigen und den kostenlosen Tarif („Free") wählen.
+
+
+-----------------------------------------------------------
+TEIL 2  —  Repository (Projektordner) anlegen
+-----------------------------------------------------------
+1. Oben rechts auf das „+" klicken  →  „New repository".
+2. Bei „Repository name" einen Namen eingeben, z. B.:  praxis-app
+3. Sichtbarkeit auf „Public" stellen.
+   >> WICHTIG: Kostenlose GitHub Pages funktionieren NUR mit einem
+      öffentlichen (Public) Repository. Genau deshalb wurde die
+      hochzuladende Datei vorher von allen Patientendaten bereinigt –
+      im Quelltext stehen keine Namen. Die echten Daten gibst du erst
+      in der App auf dem Gerät ein; sie bleiben dort lokal gespeichert.
+4. Häkchen bei „Add a README file" setzen (optional).
+5. Auf „Create repository" klicken.
+
+
+-----------------------------------------------------------
+TEIL 3  —  Dateien hochladen
+-----------------------------------------------------------
+1. Im neuen Repository auf „Add file"  →  „Upload files" klicken.
+2. Den entpackten Ordner „PraxisBehringerApp" öffnen, darin die
+   7 EINZELNEN Dateien markieren und in das Upload-Feld ziehen.
+   >> WICHTIG: die Dateien SELBST hochladen, NICHT den Ordner.
+      „index.html" muss direkt im Repository liegen – nicht in einem
+      Unterordner. (Sonst gibt es später eine 404-Fehlerseite.)
+3. Nach unten scrollen und auf „Commit changes" klicken.
+
+
+-----------------------------------------------------------
+TEIL 4  —  GitHub Pages aktivieren
+-----------------------------------------------------------
+1. Oben im Repository auf den Reiter „Settings".
+2. In der linken Seitenleiste (Abschnitt „Code and automation")
+   auf „Pages" klicken.
+3. Unter „Build and deployment"  →  „Source":
+   „Deploy from a branch" auswählen.
+4. Unter „Branch": im linken Feld „main" wählen,
+   das rechte Feld auf „/ (root)" lassen.
+5. Auf „Save" klicken.
+6. Ein paar Minuten warten, dann die Seite neu laden. Oben erscheint:
+   „Your site is live at https://BENUTZERNAME.github.io/praxis-app/"
+   >> Das ist die Adresse deiner App. Mit „Visit site" testen.
+
+
+-----------------------------------------------------------
+TEIL 5  —  App auf iPad und iPhone installieren
+-----------------------------------------------------------
+Auf jedem Gerät einmal durchführen:
+1. Die Adresse aus Teil 4 in SAFARI öffnen (wichtig: Safari, nicht
+   Chrome – nur Safari kann unter iOS Web-Apps installieren).
+2. Das Teilen-Symbol antippen (Quadrat mit Pfeil nach oben).
+3. „Zum Home-Bildschirm" wählen  →  Name bestätigen  →  „Hinzufügen".
+4. Beim ersten Start einmal mit Internetverbindung öffnen, damit alles
+   für die Offline-Nutzung gespeichert wird.
+
+
+-----------------------------------------------------------
+TEIL 6  —  (Optional) Für die Google-Kalender-Anbindung
+-----------------------------------------------------------
+Wenn du den Kalender nutzen willst, in der Google Cloud Console bei der
+OAuth-Client-ID unter „Autorisierte JavaScript-Quellen" eintragen –
+nur die Domain, OHNE den Projektpfad:
+
+        https://BENUTZERNAME.github.io
+
+(Die vollständige Google-Einrichtung steht in ANLEITUNG_iPhone_App.txt
+und in der App unter „Einstellungen → Google Kalender".)
+
+
+-----------------------------------------------------------
+TEIL 7  —  Später eine neue Version hochladen
+-----------------------------------------------------------
+1. Im Repository erneut „Add file"  →  „Upload files" und die neue
+   „index.html" mit gleichem Namen hochladen (ersetzt die alte).
+2. „Commit changes" klicken.
+3. Tipp: In „sw.js" die Zeile
+        const CACHE = 'praxis-behringer-v1';
+   auf v2, v3 … erhöhen, damit die App die neue Version sicher nachlädt.
+4. Auf dem Gerät die App schließen und einmal mit Internet neu öffnen.
+
+
+-----------------------------------------------------------
+WENN ETWAS NICHT KLAPPT
+-----------------------------------------------------------
+• „404"-Fehlerseite:
+  „index.html" liegt nicht direkt im Repository, sondern in einem
+  Unterordner. Lösung: die Datei so hochladen, dass sie ganz oben im
+  Repository steht (siehe Teil 3).
+
+• „Deploy from a branch" ist ausgegraut / nicht anklickbar:
+  Das Repository ist nicht „Public". Unter Settings → General → ganz
+  unten „Change repository visibility" auf Public stellen.
+
+• Seite erscheint nicht / noch nicht erreichbar:
+  Der erste Aufbau dauert ein paar Minuten. Pages-Seite neu laden und
+  kurz warten.
+
+• Weißer Bildschirm beim Öffnen:
+  Einmal mit aktiver Internetverbindung starten, damit alle Dateien
+  geladen werden.
+
+• Daten erscheinen nicht auf dem anderen Gerät:
+  Das ist normal – iPad und iPhone speichern getrennt. Zum Übertragen
+  in der App „Sicherung exportieren" und auf dem anderen Gerät
+  „importieren".

@@ -1,0 +1,208 @@
+========================================================================
+APP AUF GITHUB AKTUALISIEREN
+Alte Version ersetzen und die neue hochladen
+Praxis Sabrina Behringer · Abrechnungstool
+========================================================================
+
+Diese Anleitung beschreibt, wie Sie die bereits auf GitHub veroeffentlichte
+App durch die neue Version ersetzen - komplett ueber die Webseite von
+GitHub, ohne Programmierkenntnisse.
+
+
+------------------------------------------------------------------------
+WICHTIG VORAB - BITTE ZUERST LESEN
+------------------------------------------------------------------------
+
+1) BENUTZEN SIE DASSELBE REPOSITORY (dasselbe Projekt) WIE BISHER.
+   Loeschen Sie NICHT das ganze Repository und legen Sie kein neues an.
+
+   Warum? Die Internet-Adresse Ihrer App (z. B.
+   https://IHR-NAME.github.io/praxis-app/) haengt am Namen des
+   Repositorys. Bleibt das Repository gleich, bleibt auch die Adresse
+   gleich - und damit:
+     - funktioniert die bereits auf iPhone/iPad installierte App weiter,
+     - bleiben alle erfassten Daten (Rechnungen, Rezepte, Einstellungen)
+       erhalten, denn diese liegen auf dem Geraet und sind an die
+       gleiche Web-Adresse gebunden.
+
+   Wuerden Sie das Repository loeschen, waere die alte Adresse weg, die
+   installierte App wuerde nicht mehr laden und muesste auf jedem Geraet
+   neu eingerichtet werden.
+
+2) IHRE DATEN GEHEN NICHT VERLOREN.
+   Das Update tauscht nur die Programm-Dateien aus. Die in der App
+   gespeicherten Eintraege bleiben auf dem jeweiligen Geraet erhalten.
+   (Tipp trotzdem: in der App unter "Einstellungen" vorher einmal
+   "Sicherung exportieren" antippen - sicher ist sicher.)
+
+3) DIE NEUEN DATEIEN.
+   Entpacken Sie die Datei  PraxisBehringerApp_Hosting.zip  auf Ihrem
+   Computer (Rechtsklick > "Entpacken" / "Alle extrahieren").
+   Sie erhalten einen Ordner  PraxisBehringerApp  mit diesen Dateien:
+     - index.html
+     - manifest.webmanifest
+     - sw.js
+     - icon-180.png
+     - icon-192.png
+     - icon-512.png
+     - ANLEITUNG_iPhone_App.txt
+     - GitHub_Anleitung_Hosting.txt
+     - GitHub_Update_Anleitung.txt  (diese Anleitung)
+
+   Diese EINZELNEN Dateien laden Sie hoch - NICHT den Ordner und NICHT
+   die ZIP-Datei.
+
+
+========================================================================
+SCHRITT 1 - BEI GITHUB ANMELDEN UND PROJEKT OEFFNEN
+========================================================================
+
+1. Oeffnen Sie die Webseite:            https://github.com
+2. Melden Sie sich oben rechts an ("Sign in"), falls noetig.
+3. Klicken Sie oben rechts auf Ihr Profilbild > "Your repositories".
+4. Klicken Sie auf das Repository Ihrer App
+   (z. B. "praxis-app" - der Name, den Sie damals vergeben haben).
+
+Sie sehen jetzt die Liste der vorhandenen Dateien (index.html, sw.js usw.).
+
+
+========================================================================
+SCHRITT 2 - NEUE DATEIEN HOCHLADEN (DIE ALTEN WERDEN ERSETZT)
+========================================================================
+
+Die neuen Dateien haben dieselben Namen wie die alten. Beim Hochladen
+ueberschreibt GitHub die alten Dateien automatisch - das ist der
+einfachste und sicherste Weg.
+
+1. Klicken Sie in der Dateiliste auf den Button  "Add file"
+   (oben rechts) und waehlen Sie  "Upload files".
+
+2. Oeffnen Sie auf Ihrem Computer den entpackten Ordner
+   "PraxisBehringerApp".
+
+3. Markieren Sie darin ALLE Dateien
+   (Windows: Strg+A   /   Mac: Cmd+A) und ziehen Sie sie mit der Maus
+   in das gestrichelte Feld "Drag files here" auf der GitHub-Seite.
+   (Alternativ "choose your files" anklicken und alle Dateien auswaehlen.)
+
+   WICHTIG: Achten Sie darauf, dass index.html, manifest.webmanifest,
+   sw.js und die drei icon-Dateien an genau der gleichen Stelle landen
+   wie bisher (normalerweise direkt im Hauptverzeichnis des Repositorys,
+   dort wo auch die alte index.html lag).
+
+4. Warten Sie, bis unter dem Feld alle Dateien mit gruenem Haken
+   ("uploaded") erscheinen.
+
+5. Scrollen Sie nach unten zum Abschnitt "Commit changes".
+   Schreiben Sie in das obere Feld z. B.:
+        Update auf neue Version
+   und lassen Sie die Auswahl auf
+        "Commit directly to the main branch".
+
+6. Klicken Sie auf den gruenen Button  "Commit changes".
+
+Fertig - die neuen Dateien sind hochgeladen und haben die alten ersetzt.
+
+
+========================================================================
+SCHRITT 3 (OPTIONAL) - UEBRIG GEBLIEBENE ALTE DATEIEN ENTFERNEN
+========================================================================
+
+Wenn aus einer frueheren Version noch Dateien vorhanden sind, die es in
+der neuen Version NICHT mehr gibt (anderer Dateiname), koennen Sie diese
+einzeln loeschen:
+
+1. Klicken Sie in der Dateiliste auf die betreffende Datei.
+2. Klicken Sie rechts oben auf das Papierkorb-Symbol
+   (Mauszeiger zeigt "Delete this file").
+3. Unten "Commit changes" anklicken.
+
+Wiederholen Sie das fuer jede nicht mehr benoetigte Datei.
+
+Hinweis: Haben alle neuen Dateien dieselben Namen wie zuvor (Normalfall),
+ist dieser Schritt nicht noetig - es bleibt nichts Altes uebrig.
+
+
+========================================================================
+SCHRITT 4 - VEROEFFENTLICHUNG ABWARTEN
+========================================================================
+
+GitHub Pages veroeffentlicht die neue Version automatisch. Das dauert
+meist 1-2 Minuten.
+
+Kontrolle (optional):
+- Klicken Sie im Repository oben auf den Reiter  "Actions".
+  Ein gruener Haken bei "pages build and deployment" bedeutet:
+  Veroeffentlichung abgeschlossen.
+- Oder oeffnen Sie  Settings > Pages : dort steht die Adresse Ihrer App
+  und ob die Seite "live" ist.
+
+
+========================================================================
+SCHRITT 5 - DIE INSTALLIERTE APP AUF DEM GERAET AKTUALISIEREN
+========================================================================
+
+Die App speichert sich fuer den Offline-Betrieb selbst im Geraet. Damit
+die neue Version sichtbar wird, muss dieser Zwischenspeicher einmal
+erneuert werden. Das geschieht automatisch - oft braucht es aber einen
+Neustart der App:
+
+AUF DEM IPHONE / IPAD (installierte App):
+1. App komplett schliessen:
+   - Vom unteren Bildschirmrand nach oben wischen und kurz halten
+     (bzw. zweimal die Home-Taste druecken),
+   - dann die Vorschau der App nach oben wegwischen.
+2. App ueber das Symbol auf dem Home-Bildschirm wieder oeffnen.
+3. Falls noch die alte Ansicht erscheint: App noch einmal schliessen
+   und erneut oeffnen. Beim zweiten Start ist die neue Version aktiv.
+
+IM SAFARI-BROWSER (falls Sie die App im Browser nutzen):
+- Die Seite mit Wischen von oben nach unten neu laden (Pull-to-Refresh),
+  am besten zweimal.
+
+NUR IM NOTFALL (wenn nach mehrmaligem Neustart noch die alte Version
+erscheint):
+- Symbol der App vom Home-Bildschirm loeschen (gedrueckt halten >
+  "App entfernen" > "Vom Home-Bildschirm entfernen"),
+- die Adresse der App erneut in Safari oeffnen und ueber das
+  Teilen-Symbol > "Zum Home-Bildschirm" wieder hinzufuegen.
+  (Ihre gespeicherten Daten bleiben dabei erhalten, da die Adresse
+  gleich ist.)
+
+
+========================================================================
+KURZ-CHECKLISTE
+========================================================================
+[ ] (Optional) In der App "Sicherung exportieren"
+[ ] ZIP entpackt, Ordner "PraxisBehringerApp" geoeffnet
+[ ] github.com -> angemeldet -> bisheriges Repository geoeffnet
+[ ] "Add file" > "Upload files" -> ALLE Dateien hineingezogen
+[ ] "Commit changes" geklickt
+[ ] 1-2 Minuten gewartet (Actions: gruener Haken)
+[ ] App auf iPhone/iPad geschlossen und neu geoeffnet (ggf. zweimal)
+[ ] Neue Version sichtbar (modernes Design, Auswertung, Quittung)
+
+
+========================================================================
+HAEUFIGE FRAGEN
+========================================================================
+
+F: Muss ich die alten Dateien zuerst loeschen?
+A: Nein. Da die neuen Dateien gleich heissen, werden die alten beim
+   Hochladen ueberschrieben. Loeschen ist nur fuer uebrig gebliebene
+   Dateien mit anderem Namen noetig (Schritt 3).
+
+F: Aendert sich die Adresse meiner App?
+A: Nein - solange Sie dasselbe Repository verwenden.
+
+F: Gehen meine erfassten Rechnungen verloren?
+A: Nein. Sie liegen auf dem Geraet und sind an die (gleich bleibende)
+   Web-Adresse gebunden. Eine Sicherung vorab schadet trotzdem nicht.
+
+F: Es erscheint weiter die alte Version - was tun?
+A: App komplett schliessen und neu oeffnen, notfalls zweimal. Hilft das
+   nicht, Schritt 5 "Nur im Notfall" ausfuehren. Hintergrund: Die
+   Cache-Version wurde in dieser Version erhoeht, sodass das Update
+   normalerweise von selbst greift.
+
+========================================================================
