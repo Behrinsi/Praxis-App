@@ -1,7 +1,7 @@
 /* Service Worker · Praxis Behringer Abrechnung
    Cacht die App-Dateien, damit die App auch offline startet.
    Bei jeder neuen Version unten die Versionsnummer erhöhen. */
-const CACHE = 'praxis-behringer-v2';
+const CACHE = 'praxis-behringer-v4';
 const ASSETS = [
   './',
   './index.html',

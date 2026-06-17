@@ -260,6 +260,14 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
   /* ---- Behandlungsvertrag (mehrseitig) ---- */
   .dc-page{break-after:page;page-break-after:always}
   .dc-doc{height:296mm}
+  /* Anlage: Privatpreisliste (zweispaltig) */
+  .doc .vk-intro{margin-bottom:4mm}
+  .doc .vk-prices{column-count:2;column-gap:9mm;margin-top:1mm}
+  .doc .vk-row{display:flex;justify-content:space-between;align-items:baseline;break-inside:avoid;padding:1.7mm 0;border-bottom:.4pt solid var(--rule-soft);font-size:9.3pt;line-height:1.3}
+  .doc .vk-row .nm{color:var(--ink);flex:1 1 auto;min-width:0;padding-right:3mm}
+  .doc .vk-row .nm .p{color:var(--muted);font-variant-numeric:tabular-nums;margin-right:1.5mm}
+  .doc .vk-row .pr{color:var(--ink);font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap;flex:0 0 auto}
+  .doc .vk-note{font-size:8.3pt;color:var(--muted);margin-top:5mm;line-height:1.45}
   .doc .dc-intro p{margin:0 0 2.5mm;color:var(--soft);font-size:9.4pt;line-height:1.5}
   .doc .dc-intro .an{color:var(--ink);margin-bottom:3mm}
   .doc .dc-infobox{border-left:2pt solid var(--accent);padding:2.5mm 5mm;margin:3mm 0;font-size:9.2pt;color:var(--soft);line-height:1.45}
@@ -881,6 +889,7 @@ function viewLeistungen(){
         <button class="btn-link" data-action="reset-leistungen">Auf Standard zurücksetzen</button>
       </div>
     </div>
+    <div class="note-box">Die hier gepflegten <strong>Praxispreise</strong> werden automatisch für Privatrechnungen sowie für die Preisliste in der Anlage des Privat-Behandlungsvertrags verwendet. Preisänderungen erscheinen beim nächsten Erstellen des jeweiligen Dokuments.</div>
     <div class="table-wrap"><table class="tbl">
       <thead><tr><th>Pos.</th><th>Leistung</th><th class="num">Beihilfe / GKV</th><th class="num">Praxispreis</th><th></th></tr></thead>
       <tbody>${state.leistungen.map((l,i)=>`
@@ -1355,7 +1364,7 @@ function vertragText(typ){
     s5h: gkv?'Zuzahlung gesetzlich Versicherter':'Honorar und Zahlung',
     s5: gkv
       ? 'Erwachsene gesetzlich Versicherte leisten gemäß § 32 Abs. 4 i.V.m. § 61 SGB V eine gesetzliche Zuzahlung von <strong>10 % der Behandlungskosten zuzüglich 10,00 € je Verordnung</strong>. Die Zuzahlung ist spätestens nach Abschluss der Behandlungsserie fällig und kann auf Wunsch auch zu Behandlungsbeginn entrichtet werden. Bescheinigungen über die Befreiung von der Zuzahlungspflicht sind unaufgefordert vor Behandlungsbeginn vorzulegen. Patientinnen und Patienten bis zur Vollendung des 18. Lebensjahres sind von der Zuzahlung befreit.'
-      : `Die Vergütung richtet sich nach der zum Behandlungszeitpunkt gültigen Privatpreisliste der Praxis, die der Patientin / dem Patienten zugänglich ist. Die Rechnungsstellung erfolgt in der Regel nach Abschluss der Behandlungsserie. Der Rechnungsbetrag ist innerhalb von ${tage} Tagen nach Rechnungsdatum ohne Abzug auf das in der Rechnung angegebene Konto zu zahlen. Bei Zahlungsverzug können Verzugszinsen sowie angemessene Mahnkosten nach den gesetzlichen Bestimmungen berechnet werden.`,
+      : `Die Vergütung richtet sich nach der zum Behandlungszeitpunkt gültigen Privatpreisliste der Praxis, die dieser Vereinbarung als Anlage beigefügt ist. Die Rechnungsstellung erfolgt in der Regel nach Abschluss der Behandlungsserie. Der Rechnungsbetrag ist innerhalb von ${tage} Tagen nach Rechnungsdatum ohne Abzug auf das in der Rechnung angegebene Konto zu zahlen. Bei Zahlungsverzug können Verzugszinsen sowie angemessene Mahnkosten nach den gesetzlichen Bestimmungen berechnet werden.`,
     s6h:'Mitwirkungspflichten',
     s6intro:'Eine erfolgreiche Therapie setzt die aktive Mitwirkung der Patientin / des Patienten voraus. Hierzu gehören insbesondere:',
     s6li:[
@@ -1375,8 +1384,10 @@ function dcClause(num,h,bodyHTML){
 }
 function renderVertragDoc(typ, d){
   d=d||{};
+  const isPrivat = typ!=='gkv';
   const T=vertragText(typ);
-  const pm=n=>`<div class="doc-pagemark">Behandlungsvertrag · Seite ${n} / 3</div>`;
+  const total = isPrivat ? 4 : 3;
+  const pm=n=>`<div class="doc-pagemark">Behandlungsvertrag · Seite ${n} / ${total}</div>`;
   const foot=docFooter('Praxis Behringer');
   const page1=`<div class="doc dc-doc dc-page">
     ${pm(1)}
@@ -1410,7 +1421,7 @@ function renderVertragDoc(typ, d){
     ${dcClause('§ 7', T.s7h, `<p>${T.s7}</p>`)}
     ${foot}
   </div>`;
-  const page3=`<div class="doc dc-doc">
+  const page3=`<div class="doc dc-doc${isPrivat?' dc-page':''}">
     ${pm(3)}
     ${dcClause('§ 8', T.s8h, `<p>${T.s8}</p>`)}
     <div class="dc-sign">
@@ -1422,7 +1433,19 @@ function renderVertragDoc(typ, d){
     </div>
     ${foot}
   </div>`;
-  return page1+page2+page3;
+  let out = page1+page2+page3;
+  if(isPrivat){
+    const rows = state.leistungen.map(l=>`<div class="vk-row"><span class="nm"><span class="p">${esc(l.pos||'')}</span>${esc(l.name)}</span><span class="pr">${fmtEUR(l.praxis)}</span></div>`).join('');
+    out += `<div class="doc dc-doc">
+      ${pm(4)}
+      <div class="doc-section"><h1>Anlage · Privatpreisliste</h1><span class="eb">Bestandteil des Behandlungsvertrages · § 5 · Stand ${esc(fmtDate(todayISO()))}</span></div>
+      <div class="dc-intro vk-intro"><p>Die nachstehende Preisliste ist Bestandteil dieses Behandlungsvertrages. Die Vergütung der einzelnen Leistungen richtet sich nach den hier aufgeführten, zum Behandlungszeitpunkt gültigen Preisen je Behandlungseinheit.</p></div>
+      <div class="vk-prices">${rows}</div>
+      <p class="vk-note">Alle Preise sind Endpreise je Behandlungseinheit. Steuerfreie Heilbehandlung gemäß § 4 Nr. 14 UStG. Änderungen der Preisliste bleiben vorbehalten und werden rechtzeitig bekannt gegeben.</p>
+      ${foot}
+    </div>`;
+  }
+  return out;
 }
 
 function renderMerkblattDoc(d){
