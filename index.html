@@ -174,6 +174,33 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
   .gcal-date{flex:0 0 auto;width:128px;font-size:12.5px;color:var(--muted);font-variant-numeric:tabular-nums}
   .gcal-title{flex:1 1 auto;font-size:13.5px;color:var(--ink)}
 
+  /* Rezept-Belege (Fotos) */
+  .foto-count{font-family:var(--sans);font-style:normal;font-size:10px;letter-spacing:.4px;color:var(--muted);text-transform:none;margin-left:8px}
+  .foto-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(94px,1fr));gap:10px;margin:8px 0 4px}
+  .foto-grid.gallery{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
+  .foto-thumb{position:relative;aspect-ratio:1/1;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--panel);box-shadow:var(--shadow-sm)}
+  .foto-thumb img{width:100%;height:100%;object-fit:cover;cursor:zoom-in;display:block}
+  .foto-x{position:absolute;top:5px;right:5px;width:24px;height:24px;border:none;border-radius:50%;background:rgba(24,24,20,.62);color:#fff;font-size:15px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center}
+  .foto-x:hover{background:var(--danger)}
+  .foto-add{position:relative;overflow:hidden;margin-top:2px}
+  .foto-add input{position:absolute;inset:0;opacity:0;width:100%;height:100%;cursor:pointer}
+  .foto-overlay{position:fixed;inset:0;background:rgba(15,15,12,.9);display:flex;align-items:center;justify-content:center;z-index:80;padding:24px;cursor:zoom-out}
+  .foto-overlay img{max-width:100%;max-height:100%;border-radius:6px;box-shadow:0 12px 44px rgba(0,0,0,.55)}
+  .foto-overlay-x{position:fixed;top:16px;right:20px;width:42px;height:42px;border:none;border-radius:50%;background:rgba(255,255,255,.16);color:#fff;font-size:24px;cursor:pointer}
+
+  /* Sicherheit: Topbar-Sperrbutton & Sperrbildschirm */
+  .topbar-right{display:flex;align-items:center;gap:10px}
+  .lock-top{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border:1px solid var(--line);background:var(--paper);color:var(--accent);border-radius:10px;cursor:pointer;box-shadow:var(--shadow-sm);transition:background .15s}
+  .lock-top:hover{background:var(--accent-bg)}
+  .lock-screen{position:fixed;inset:0;z-index:100;background:linear-gradient(160deg,#f7f6f1,#e9e8dd);display:flex;align-items:center;justify-content:center;padding:24px}
+  .lock-card{background:var(--paper);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--shadow-lg);padding:34px 30px;max-width:370px;width:100%;text-align:center}
+  .lock-mark{margin:0 auto 18px;width:56px;height:56px;border-radius:16px}
+  .lock-card h2{font-family:var(--serif);font-style:italic;font-weight:600;font-size:27px;color:var(--ink);line-height:1}
+  .lock-sub{font-size:13px;color:var(--muted);margin:8px 0 22px}
+  .lock-card .input{text-align:center;font-size:15px}
+  .lock-err{color:var(--danger);font-size:12.5px;min-height:18px;margin-top:9px}
+  .lock-hint{font-size:12px;color:var(--soft);margin-top:10px;background:var(--accent-bg);border:1px solid var(--accent-weak);border-radius:9px;padding:9px 11px}
+
   /* Sanfte Einblendung für Dialoge */
   @keyframes modalIn{from{opacity:0;transform:translateY(10px) scale(.99)}to{opacity:1;transform:none}}
   .modal{animation:modalIn .2s ease both}
@@ -308,7 +335,10 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
         <div class="brand-tag">Praxis für Physiotherapie</div>
       </div>
     </div>
-    <div class="role">Rechnungen &amp; Abrechnung</div>
+    <div class="topbar-right">
+      <button id="lock-top" class="lock-top" data-action="sec-lock" style="display:none" title="App sperren" aria-label="App sperren"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="10.5" width="16" height="9.5" rx="2"/><path d="M8 10.5V7a4 4 0 0 1 8 0v3.5"/></svg></button>
+      <div class="role">Rechnungen &amp; Abrechnung</div>
+    </div>
   </div>
 
   <nav class="nav" id="nav"></nav>
@@ -476,6 +506,7 @@ function renderNav(){
    ============================================================ */
 function render(){
   el('nav').innerHTML=renderNav();
+  updateLockButton();
   const v=ui.view;
   let html='';
   if(v==='dashboard') html=viewDashboard();
@@ -714,11 +745,13 @@ function viewRezepte(){
       <tbody>${rez.map(r=>`
         <tr>
           <td class="muted">${fmtDate(r.datum)}</td>
-          <td>${esc(r.patient)}</td>
-          <td class="muted">${esc(r.rezeptNr||'—')}</td>
+          <td>${esc(r.patient)}${r.fotoCount>0?` <span class="badge neutral" style="font-size:10px">${r.fotoCount} Beleg${r.fotoCount>1?'e':''}</span>`:''}</td>
+          <td class="muted">${esc(r.rezeptNr||'—')}${r.ausstellungsdatum?`<div style="font-size:11px;color:var(--muted)">ausgestellt ${fmtDate(r.ausstellungsdatum)}</div>`:''}</td>
           <td class="num tnum strong">${fmtEUR(r.betrag)}</td>
-          <td>${r.abgerechnet?`<span class="badge bezahlt">Abgerechnet</span>`:`<span class="badge offen">Offen</span>`}</td>
+          <td>${r.abgerechnet?`<span class="badge bezahlt">Abgerechnet</span>`:`<span class="badge offen">Offen</span>`}${(()=>{const b=Number(r.zuzahlBetrag)||0; if(r.zuzahlStatus==='vorOrt') return `<div style="margin-top:4px"><span class="badge bezahlt" style="font-size:10px">Zuz. ${b?fmtEUR(b)+' ':''}vor Ort</span></div>`; if(r.zuzahlStatus==='befreit') return `<div style="margin-top:4px"><span class="badge neutral" style="font-size:10px">zuzahlungsbefreit</span></div>`; if(r.zuzahlStatus==='praxis') return `<div style="margin-top:4px"><span class="badge offen" style="font-size:10px">Zuz. ${b?fmtEUR(b)+' ':''}über Praxis</span></div>`; return '';})()}</td>
           <td class="row-actions">
+            ${r.zuzahlStatus==='vorOrt'&&Number(r.zuzahlBetrag)>0?`<button class="btn-link" data-action="quittung-zuzahlung" data-id="${r.id}">Quittung</button>`:''}
+            ${r.fotoCount>0?`<button class="btn-link" data-action="foto-view" data-id="${r.id}">Belege</button>`:''}
             <button class="btn-link" data-action="edit-rezept" data-id="${r.id}">Bearbeiten</button>
             <button class="btn-link danger" data-action="del-rezept" data-id="${r.id}">Löschen</button>
           </td>
@@ -726,6 +759,12 @@ function viewRezepte(){
       </tbody></table></div>
 
     <div class="sum-line"><span class="l">Summe ${monthLabel(ym)}</span><span class="v">${fmtEUR(sumAlle)}</span></div>
+    ${(()=>{ const vo=rez.filter(r=>r.zuzahlStatus==='vorOrt').reduce((s,r)=>s+(Number(r.zuzahlBetrag)||0),0);
+             const pr=rez.filter(r=>r.zuzahlStatus==='praxis').reduce((s,r)=>s+(Number(r.zuzahlBetrag)||0),0);
+             const bf=rez.filter(r=>r.zuzahlStatus==='befreit').length;
+             if(!vo&&!pr&&!bf) return '';
+             const parts=[]; if(vo) parts.push(`${fmtEUR(vo)} vor Ort vereinnahmt`); if(pr) parts.push(`${fmtEUR(pr)} über Praxis zu erheben`); if(bf) parts.push(`${bf}× befreit`);
+             return `<div class="hint" style="margin-top:6px">Zuzahlungen: ${parts.join(' · ')}</div>`; })()}
     ${sumOffen>0?`
     <div class="btn-row" style="margin-top:16px;align-items:center">
       <button class="btn" data-action="monatsabrechnung" data-monat="${ym}" ${!apName?'disabled style="opacity:.5;cursor:not-allowed"':''}>Monatsabrechnung erstellen</button>
@@ -932,6 +971,22 @@ function viewEinstellungen(){
   </div>
 
   <div class="card">
+    <div class="card-head"><div><h2>Sicherheit &amp; Datenschutz</h2><div class="sub">Passwortschutz der App und Verschlüsselung der Rezept-Belege</div></div>${secEnabled()?`<span class="badge bezahlt">Aktiv</span>`:`<span class="badge neutral">Inaktiv</span>`}</div>
+    ${!cryptoAvailable()
+      ? `<div class="note-box">Passwortschutz und Verschlüsselung benötigen die App über eine sichere <strong>https-Adresse</strong> (gehostete bzw. installierte App). Beim direkten Öffnen der Datei vom Computer stehen sie nicht zur Verfügung.</div>`
+      : (secEnabled()
+        ? `<div class="hint">Die App ist beim Öffnen mit einem Passwort geschützt. Rezept-Belege (Fotos) werden mit <strong>AES-GCM (256 Bit)</strong> verschlüsselt gespeichert; der Schlüssel wird per PBKDF2 aus dem Passwort abgeleitet und nur im Arbeitsspeicher gehalten.</div>
+           <div class="btn-row">
+             <button class="btn btn-ghost" data-action="sec-lock">App jetzt sperren</button>
+             <button class="btn btn-ghost" data-action="sec-change">Passwort ändern</button>
+             <button class="btn-link danger" data-action="sec-disable">Passwortschutz aufheben</button>
+           </div>`
+        : `<div class="hint">Richten Sie ein Passwort ein. Es schützt den Zugang zur App und verschlüsselt die gespeicherten Rezept-Belege (Fotos). <strong>Das Passwort kann nicht wiederhergestellt werden</strong> – bei Verlust sind die verschlüsselten Belege nicht mehr lesbar.</div>
+           <div class="btn-row"><button class="btn" data-action="sec-setup">Passwortschutz einrichten</button></div>`)
+    }
+  </div>
+
+  <div class="card">
     <div class="card-head"><div><h2>Abrechnende Praxis</h2><div class="sub">Empfänger der monatlichen Praxisabrechnung</div></div></div>
     <div class="grid2">
       <div class="field"><label>Name der Praxis</label><input class="input" id="a-name" value="${esc(a.name)}"></div>
@@ -1100,22 +1155,28 @@ function refreshRechnungForm(){ el('modal-body').innerHTML=rechnungFormBody(); }
 
 /* ---------- Rezeptformular ---------- */
 function openRezeptForm(existing){
-  if(existing){ edRezept=structuredClone(existing); }
+  if(existing){ edRezept=structuredClone(existing); edRezept.fotos=[]; edRezept._fotosLoading = (existing.fotoCount>0); }
   else{
     const datum=todayISO();
-    edRezept={ id:uid(), datum, monat:datum.slice(0,7), patient:'', rezeptNr:'', betrag:0, positionen:[], notiz:'', abgerechnet:false, _new:true };
+    edRezept={ id:uid(), datum, ausstellungsdatum:'', monat:datum.slice(0,7), patient:'', rezeptNr:'', betrag:0, zuzahlStatus:'vorOrt', zuzahlBetrag:0, positionen:[], notiz:'', abgerechnet:false, fotoCount:0, fotos:[], _new:true };
   }
   openModal(existing?'Rezept bearbeiten':'Rezept erfassen', rezeptFormBody(),
     `<button class="btn-link" data-action="close-modal">Abbrechen</button>
      <button class="btn" data-action="save-rezept">Rezept speichern</button>`);
+  if(existing && existing.fotoCount>0){
+    fotosLoad(existing.id).then(arr=>{ if(edRezept && edRezept.id===existing.id){ edRezept.fotos=arr; edRezept._fotosLoading=false; refreshFotoStrip(); } });
+  }
 }
 function rezeptFormBody(){
   const e=edRezept;
   const catOpts=state.leistungen.map(l=>`<option value="${esc(l.pos)}">${esc(l.pos)} · ${esc(l.name)} (${fmtEUR(l.beihilfe)})</option>`).join('');
   const hasPos=e.positionen&&e.positionen.length;
   return `
-    <div class="grid3">
+    <div class="grid2">
+      <div class="field"><label>Ausstellungsdatum (Rezept)</label><input class="input" type="date" id="rz-ausstellung" value="${esc(e.ausstellungsdatum||'')}"></div>
       <div class="field"><label>Behandlungsdatum</label><input class="input" type="date" id="rz-datum" value="${esc(e.datum)}"></div>
+    </div>
+    <div class="grid2">
       <div class="field"><label>Abrechnungsmonat</label><input class="input" type="month" id="rz-monat" value="${esc(e.monat)}"></div>
       <div class="field"><label>Rezept-Nr. (optional)</label><input class="input" id="rz-nr" value="${esc(e.rezeptNr||'')}"></div>
     </div>
@@ -1136,7 +1197,29 @@ function rezeptFormBody(){
       <button class="btn btn-ghost btn-sm" data-action="rezpos-uebernehmen">Summe als Rezeptbetrag übernehmen</button>
     </div>
 
+    <div class="subhead">Rezeptgebühr · gesetzliche Zuzahlung</div>
+    <div class="grid2">
+      <div class="field"><label>Status</label>
+        <select class="input" id="rz-zzstatus">
+          <option value="" ${!e.zuzahlStatus?'selected':''}>— keine Angabe —</option>
+          <option value="vorOrt" ${e.zuzahlStatus==='vorOrt'?'selected':''}>vor Ort bezahlt (bei mir)</option>
+          <option value="befreit" ${e.zuzahlStatus==='befreit'?'selected':''}>befreit (Zuzahlungsbefreiung)</option>
+          <option value="praxis" ${e.zuzahlStatus==='praxis'?'selected':''}>Rechnung durch abrechnende Praxis</option>
+        </select>
+      </div>
+      <div class="field"><label>Zuzahlungsbetrag (€) · <a href="#" data-action="zz-calc" style="color:var(--accent);text-decoration:none">berechnen (10 % + 10 €)</a></label>
+        <input class="input" inputmode="decimal" id="rz-zzbetrag" value="${e.zuzahlBetrag?String(e.zuzahlBetrag.toFixed(2)).replace('.',','):''}" placeholder="z. B. 27,80"></div>
+    </div>
+    <div class="hint">„Vor Ort bezahlt“ wird auf der Monatsabrechnung vom Rechnungsbetrag abgezogen (Betrag wurde bereits vereinnahmt). „Rechnung durch Praxis“ wird auf der Abrechnung ausgewiesen, damit die Praxis die Gebühr beim Patienten erhebt. Formel: 10 % des Rezeptwerts + 10 € je Verordnung – maßgeblich ist der Betrag laut Verordnung/Abrechnungssoftware.</div>
+
     <div class="field" style="margin-top:16px"><label>Notiz (optional)</label><textarea class="input" id="rz-notiz" placeholder="z. B. Verordnung Dr. … / Diagnose">${esc(e.notiz||'')}</textarea></div>
+
+    <div class="subhead">Rezept-Belege · Fotos <span id="foto-count" class="foto-count">${(e.fotos&&e.fotos.length)?`${e.fotos.length} Beleg${e.fotos.length>1?'e':''}`:''}</span></div>
+    <div class="hint">Fotos abgeschlossener Rezepte als Nachweis bei Erstattungsfragen. Sie werden komprimiert und ausschließlich lokal auf diesem Gerät gespeichert (nicht Teil der Rechnung, nicht in der Cloud).</div>
+    <div id="foto-strip">${fotoStripHTML()}</div>
+    <label class="btn btn-ghost btn-sm foto-add">＋ Rezept fotografieren / Foto wählen
+      <input type="file" accept="image/*" capture="environment" multiple id="foto-input">
+    </label>
   `;
 }
 function rezPosRows(){
@@ -1155,8 +1238,9 @@ function rezPosRows(){
 function rezPosSum(){ const e=edRezept; return (e.positionen||[]).reduce((s,p)=>s+(Number(p.anzahl)||0)*(Number(p.satz)||0),0); }
 function syncRezeptForm(){
   const e=edRezept; if(!e) return;
-  e.datum=val('rz-datum'); e.monat=val('rz-monat'); e.rezeptNr=val('rz-nr'); e.patient=val('rz-patient');
+  e.datum=val('rz-datum'); e.ausstellungsdatum=val('rz-ausstellung'); e.monat=val('rz-monat'); e.rezeptNr=val('rz-nr'); e.patient=val('rz-patient');
   e.notiz=val('rz-notiz'); e.betrag=parseNum(val('rz-betrag'));
+  e.zuzahlStatus=val('rz-zzstatus'); e.zuzahlBetrag=parseNum(val('rz-zzbetrag'));
   document.querySelectorAll('[data-rpf]').forEach(inp=>{
     const i=+inp.dataset.i, f=inp.dataset.rpf; if(!e.positionen[i]) return;
     if(f==='anzahl') e.positionen[i][f]=parseInt(inp.value,10)||0;
@@ -1283,6 +1367,17 @@ function renderPraxisabrechnungDoc(pa){
             .sort((x,y)=>(x.datum||'').localeCompare(y.datum||''));
   const anteil=Number(pa.anteilProzent)||100;
   const hasAnteil=anteil!==100;
+  const zzVorOrt=Number(pa.zuzahlungVorOrt)||0;
+  const zzPraxis=Number(pa.zuzahlungPraxis)||0;
+  const anteilBetrag=Math.round(pa.summe*anteil/100*100)/100;
+  const zzCell=r=>{
+    const b=Number(r.zuzahlBetrag)||0;
+    if(r.zuzahlStatus==='vorOrt') return (b?fmtEUR(b)+' ':'')+'vor Ort';
+    if(r.zuzahlStatus==='befreit') return 'befreit';
+    if(r.zuzahlStatus==='praxis') return 'über Praxis'+(b?' · '+fmtEUR(b):'');
+    return '—';
+  };
+  const showSummary = hasAnteil || zzVorOrt>0;
   return `<div class="doc">
     <div class="doc-pagemark">Abrechnung ${esc(pa.nummer)}</div>
     ${docHeader()}
@@ -1296,23 +1391,27 @@ function renderPraxisabrechnungDoc(pa){
       <p>hiermit stelle ich Ihnen die im Monat <strong>${esc(monthLabel(pa.monat))}</strong> über Ihre Praxis abgerechneten physiotherapeutischen Heilmittelverordnungen in Rechnung. Die Aufstellung der einzelnen Verordnungen entnehmen Sie bitte der folgenden Übersicht.</p>
     </div>
     <table class="doc-srv">
-      <thead><tr><th>Datum</th><th>Patient/in</th><th>Rezept-Nr.</th><th class="n">Rezeptbetrag</th></tr></thead>
+      <thead><tr><th>Ausgestellt</th><th>Behandelt</th><th>Patient/in</th><th>Rezept-Nr.</th><th>Zuzahlung</th><th class="n">Rezeptbetrag</th></tr></thead>
       <tbody>${rez.map(r=>`
         <tr>
-          <td class="pos" style="width:20mm">${esc(fmtDate(r.datum))}</td>
+          <td class="pos" style="width:17mm">${r.ausstellungsdatum?esc(fmtDate(r.ausstellungsdatum)):'—'}</td>
+          <td class="pos" style="width:17mm">${esc(fmtDate(r.datum))}</td>
           <td><span class="ti">${esc(r.patient)}</span>${r.notiz?`<span class="su">${esc(r.notiz)}</span>`:''}</td>
-          <td class="pr" style="text-align:left">${esc(r.rezeptNr||'—')}</td>
+          <td class="pr" style="text-align:left;width:17mm">${esc(r.rezeptNr||'—')}</td>
+          <td class="pos" style="width:26mm;font-size:8.4pt">${zzCell(r)}</td>
           <td class="n tot">${fmtEUR(r.betrag)}</td>
         </tr>`).join('')}
       </tbody>
     </table>
-    ${hasAnteil?`
+    ${showSummary?`
       <div class="doc-sub" style="border-top:.5pt solid var(--rule);margin-top:3mm;padding-top:2.5mm"><span>Summe Rezeptbeträge (${rez.length} Verordnungen)</span><span>${fmtEUR(pa.summe)}</span></div>
-      <div class="doc-sub"><span>Anteil gemäß Vereinbarung · ${anteil.toLocaleString('de-DE')} %</span><span>${fmtEUR(pa.betrag)}</span></div>
+      ${hasAnteil?`<div class="doc-sub"><span>Anteil gemäß Vereinbarung · ${anteil.toLocaleString('de-DE')} %</span><span>${fmtEUR(anteilBetrag)}</span></div>`:''}
+      ${zzVorOrt>0?`<div class="doc-sub"><span>abzüglich vor Ort vereinnahmter gesetzlicher Zuzahlungen</span><span>− ${fmtEUR(zzVorOrt)}</span></div>`:''}
       <div class="doc-total"><span class="l">Rechnungsbetrag</span><span class="v">${fmtEUR(pa.betrag)}</span></div>
     `:`
       <div class="doc-total"><span class="l">Rechnungsbetrag · ${rez.length} Verordnungen</span><span class="v">${fmtEUR(pa.betrag)}</span></div>
     `}
+    ${zzPraxis>0?`<div class="doc-intro" style="margin-top:3mm"><p style="font-size:9pt">Die gesetzliche Zuzahlung der mit „über Praxis“ gekennzeichneten Verordnungen (insgesamt <strong>${fmtEUR(zzPraxis)}</strong>) ist noch durch Ihre Praxis bei den Patientinnen und Patienten zu erheben; sie ist nicht Bestandteil dieser Abrechnung.</p></div>`:''}
     ${docPay(pa.betrag, `${pa.nummer} · ${monthLabel(pa.monat)}`, addDays(pa.datum, state.praxis.zahlungszielTage||14))}
     <div class="doc-tax">${esc(state.praxis.ustHinweis)}</div>
     <div class="doc-sign"><div class="g">Mit freundlichen Grüßen</div><div class="s">${esc(state.praxis.name)}</div></div>
@@ -1568,6 +1667,7 @@ document.addEventListener('change', e=>{
   if(t.id==='monat-select'){ ui.rezeptMonth=t.value; render(); }
   if(t.id==='ausw-jahr'){ ui.auswertungJahr=t.value; render(); }
   if(t.id==='import-file'){ handleImportFile(t.files[0]); }
+  if(t.id==='foto-input'){ handleFotoFiles(t.files); t.value=''; }
 });
 document.addEventListener('input', e=>{
   const t=e.target;
@@ -1641,9 +1741,20 @@ document.addEventListener('click', e=>{
     case 'save-rezept': saveRezept(); break;
     case 'del-rezept': {
       const r=state.rezepte.find(x=>x.id===t.dataset.id);
-      if(r){ if(r.abgerechnet){ alert('Dieses Rezept ist bereits Teil einer Praxisabrechnung. Bitte zuerst die betreffende Abrechnung stornieren.'); break; } if(confirm(`Rezept (${r.patient}, ${fmtDate(r.datum)}) löschen?`)){ state.rezepte=state.rezepte.filter(x=>x.id!==r.id); saveData(); render(); } }
+      if(r){ if(r.abgerechnet){ alert('Dieses Rezept ist bereits Teil einer Praxisabrechnung. Bitte zuerst die betreffende Abrechnung stornieren.'); break; } if(confirm(`Rezept (${r.patient}, ${fmtDate(r.datum)}) löschen?`)){ state.rezepte=state.rezepte.filter(x=>x.id!==r.id); saveData(); fotosDelete(r.id); render(); } }
       break;
     }
+    case 'foto-del': if(edRezept&&edRezept.fotos){ edRezept.fotos.splice(+t.dataset.i,1); refreshFotoStrip(); } break;
+    case 'foto-zoom': openFotoZoom(((edRezept&&edRezept.fotos)||[])[+t.dataset.i]); break;
+    case 'foto-zoom-src': openFotoZoom(_galleryFotos[+t.dataset.i]); break;
+    case 'foto-view': openFotoGallery(t.dataset.id); break;
+    case 'sec-lock': secLock(); break;
+    case 'sec-setup': openSecSetup(); break;
+    case 'sec-save-setup': secSaveSetup(); break;
+    case 'sec-change': openSecChange(); break;
+    case 'sec-save-change': secSaveChange(); break;
+    case 'sec-disable': openSecDisable(); break;
+    case 'sec-confirm-disable': secConfirmDisable(); break;
     case 'set-monat': break;
     case 'beispiel-rezepte': loadBeispielRezepte(t.dataset.monat); break;
     case 'monatsabrechnung': erstelleMonatsabrechnung(t.dataset.monat); break;
@@ -1673,6 +1784,16 @@ document.addEventListener('click', e=>{
     case 'mahnung-pa': openMahnungForm('pa', t.dataset.id); break;
     case 'print-mahnung': printMahnung(); break;
     case 'quittung-rechnung': openQuittungForm(t.dataset.id); break;
+    case 'quittung-zuzahlung': openQuittungZuzahlung(t.dataset.id); break;
+    case 'zz-calc': {
+      e.preventDefault();
+      const rb=parseNum(val('rz-betrag'));
+      if(!rb){ alert('Bitte zuerst den Rezeptbetrag eingeben.'); break; }
+      const zz=Math.min(Math.round((rb*0.10+10)*100)/100, rb);
+      const f=el('rz-zzbetrag'); if(f){ f.value=zz.toFixed(2).replace('.',','); }
+      syncRezeptForm();
+      break;
+    }
     case 'neue-quittung': openQuittungForm(null); break;
     case 'print-quittung': printQuittung(); break;
     case 'gcal-connect': gcalConnect(); break;
@@ -1708,16 +1829,260 @@ function saveRechnung(){
   saveData(); closeModal(); render();
 }
 
+/* ---------- Sicherheit: App-Sperre & Foto-Verschlüsselung (PBKDF2 + AES-GCM) ---------- */
+const SEC_KEY='sb_security_v1', SEC_VERIFY='sb-verify-ok', SEC_ITER=250000;
+let secCfg=null;      // {enabled, salt, iterations, verifierIv, verifierCt, hint}
+let cryptoKey=null;   // abgeleiteter AES-GCM-Schlüssel – nur im Arbeitsspeicher
+function cryptoAvailable(){ try{ return !!(window.crypto && window.crypto.subtle && window.isSecureContext); }catch(e){ return false; } }
+function secLoad(){ try{ secCfg=JSON.parse(localStorage.getItem(SEC_KEY)||'null'); }catch(e){ secCfg=null; } return secCfg; }
+function secSaveCfg(){ try{ if(secCfg) localStorage.setItem(SEC_KEY, JSON.stringify(secCfg)); else localStorage.removeItem(SEC_KEY); }catch(e){} }
+function secEnabled(){ return !!(secCfg && secCfg.enabled); }
+function _b64(buf){ let s=''; const b=new Uint8Array(buf); for(let i=0;i<b.length;i++) s+=String.fromCharCode(b[i]); return btoa(s); }
+function _unb64(str){ return Uint8Array.from(atob(str), c=>c.charCodeAt(0)); }
+async function _deriveKey(pw, salt, iter){
+  const base=await crypto.subtle.importKey('raw', new TextEncoder().encode(pw), 'PBKDF2', false, ['deriveKey']);
+  return crypto.subtle.deriveKey({name:'PBKDF2', salt, iterations:iter, hash:'SHA-256'}, base, {name:'AES-GCM', length:256}, false, ['encrypt','decrypt']);
+}
+async function _enc(key, str){
+  const iv=crypto.getRandomValues(new Uint8Array(12));
+  const ct=await crypto.subtle.encrypt({name:'AES-GCM', iv}, key, new TextEncoder().encode(str));
+  return { iv:_b64(iv), ct:_b64(ct), enc:1 };
+}
+async function _dec(key, obj){
+  const pt=await crypto.subtle.decrypt({name:'AES-GCM', iv:_unb64(obj.iv)}, key, _unb64(obj.ct));
+  return new TextDecoder().decode(pt);
+}
+async function secUnlock(pw){
+  if(!secEnabled()) return true;
+  try{
+    const key=await _deriveKey(pw, _unb64(secCfg.salt), secCfg.iterations||SEC_ITER);
+    const v=await _dec(key, {iv:secCfg.verifierIv, ct:secCfg.verifierCt});
+    if(v!==SEC_VERIFY) return false;
+    cryptoKey=key; return true;
+  }catch(e){ return false; }
+}
+async function secSetup(pw, hint){
+  if(!cryptoAvailable()) throw new Error('Die Verschlüsselung ist hier nicht verfügbar – bitte die App über die sichere https-Adresse öffnen.');
+  const salt=crypto.getRandomValues(new Uint8Array(16));
+  const key=await _deriveKey(pw, salt, SEC_ITER);
+  const ver=await _enc(key, SEC_VERIFY);
+  cryptoKey=key;
+  secCfg={ enabled:true, salt:_b64(salt), iterations:SEC_ITER, verifierIv:ver.iv, verifierCt:ver.ct, hint:hint||'' };
+  secSaveCfg();
+  await fotosReencryptAll();     // vorhandene Belege verschlüsseln
+}
+async function secChangePassword(oldPw, newPw, hint){
+  if(!(await secUnlock(oldPw))) return false;
+  const keys=await fotosAllKeys(), cache={};
+  for(const k of keys) cache[k]=await fotosLoad(k);           // mit altem Schlüssel entschlüsseln
+  const salt=crypto.getRandomValues(new Uint8Array(16));
+  const key=await _deriveKey(newPw, salt, SEC_ITER);
+  const ver=await _enc(key, SEC_VERIFY);
+  cryptoKey=key;
+  secCfg={ enabled:true, salt:_b64(salt), iterations:SEC_ITER, verifierIv:ver.iv, verifierCt:ver.ct, hint:(hint!=null?hint:secCfg.hint)||'' };
+  secSaveCfg();
+  for(const k of keys) await fotosSave(k, cache[k]);          // mit neuem Schlüssel speichern
+  return true;
+}
+async function secDisable(pw){
+  if(!(await secUnlock(pw))) return false;
+  const keys=await fotosAllKeys(), cache={};
+  for(const k of keys) cache[k]=await fotosLoad(k);           // entschlüsseln
+  cryptoKey=null;                                             // ab jetzt Klartext
+  secCfg=null; secSaveCfg();
+  for(const k of keys) await fotosSave(k, cache[k]);          // Klartext speichern
+  return true;
+}
+async function fotosReencryptAll(){
+  const keys=await fotosAllKeys();
+  for(const k of keys){ const arr=await fotosLoad(k); await fotosSave(k, arr); }
+}
+function updateLockButton(){ const b=el('lock-top'); if(b) b.style.display = secEnabled()?'inline-flex':'none'; }
+function secLock(){ cryptoKey=null; showLockScreen(); }
+function showLockScreen(){
+  if(el('lock-screen')) return;
+  const ov=document.createElement('div'); ov.id='lock-screen'; ov.className='lock-screen';
+  ov.innerHTML=`
+    <div class="lock-card">
+      <div class="brand-mark lock-mark"><div class="brand-dots"><span></span><span></span><span></span><span></span><span></span><span></span></div></div>
+      <h2>Praxis Behringer</h2>
+      <p class="lock-sub">Geschützter Bereich · bitte Passwort eingeben</p>
+      <input type="password" id="lock-pw" class="input" placeholder="Passwort" autocomplete="current-password">
+      <div id="lock-err" class="lock-err"></div>
+      ${secCfg&&secCfg.hint?`<div class="lock-hint">Merkhilfe: ${esc(secCfg.hint)}</div>`:''}
+      <button class="btn" id="lock-go" style="width:100%;justify-content:center;margin-top:12px">Entsperren</button>
+    </div>`;
+  document.body.appendChild(ov);
+  const input=el('lock-pw'), btn=el('lock-go');
+  const attempt=async ()=>{
+    btn.disabled=true; el('lock-err').textContent='Prüfe …';
+    const ok=await secUnlock(input.value||'');
+    if(ok){ ov.remove(); render(); }
+    else{ el('lock-err').textContent='Falsches Passwort.'; btn.disabled=false; input.select(); }
+  };
+  btn.addEventListener('click', attempt);
+  input.addEventListener('keydown', e=>{ if(e.key==='Enter') attempt(); });
+  setTimeout(()=>{ try{ input.focus(); }catch(e){} }, 60);
+}
+
+function openSecSetup(){
+  openModal('Passwortschutz einrichten', `
+    <div class="note-box">Das Passwort schützt den Zugang zur App und verschlüsselt die Rezept-Belege (AES-GCM). <strong>Bewahren Sie es sicher auf – es kann nicht zurückgesetzt werden.</strong> Bei Verlust sind die verschlüsselten Belege nicht mehr lesbar.</div>
+    <div class="field"><label>Neues Passwort (mind. 6 Zeichen)</label><input class="input" type="password" id="sec-pw1" autocomplete="new-password"></div>
+    <div class="field"><label>Passwort wiederholen</label><input class="input" type="password" id="sec-pw2" autocomplete="new-password"></div>
+    <div class="field"><label>Merkhilfe (optional, wird im Klartext gespeichert)</label><input class="input" id="sec-hint" placeholder="z. B. wie das erste Haustier"></div>
+  `, `<button class="btn-link" data-action="close-modal">Abbrechen</button><button class="btn" data-action="sec-save-setup">Einrichten</button>`);
+}
+async function secSaveSetup(){
+  const p1=val('sec-pw1'), p2=val('sec-pw2'), hint=val('sec-hint');
+  if(!p1||p1.length<6){ alert('Bitte ein Passwort mit mindestens 6 Zeichen wählen.'); return; }
+  if(p1!==p2){ alert('Die Passwörter stimmen nicht überein.'); return; }
+  try{ await secSetup(p1, hint); closeModal(); updateLockButton(); toast('Passwortschutz aktiviert'); render(); }
+  catch(e){ alert(e.message||'Einrichtung fehlgeschlagen.'); }
+}
+function openSecChange(){
+  openModal('Passwort ändern', `
+    <div class="field"><label>Aktuelles Passwort</label><input class="input" type="password" id="sec-old" autocomplete="current-password"></div>
+    <div class="field"><label>Neues Passwort (mind. 6 Zeichen)</label><input class="input" type="password" id="sec-pw1" autocomplete="new-password"></div>
+    <div class="field"><label>Neues Passwort wiederholen</label><input class="input" type="password" id="sec-pw2" autocomplete="new-password"></div>
+    <div class="field"><label>Merkhilfe (optional)</label><input class="input" id="sec-hint" value="${secCfg&&secCfg.hint?esc(secCfg.hint):''}"></div>
+  `, `<button class="btn-link" data-action="close-modal">Abbrechen</button><button class="btn" data-action="sec-save-change">Ändern</button>`);
+}
+async function secSaveChange(){
+  const old=val('sec-old'), p1=val('sec-pw1'), p2=val('sec-pw2'), hint=val('sec-hint');
+  if(!p1||p1.length<6){ alert('Bitte ein neues Passwort mit mindestens 6 Zeichen wählen.'); return; }
+  if(p1!==p2){ alert('Die neuen Passwörter stimmen nicht überein.'); return; }
+  const ok=await secChangePassword(old, p1, hint);
+  if(ok){ closeModal(); toast('Passwort geändert'); }
+  else alert('Das aktuelle Passwort ist nicht korrekt.');
+}
+function openSecDisable(){
+  openModal('Passwortschutz aufheben', `
+    <div class="note-box">Nach dem Aufheben ist die App nicht mehr passwortgeschützt und die Rezept-Belege werden wieder unverschlüsselt gespeichert.</div>
+    <div class="field"><label>Zur Bestätigung: aktuelles Passwort</label><input class="input" type="password" id="sec-old" autocomplete="current-password"></div>
+  `, `<button class="btn-link" data-action="close-modal">Abbrechen</button><button class="btn-link danger" data-action="sec-confirm-disable">Passwortschutz aufheben</button>`);
+}
+async function secConfirmDisable(){
+  const ok=await secDisable(val('sec-old'));
+  if(ok){ closeModal(); updateLockButton(); toast('Passwortschutz aufgehoben'); render(); }
+  else alert('Das Passwort ist nicht korrekt.');
+}
+
+/* ---------- Rezept-Belege: Fotos (Speicherung in IndexedDB) ---------- */
+const FOTO_DB='sb_rezept_fotos', FOTO_STORE='fotos';
+let _galleryFotos=[];
+function fotoDBOpen(){
+  return new Promise((resolve,reject)=>{
+    try{
+      if(typeof window==='undefined' || !window.indexedDB){ reject(new Error('IndexedDB nicht verfügbar')); return; }
+      const rq=window.indexedDB.open(FOTO_DB,1);
+      rq.onupgradeneeded=()=>{ const db=rq.result; if(!db.objectStoreNames.contains(FOTO_STORE)) db.createObjectStore(FOTO_STORE); };
+      rq.onsuccess=()=>resolve(rq.result);
+      rq.onerror=()=>reject(rq.error||new Error('IndexedDB-Fehler'));
+    }catch(err){ reject(err); }
+  });
+}
+async function fotosAllKeys(){
+  try{ const db=await fotoDBOpen(); return await new Promise((res,rej)=>{ const tx=db.transaction(FOTO_STORE,'readonly'); const rq=tx.objectStore(FOTO_STORE).getAllKeys(); rq.onsuccess=()=>res(rq.result||[]); rq.onerror=()=>rej(rq.error); }); }
+  catch(e){ return []; }
+}
+async function fotosLoad(id){
+  try{
+    const db=await fotoDBOpen();
+    const raw=await new Promise((res,rej)=>{ const tx=db.transaction(FOTO_STORE,'readonly'); const rq=tx.objectStore(FOTO_STORE).get(id); rq.onsuccess=()=>res(Array.isArray(rq.result)?rq.result:[]); rq.onerror=()=>rej(rq.error); });
+    const out=[];
+    for(const item of raw){
+      if(item && typeof item==='object' && item.enc){
+        if(!cryptoKey) continue;                            // verschlüsselt, aber (noch) kein Schlüssel
+        try{ out.push(await _dec(cryptoKey, item)); }catch(e){ /* falscher Schlüssel – überspringen */ }
+      } else if(typeof item==='string'){ out.push(item); }  // Klartext (unverschlüsselt)
+    }
+    return out;
+  }catch(e){ return []; }
+}
+async function fotosSave(id, arr){
+  try{
+    const db=await fotoDBOpen();
+    let store=arr||[];
+    if(cryptoKey && store.length){ const enc=[]; for(const durl of store){ enc.push(await _enc(cryptoKey, durl)); } store=enc; }
+    await new Promise((res,rej)=>{ const tx=db.transaction(FOTO_STORE,'readwrite'); const st=tx.objectStore(FOTO_STORE); if(store.length) st.put(store,id); else st.delete(id); tx.oncomplete=()=>res(); tx.onerror=()=>rej(tx.error); });
+    return true;
+  }catch(e){ console.warn('Beleg speichern fehlgeschlagen:',e); return false; }
+}
+async function fotosDelete(id){ return fotosSave(id, []); }
+
+function compressImage(file, maxDim, quality){
+  maxDim=maxDim||1600; quality=quality||0.72;
+  return new Promise((resolve,reject)=>{
+    const fr=new FileReader();
+    fr.onload=()=>{
+      const img=new Image();
+      img.onload=()=>{
+        try{
+          let w=img.naturalWidth||img.width, h=img.naturalHeight||img.height;
+          const m=Math.max(w,h); if(m>maxDim){ const s=maxDim/m; w=Math.round(w*s); h=Math.round(h*s); }
+          const cv=document.createElement('canvas'); cv.width=w; cv.height=h;
+          const ctx=cv.getContext('2d'); ctx.fillStyle='#fff'; ctx.fillRect(0,0,w,h); ctx.drawImage(img,0,0,w,h);
+          resolve(cv.toDataURL('image/jpeg',quality));
+        }catch(err){ reject(err); }
+      };
+      img.onerror=()=>reject(new Error('Bild konnte nicht geladen werden'));
+      img.src=fr.result;
+    };
+    fr.onerror=()=>reject(fr.error);
+    fr.readAsDataURL(file);
+  });
+}
+
+function fotoStripHTML(){
+  const e=edRezept; if(!e) return '';
+  if(e._fotosLoading) return `<div class="hint">Belege werden geladen …</div>`;
+  const fotos=e.fotos||[];
+  if(!fotos.length) return `<div class="hint">Noch keine Belege gespeichert.</div>`;
+  return `<div class="foto-grid">${fotos.map((src,i)=>`
+    <div class="foto-thumb">
+      <img src="${src}" data-action="foto-zoom" data-i="${i}" alt="Beleg ${i+1}">
+      <button class="foto-x" data-action="foto-del" data-i="${i}" aria-label="Beleg entfernen">×</button>
+    </div>`).join('')}</div>`;
+}
+function refreshFotoStrip(){ const s=el('foto-strip'); if(s) s.innerHTML=fotoStripHTML(); const c=el('foto-count'); if(c){ const n=(edRezept&&edRezept.fotos?edRezept.fotos.length:0); c.textContent=n?`${n} Beleg${n>1?'e':''}`:''; } }
+async function handleFotoFiles(files){
+  if(!files||!files.length) return; const e=edRezept; if(!e) return;
+  if(!e.fotos) e.fotos=[];
+  for(const f of Array.from(files)){
+    if(!/^image\//.test(f.type||'')) continue;
+    try{ e.fotos.push(await compressImage(f)); refreshFotoStrip(); }
+    catch(err){ console.warn('Foto-Fehler',err); alert('Ein Foto konnte nicht verarbeitet werden.'); }
+  }
+}
+function openFotoZoom(src){
+  if(!src) return;
+  const ov=document.createElement('div'); ov.className='foto-overlay';
+  ov.innerHTML=`<img src="${src}" alt="Beleg"><button class="foto-overlay-x" aria-label="Schließen">×</button>`;
+  ov.addEventListener('click',()=>ov.remove());
+  document.body.appendChild(ov);
+}
+async function openFotoGallery(rezeptId){
+  const r=state.rezepte.find(x=>x.id===rezeptId);
+  const fotos=await fotosLoad(rezeptId); _galleryFotos=fotos;
+  const body = fotos.length
+    ? `<div class="hint">Gespeicherte Belege zu diesem Rezept. Zum Vergrößern antippen.</div><div class="foto-grid gallery">${fotos.map((s,i)=>`<div class="foto-thumb"><img src="${s}" data-action="foto-zoom-src" data-i="${i}" alt="Beleg ${i+1}"></div>`).join('')}</div>`
+    : `<div class="empty">Für dieses Rezept sind keine Belege gespeichert.</div>`;
+  openModal(`Belege${r?' · '+esc(r.patient):''}`, body, `<button class="btn" data-action="close-modal">Schließen</button>`);
+}
+
 function saveRezept(){
   syncRezeptForm();
   const e=edRezept;
   if(!e.patient.trim()){ alert('Bitte den Namen der Patientin / des Patienten angeben.'); return; }
   if(!e.betrag||e.betrag<=0){ alert('Bitte einen Rezeptbetrag größer 0 erfassen (direkt oder über Positionen).'); return; }
   if(!e.monat){ e.monat=(e.datum||todayISO()).slice(0,7); }
-  delete e._new;
+  delete e._new; delete e._fotosLoading;
+  const fotos = e.fotos || []; delete e.fotos; e.fotoCount = fotos.length;
   const idx=state.rezepte.findIndex(r=>r.id===e.id);
   if(idx>=0) state.rezepte[idx]=e; else state.rezepte.push(e);
-  saveData(); closeModal(); ui.rezeptMonth=e.monat; render();
+  saveData(); fotosSave(e.id, fotos);
+  closeModal(); ui.rezeptMonth=e.monat; render();
 }
 
 function saveLeistung(idxStr){
@@ -1818,8 +2183,21 @@ function openQuittungForm(id){
   } : {
     empfaenger:'', betrag:0, zweck:'', art:'bar', datum:todayISO(), ort
   };
+  openQuittungModal();
+}
+function openQuittungZuzahlung(rezeptId){
+  const r=state.rezepte.find(x=>x.id===rezeptId); if(!r) return;
+  const ort=(state.praxis.plzOrt||'').replace(/^\d{5}\s*/,'') || '';
+  edQuittung={
+    empfaenger:r.patient||'', betrag:Number(r.zuzahlBetrag)||0,
+    zweck:'Gesetzliche Zuzahlung · Rezept '+(r.rezeptNr||fmtDate(r.datum)),
+    art:'bar', datum:todayISO(), ort
+  };
+  openQuittungModal();
+}
+function openQuittungModal(){
   openModal('Quittung erstellen', `
-    <div class="note-box" style="margin-top:0">Quittung über den erhaltenen Betrag – z. B. für Selbstzahler, die bar bezahlt haben. Felder können angepasst werden (etwa für Teilbeträge).</div>
+    <div class="note-box" style="margin-top:0">Quittung über den erhaltenen Betrag – z. B. für Selbstzahler oder vor Ort bezahlte Zuzahlungen. Felder können angepasst werden (etwa für Teilbeträge).</div>
     <div class="field"><label>Empfänger / Zahler</label><input class="input" id="q-empf" value="${esc(edQuittung.empfaenger)}"></div>
     <div class="grid2">
       <div class="field"><label>Betrag (€)</label><input class="input" inputmode="decimal" id="q-betrag" value="${(edQuittung.betrag||0).toFixed(2).replace('.',',')}"></div>
@@ -1967,11 +2345,16 @@ function erstelleMonatsabrechnung(monat){
   if(!offene.length){ alert('Keine offenen Rezepte in diesem Monat.'); return; }
   const summe=offene.reduce((s,r)=>s+(Number(r.betrag)||0),0);
   const anteil=Number(a.anteilProzent)||100;
-  const betragFinal=Math.round(summe*anteil/100*100)/100;
-  if(!confirm(`Monatsabrechnung ${monthLabel(monat)} erstellen?\n\n${offene.length} Rezepte · Rezeptsumme ${fmtEUR(summe)}${anteil!==100?`\nAnteil ${anteil}% = ${fmtEUR(betragFinal)}`:''}`)) return;
+  const anteilBetrag=Math.round(summe*anteil/100*100)/100;
+  const zzVorOrt=Math.round(offene.filter(r=>r.zuzahlStatus==='vorOrt').reduce((s,r)=>s+(Number(r.zuzahlBetrag)||0),0)*100)/100;
+  const zzPraxis=Math.round(offene.filter(r=>r.zuzahlStatus==='praxis').reduce((s,r)=>s+(Number(r.zuzahlBetrag)||0),0)*100)/100;
+  const betragFinal=Math.round((anteilBetrag-zzVorOrt)*100)/100;
+  if(!confirm(`Monatsabrechnung ${monthLabel(monat)} erstellen?\n\n${offene.length} Rezepte · Rezeptsumme ${fmtEUR(summe)}${anteil!==100?`\nAnteil ${anteil}% = ${fmtEUR(anteilBetrag)}`:''}${zzVorOrt>0?`\nabzüglich vor Ort vereinnahmter Zuzahlungen: −${fmtEUR(zzVorOrt)}`:''}\nRechnungsbetrag: ${fmtEUR(betragFinal)}${zzPraxis>0?`\n\nHinweis: ${fmtEUR(zzPraxis)} Zuzahlungen sind noch durch die Praxis bei Patienten zu erheben.`:''}`)) return;
   const pa={
     id:uid(), nummer:paNrFor(monat), monat, datum:todayISO(),
-    rezeptIds:offene.map(r=>r.id), summe, anteilProzent:anteil, betrag:betragFinal, status:'offen'
+    rezeptIds:offene.map(r=>r.id), summe, anteilProzent:anteil,
+    zuzahlungVorOrt:zzVorOrt, zuzahlungPraxis:zzPraxis,
+    betrag:betragFinal, status:'offen'
   };
   offene.forEach(r=>{ r.abgerechnet=true; r.abrechnungId=pa.id; });
   state.praxisabrechnungen.push(pa);
@@ -1982,11 +2365,11 @@ function erstelleMonatsabrechnung(monat){
 function loadBeispielRezepte(monat){
   const m=monat||currentYM();
   const ex=[
-    {patient:'Maria Hofmann', rezeptNr:'A-2041', betrag:178.00, notiz:'KG · LWS-Syndrom'},
-    {patient:'Jonas Keller', rezeptNr:'A-2042', betrag:213.60, notiz:'MT · Z. n. Knie-TEP'},
-    {patient:'Renate Bauer', rezeptNr:'A-2043', betrag:144.00, notiz:'MLD · Lymphödem Arm rechts'}
+    {patient:'Maria Hofmann', rezeptNr:'A-2041', betrag:178.00, notiz:'KG · LWS-Syndrom', zz:'vorOrt', zzb:27.80},
+    {patient:'Jonas Keller', rezeptNr:'A-2042', betrag:213.60, notiz:'MT · Z. n. Knie-TEP', zz:'befreit', zzb:0},
+    {patient:'Renate Bauer', rezeptNr:'A-2043', betrag:144.00, notiz:'MLD · Lymphödem Arm rechts', zz:'praxis', zzb:24.40}
   ];
-  ex.forEach((x,i)=>{ state.rezepte.push({ id:uid(), datum:`${m}-${pad2(5+i*4)}`, monat:m, patient:x.patient, rezeptNr:x.rezeptNr, betrag:x.betrag, positionen:[], notiz:x.notiz, abgerechnet:false }); });
+  ex.forEach((x,i)=>{ state.rezepte.push({ id:uid(), datum:`${m}-${pad2(5+i*4)}`, ausstellungsdatum:`${m}-${pad2(1+i*3)}`, monat:m, patient:x.patient, rezeptNr:x.rezeptNr, betrag:x.betrag, zuzahlStatus:x.zz, zuzahlBetrag:x.zzb, positionen:[], notiz:x.notiz, abgerechnet:false, fotoCount:0 }); });
   saveData(); ui.rezeptMonth=m; render();
 }
 
@@ -2031,9 +2414,14 @@ window.addEventListener('afterprint', ()=>{ el('print-root').innerHTML=''; });
 if('serviceWorker' in navigator && location.protocol.indexOf('http')===0){
   window.addEventListener('load', function(){ navigator.serviceWorker.register('sw.js').catch(function(){}); });
 }
+/* Persistenten Speicher anfordern – verringert das Risiko, dass das System lokale Daten bereinigt */
+try{ if(navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(function(){}); }catch(e){}
 
 /* ---------- Init ---------- */
-render();
+secLoad();
+if(secEnabled() && cryptoAvailable()){ showLockScreen(); }
+else { render(); }
+
 </script>
 </body>
 </html>
