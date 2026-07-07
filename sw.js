@@ -1,7 +1,10 @@
 /* Service Worker · Praxis Behringer Abrechnung
-   Cacht die App-Dateien, damit die App auch offline startet.
+   Update-sichere Strategie:
+   - HTML / App-Start (Navigation): NETWORK-FIRST -> immer die aktuellste App, wenn online;
+     nur wenn offline, wird die zuletzt gespeicherte Version aus dem Cache genutzt.
+   - Übrige Dateien (Icons, Manifest, Schriften): CACHE-FIRST (schnell, offline-fähig).
    Bei jeder neuen Version unten die Versionsnummer erhöhen. */
-const CACHE = 'praxis-behringer-v7';
+const CACHE = 'praxis-behringer-v8';
 const ASSETS = [
   './',
   './index.html',
@@ -13,7 +16,9 @@ const ASSETS = [
 
 self.addEventListener('install', (e) => {
   e.waitUntil(
-    caches.open(CACHE).then((c) => c.addAll(ASSETS)).then(() => self.skipWaiting())
+    caches.open(CACHE).then((c) =>
+      Promise.all(ASSETS.map((u) => c.add(new Request(u, { cache: 'reload' })).catch(() => {})))
+    ).then(() => self.skipWaiting())
   );
 });
 
@@ -25,18 +30,30 @@ self.addEventListener('activate', (e) => {
   );
 });
 
+function isHTML(req) {
+  return req.mode === 'navigate' || (req.headers.get('accept') || '').includes('text/html');
+}
+
 self.addEventListener('fetch', (e) => {
   const req = e.request;
   if (req.method !== 'GET') return;
-  e.respondWith(
-    caches.match(req).then((cached) => {
-      if (cached) return cached;
-      return fetch(req).then((res) => {
-        // Erfolgreiche GET-Antworten (auch Schriften) für Offline-Nutzung mitcachen
+
+  if (isHTML(req)) {
+    e.respondWith(
+      fetch(req).then((res) => {
         const copy = res.clone();
         caches.open(CACHE).then((c) => { try { c.put(req, copy); } catch (_) {} });
         return res;
-      }).catch(() => cached);
-    })
+      }).catch(() => caches.match(req).then((c) => c || caches.match('./index.html')))
+    );
+    return;
+  }
+
+  e.respondWith(
+    caches.match(req).then((cached) => cached || fetch(req).then((res) => {
+      const copy = res.clone();
+      caches.open(CACHE).then((c) => { try { c.put(req, copy); } catch (_) {} });
+      return res;
+    }).catch(() => cached))
   );
 });

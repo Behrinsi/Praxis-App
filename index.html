@@ -425,6 +425,7 @@ const DEFAULT_DATA = {
 /* ---------- Persistenz ---------- */
 const STORE_KEY = 'sb_abrechnung_v1';
 let state = loadData();
+const APP_VERSION = '8.0 · Juli 2026';
 let ui = { view:'dashboard', rezeptMonth: currentYM(), auswertungJahr: currentYM().slice(0,4), vertragTyp:'gkv', vertragData:{name:'',geb:'',anschrift:'',kasse:''} };
 let gcal = { token:null, events:[], connecting:false, error:'', from:'', to:'' };
 let gcalTokenClient = null;
@@ -1024,7 +1025,9 @@ function viewEinstellungen(){
       <button class="btn-link danger" data-action="reset-daten">Alle Daten zurücksetzen</button>
     </div>
     <input type="file" id="import-file" accept="application/json" style="display:none">
-  </div>`;
+  </div>
+
+  <div style="text-align:center;color:var(--muted);font-size:11px;margin:2px 0 4px">App-Version ${APP_VERSION}</div>`;
 }
 
 /* ============================================================
