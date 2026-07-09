@@ -167,12 +167,35 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
 
   .collapse-toggle{font-size:12px;color:var(--accent);cursor:pointer;user-select:none;display:inline-flex;align-items:center;gap:6px;font-weight:500}
   .note-box{background:var(--accent-bg);border:1px solid var(--accent-weak);border-left:3px solid var(--accent);padding:13px 16px;border-radius:0 var(--r-sm) var(--r-sm) 0;font-size:12.5px;color:var(--soft);margin:14px 0;line-height:1.55}
-  .gcal-row{display:flex;align-items:center;gap:12px;padding:11px 14px;border-bottom:1px solid var(--rule-soft);cursor:pointer;transition:background .12s}
-  .gcal-row:last-child{border-bottom:none}
-  .gcal-row:hover{background:var(--accent-bg)}
-  .gcal-row input{flex:0 0 auto;width:16px;height:16px;accent-color:var(--accent)}
-  .gcal-date{flex:0 0 auto;width:128px;font-size:12.5px;color:var(--muted);font-variant-numeric:tabular-nums}
-  .gcal-title{flex:1 1 auto;font-size:13.5px;color:var(--ink)}
+  /* Kalender (eigene Terminplanung) */
+  .cal-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+  .cal-title{font-family:var(--serif);font-style:italic;font-weight:600;font-size:22px;min-width:150px}
+  .cal-wd{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:4px}
+  .cal-wd div{text-align:center;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);padding:2px 0}
+  .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+  .cal-cell{position:relative;aspect-ratio:1/1;border:1px solid var(--rule-soft);border-radius:9px;background:var(--paper);cursor:pointer;padding:5px 6px;font-size:12.5px;color:var(--soft);transition:background .12s,border-color .12s;min-width:0}
+  .cal-cell:hover{background:var(--accent-bg)}
+  .cal-cell.out{visibility:hidden;pointer-events:none}
+  .cal-cell.sel{background:var(--accent-bg);border-color:var(--accent)}
+  .cal-cell .d{font-weight:500}
+  .cal-cell.today .d{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;background:var(--accent);color:#fff}
+  .cal-dots{position:absolute;left:6px;right:6px;bottom:5px;display:flex;gap:3px;flex-wrap:wrap}
+  .cal-dots span{width:5px;height:5px;border-radius:50%}
+  .cal-dots .tt-patient{background:var(--accent)} .cal-dots .tt-arbeit{background:#7d8ba1} .cal-dots .tt-arzt{background:var(--amber)} .cal-dots .tt-sonstig{background:#b9b9b0}
+  .day-item{display:flex;gap:12px;align-items:flex-start;padding:11px 4px;border-bottom:1px solid var(--rule-soft)}
+  .day-item:last-child{border-bottom:none}
+  .day-time{flex:0 0 86px;font-variant-numeric:tabular-nums;font-size:13px;color:var(--ink);font-weight:500;line-height:1.45}
+  .day-main{flex:1 1 auto;min-width:0}
+  .day-main .t{font-size:13.5px;color:var(--ink)}
+  .day-main .n{font-size:12px;color:var(--muted);margin-top:2px}
+  .tt-badge{display:inline-block;padding:2px 9px;border-radius:999px;font-size:10.5px;font-weight:500;margin-left:6px;vertical-align:1px}
+  .tt-badge.patient{background:var(--accent-bg);color:var(--accent)}
+  .tt-badge.arbeit{background:#e8ecf2;color:#5a6b85}
+  .tt-badge.arzt{background:var(--amber-bg);color:var(--amber)}
+  .tt-badge.sonstig{background:var(--rule-soft);color:var(--muted)}
+  .chip-row{display:flex;gap:7px;flex-wrap:wrap}
+  .chip{border:1px solid var(--line);background:var(--panel);border-radius:999px;padding:6px 13px;font-size:12.5px;color:var(--soft);cursor:pointer;transition:background .15s,border-color .15s}
+  .chip:hover{background:var(--accent-bg);border-color:var(--accent-weak);color:var(--accent)}
 
   /* Rezept-Belege (Fotos) */
   .foto-count{font-family:var(--sans);font-style:normal;font-size:10px;letter-spacing:.4px;color:var(--muted);text-transform:none;margin-left:8px}
@@ -384,7 +407,13 @@ const DEFAULT_DATA = {
     ansprechpartner: "",
     anteilProzent: 100
   },
-  google: { clientId: "" },
+  kalender: [],
+  terminVorlagen: [
+    {name:"Fitnessstudio", typ:"sonstig", titel:"Fitnessstudio", von:"18:00", bis:"19:30", erinnerung:60},
+    {name:"Frühdienst Klinik", typ:"arbeit", titel:"Frühdienst Uniklinik", von:"07:00", bis:"15:30", erinnerung:0},
+    {name:"Spätdienst Klinik", typ:"arbeit", titel:"Spätdienst Uniklinik", von:"13:00", bis:"21:30", erinnerung:0},
+    {name:"Arzttermin", typ:"arzt", titel:"", von:"", bis:"", erinnerung:60}
+  ],
   leistungen: [
     {pos:"3a", name:"Physiotherapeutische Erstbefundung", sub:"Zur Behandlungsplanung · einmal je Behandlungsfall", beihilfe:16.50, praxis:21.00},
     {pos:"3b", name:"Physiotherapeutischer Bericht", sub:"Auf schriftliche Anforderung", beihilfe:67.70, praxis:88.00},
@@ -425,10 +454,9 @@ const DEFAULT_DATA = {
 /* ---------- Persistenz ---------- */
 const STORE_KEY = 'sb_abrechnung_v1';
 let state = loadData();
-const APP_VERSION = '8.0 · Juli 2026';
-let ui = { view:'dashboard', rezeptMonth: currentYM(), auswertungJahr: currentYM().slice(0,4), vertragTyp:'gkv', vertragData:{name:'',geb:'',anschrift:'',kasse:''} };
-let gcal = { token:null, events:[], connecting:false, error:'', from:'', to:'' };
-let gcalTokenClient = null;
+const APP_VERSION = '9.1 · Juli 2026';
+let ui = { view:'dashboard', rezeptMonth: currentYM(), auswertungJahr: currentYM().slice(0,4), kalMonat: currentYM(), kalTag: todayISO(), vertragTyp:'gkv', vertragData:{name:'',geb:'',anschrift:'',kasse:''} };
+let edKalTermin = null, pendingKalDel = null;
 
 function loadData(){
   try{
@@ -490,10 +518,10 @@ function paNrFor(monat){
    ============================================================ */
 const NAV=[
   {id:'dashboard', label:'Übersicht'},
-  {id:'auswertung', label:'Auswertung'},
-  {id:'privat', label:'Privatrechnungen'},
   {id:'kalender', label:'Kalender'},
+  {id:'privat', label:'Privatrechnungen'},
   {id:'rezepte', label:'Rezepte & Praxisabrechnung'},
+  {id:'auswertung', label:'Auswertung'},
   {id:'vertraege', label:'Verträge'},
   {id:'leistungen', label:'Leistungskatalog'},
   {id:'einstellungen', label:'Einstellungen'}
@@ -648,17 +676,38 @@ function viewDashboard(){
     <div class="stat"><div class="k">Offene Praxisabrechnungen</div><div class="v">${paOffen.length}</div><div class="d">${fmtEUR(paOffenSum)} ausstehend</div></div>
   </div>
 
+  ${(()=>{
+    const hi=todayISO();
+    const up=(state.kalender||[]).filter(t=>t.datum>=hi).sort((a,b)=>(a.datum+(a.von||'')).localeCompare(b.datum+(b.von||''))).slice(0,5);
+    return `<div class="card">
+      <div class="card-head">
+        <div><h2>Nächste Termine</h2><div class="sub">Aus dem Praxiskalender</div></div>
+        <div class="btn-row"><button class="btn btn-sm" data-action="neuer-termin">＋ Termin</button><button class="btn btn-ghost btn-sm" data-action="goto" data-view="kalender">Kalender öffnen</button></div>
+      </div>
+      ${up.length?up.map(t=>`
+        <div class="day-item">
+          <div class="day-time">${esc(fmtDate(t.datum))}${t.von?'<br>'+esc(t.von)+' Uhr':''}</div>
+          <div class="day-main">
+            <div class="t">${esc(kalTitel(t))}<span class="tt-badge ${t.typ||'sonstig'}">${kalTypLabel(t.typ)}</span></div>
+            ${t.notiz?`<div class="n">${esc(t.notiz)}</div>`:''}
+          </div>
+        </div>`).join(''):`<div class="empty">Keine anstehenden Termine – im Reiter „Kalender" planen.</div>`}
+    </div>`;
+  })()}
+
   <div class="card">
     <div class="card-head">
       <div><h2>Schnellzugriff</h2><div class="sub">Häufige Vorgänge direkt starten</div></div>
     </div>
     <div class="btn-row">
       <button class="btn" data-action="neue-rechnung">＋ Neue Privatrechnung</button>
+      <button class="btn btn-ghost" data-action="neuer-termin">＋ Termin eintragen</button>
       <button class="btn btn-ghost" data-action="neues-rezept">＋ Rezept erfassen</button>
       <button class="btn btn-ghost" data-action="neue-quittung">＋ Quittung erstellen</button>
       <button class="btn btn-ghost" data-action="goto" data-view="rezepte">Monatsabrechnung erstellen</button>
     </div>
   </div>
+
 
   ${offen.length?`
   <div class="card">
@@ -858,64 +907,75 @@ function viewVertraege(){
 }
 
 /* ---------- Leistungskatalog ---------- */
-/* ---------- Kalender (Google) ---------- */
+/* ---------- Kalender (eigene Terminplanung) ---------- */
+const KAL_TYPEN={patient:'Behandlung', arbeit:'Arbeitszeit', arzt:'Arzttermin', sonstig:'Sonstiges'};
+function kalTypLabel(t){ return KAL_TYPEN[t]||'Termin'; }
+function kalTitel(t){ return t.typ==='patient' ? (t.patient||'Behandlung') : (t.titel||kalTypLabel(t.typ)); }
+function kalAm(datum){ return (state.kalender||[]).filter(t=>t.datum===datum).sort((a,b)=>(a.von||'').localeCompare(b.von||'')); }
+
 function viewKalender(){
-  const g = state.google||{};
-  const isFile = (typeof location!=='undefined' && location.protocol==='file:');
-
-  if(isFile){
-    return `<div class="card">
-      <div class="card-head"><div><h2>Kalender</h2><div class="sub">Google-Kalender-Anbindung</div></div></div>
-      <div class="note-box">Die Kalender-Anbindung funktioniert nur in der über das Internet (https) bereitgestellten App-Variante – nicht, wenn die Datei lokal geöffnet wurde. Bitte die App wie in der Anleitung beschrieben hosten und dort öffnen.</div>
-    </div>`;
+  const ym=ui.kalMonat||currentYM();
+  const [Y,M]=ym.split('-').map(Number);
+  const startIdx=(new Date(Y,M-1,1).getDay()+6)%7; /* Mo=0 */
+  const dim=new Date(Y,M,0).getDate();
+  const heute=todayISO();
+  const sel=ui.kalTag||heute;
+  let cells='';
+  for(let i=0;i<startIdx;i++) cells+='<div class="cal-cell out"></div>';
+  for(let d=1;d<=dim;d++){
+    const iso=`${ym}-${pad2(d)}`;
+    const ts=kalAm(iso);
+    const types=[...new Set(ts.map(t=>t.typ||'sonstig'))].slice(0,4);
+    cells+=`<div class="cal-cell${iso===heute?' today':''}${iso===sel?' sel':''}" data-action="kal-tag" data-datum="${iso}"><span class="d">${d}</span>${types.length?`<div class="cal-dots">${types.map(t=>`<span class="tt-${t}"></span>`).join('')}</div>`:''}</div>`;
   }
-  if(!g.clientId){
-    return `<div class="card">
-      <div class="card-head"><div><h2>Kalender</h2><div class="sub">Google-Kalender-Anbindung (nur lesend)</div></div></div>
-      <p style="font-size:13.5px;color:var(--soft);margin:0 0 14px">Um Behandlungstermine aus Google Calendar zu übernehmen, wird einmalig eine Google&nbsp;OAuth-Client-ID benötigt. Diese tragen Sie in den Einstellungen ein; die nötigen Schritte stehen dort und in der Installationsanleitung.</p>
-      <div class="btn-row"><button class="btn" data-action="goto" data-view="einstellungen">Zu den Einstellungen</button></div>
-    </div>`;
-  }
-
-  const from = gcal.from || addDays(todayISO(),-60);
-  const to   = gcal.to   || addDays(todayISO(),14);
-  const connected = !!gcal.token;
-  const evs = gcal.events||[];
-
-  return `<div class="card">
-    <div class="card-head">
-      <div><h2>Kalender</h2><div class="sub">Termine aus Google Calendar ansehen und in eine Rechnung übernehmen</div></div>
+  const tag=kalAm(sel);
+  const wd=['Sonntag','Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag'][new Date(sel+'T12:00').getDay()];
+  const notifBtn=(typeof Notification!=='undefined' && Notification.permission==='default')
+    ? `<button class="btn-link" data-action="notif-erlauben">Benachrichtigungen erlauben</button>` : '';
+  return `
+  <div class="card">
+    <div class="cal-head">
+      <div class="cal-title">${MONTHS[M-1]} ${Y}</div>
       <div class="btn-row">
-        ${connected
-          ? `<button class="btn btn-ghost" data-action="gcal-refresh" ${gcal.connecting?'disabled':''}>${gcal.connecting?'Lädt …':'Aktualisieren'}</button>`
-          : `<button class="btn" data-action="gcal-connect" ${gcal.connecting?'disabled':''}>${gcal.connecting?'Verbinde …':'Mit Google verbinden'}</button>`}
+        <button class="btn btn-ghost btn-sm" data-action="kal-prev" aria-label="Voriger Monat">‹</button>
+        <button class="btn btn-ghost btn-sm" data-action="kal-heute">Heute</button>
+        <button class="btn btn-ghost btn-sm" data-action="kal-next" aria-label="Nächster Monat">›</button>
       </div>
     </div>
+    <div class="cal-wd"><div>Mo</div><div>Di</div><div>Mi</div><div>Do</div><div>Fr</div><div>Sa</div><div>So</div></div>
+    <div class="cal-grid">${cells}</div>
+    <div class="hint" style="margin-top:12px">Markierungen: <span class="tt-badge patient" style="margin-left:0">Behandlung</span> <span class="tt-badge arbeit">Arbeitszeit</span> <span class="tt-badge arzt">Arzttermin</span> <span class="tt-badge sonstig">Sonstiges</span></div>
+  </div>
 
-    ${gcal.error?`<div class="note-box" style="border-left-color:var(--danger);color:var(--danger)">${esc(gcal.error)}</div>`:''}
-
-    <div class="grid3">
-      <div class="field"><label>Von</label><input class="input" type="date" id="gcal-from" value="${esc(from)}"></div>
-      <div class="field"><label>Bis</label><input class="input" type="date" id="gcal-to" value="${esc(to)}"></div>
-      <div class="field" style="display:flex;align-items:flex-end"><button class="btn btn-ghost" data-action="gcal-refresh" style="width:100%" ${connected?'':'disabled'}>Zeitraum laden</button></div>
+  <div class="card">
+    <div class="card-head">
+      <div><h2>${wd}, ${fmtDate(sel)}</h2><div class="sub">${tag.length?tag.length+' Termin'+(tag.length>1?'e':''):'Keine Termine geplant'}</div></div>
+      <button class="btn" data-action="neuer-termin" data-datum="${sel}">＋ Termin</button>
     </div>
+    ${tag.length?tag.map(t=>`
+      <div class="day-item">
+        <div class="day-time">${t.von?esc(t.von)+(t.bis?'–'+esc(t.bis):''):'—'}</div>
+        <div class="day-main">
+          <div class="t">${esc(kalTitel(t))}<span class="tt-badge ${t.typ||'sonstig'}">${kalTypLabel(t.typ)}</span>${t.erinnerung?` <span style="font-size:11px;color:var(--muted)">🔔 ${t.erinnerung>=1440?'1 Tag':t.erinnerung+' Min.'} vorher</span>`:''}</div>
+          ${t.notiz?`<div class="n">${esc(t.notiz)}</div>`:''}
+        </div>
+        <div class="row-actions">
+          ${t.typ==='patient'&&t.patient?`<button class="btn-link" data-action="terminliste-patient" data-name="${esc(t.patient)}">Terminliste</button>`:''}
+          <button class="btn-link" data-action="edit-termin" data-id="${t.id}">Bearbeiten</button>
+          <button class="btn-link danger" data-action="kal-del" data-id="${t.id}">Löschen</button>
+        </div>
+      </div>`).join(''):`<div class="empty">Für diesen Tag ist nichts geplant.</div>`}
+  </div>
 
-    ${connected ? (evs.length ? `
-      <div class="field"><label>Termine filtern</label><input class="input" id="gcal-filter" placeholder="z. B. Name tippen …"></div>
-      <div class="hint">Termine auswählen und unten in eine neue Rechnung übernehmen. Der Patientenname wird aus dem Termintitel vorbelegt und kann angepasst werden.</div>
-      <div class="table-wrap" style="border:1px solid var(--rule);border-radius:8px">
-        ${evs.map(e=>`
-          <label class="gcal-row" data-title="${esc((e.titel||'').toLowerCase())}">
-            <input type="checkbox" class="gcal-ev" data-date="${esc(e.datum)}" data-title="${esc(e.titel)}">
-            <span class="gcal-date">${esc(fmtDate(e.datum))}${e.zeit?` · ${esc(e.zeit)}`:''}</span>
-            <span class="gcal-title">${esc(e.titel)}</span>
-          </label>`).join('')}
-      </div>
-      <div class="btn-row" style="margin-top:14px">
-        <button class="btn" data-action="gcal-import">Ausgewählte Termine → neue Rechnung</button>
-      </div>`
-      : `<div class="empty">Keine Termine im gewählten Zeitraum gefunden.</div>`)
-    : `<div class="empty"><span class="display">Noch nicht verbunden</span>Mit Google verbinden, um Termine des gewählten Zeitraums anzuzeigen.</div>`}
+  <div class="card">
+    <div class="card-head"><div><h2>Werkzeuge</h2><div class="sub">Terminlisten für Patienten &amp; Erinnerungen</div></div></div>
+    <div class="btn-row">
+      <button class="btn btn-ghost" data-action="terminliste">Terminliste für Patient/in drucken</button>
+      <button class="btn btn-ghost" data-action="termine-ics">Künftige Termine für iPhone-Kalender (.ics)</button>
+      <button class="btn btn-ghost" data-action="vorlagen">Vorlagen bearbeiten</button>
+      ${notifBtn}
+    </div>
+    <div class="hint">Erinnerungen erscheinen als Hinweis, solange die App geöffnet ist. Für Erinnerungen auch bei geschlossener App: die .ics-Datei exportieren und in den iPhone-Kalender übernehmen – dieser erinnert dann zuverlässig.</div>
   </div>`;
 }
 
@@ -1002,21 +1062,6 @@ function viewEinstellungen(){
   </div>
 
   <div class="card">
-    <div class="card-head"><div><h2>Google Kalender</h2><div class="sub">Nur lesender Zugriff – Termine in Rechnungen übernehmen (nur in der gehosteten App-Variante)</div></div></div>
-    <div class="field"><label>Google OAuth-Client-ID</label><input class="input" id="g-clientid" value="${esc((state.google||{}).clientId||'')}" placeholder="z. B. 1234567890-abc….apps.googleusercontent.com"></div>
-    <div class="note-box">
-      <strong>Einmalige Einrichtung in der Google Cloud Console:</strong><br>
-      1. Projekt anlegen (console.cloud.google.com) und die „Google Calendar API" aktivieren.<br>
-      2. Unter „APIs &amp; Dienste → OAuth-Zustimmungsbildschirm" einen externen Zustimmungsbildschirm anlegen; sich selbst als Testnutzer eintragen.<br>
-      3. Unter „Anmeldedaten" eine <strong>OAuth-Client-ID</strong> vom Typ „Webanwendung" erstellen.<br>
-      4. Bei „Autorisierte JavaScript-Quellen" die Internet-Adresse Ihrer App eintragen (z. B. https://ihr-name.github.io – ohne Pfad).<br>
-      5. Die erzeugte Client-ID oben einfügen und speichern.<br>
-      Datenschutz: Es wird ausschließlich lesend auf Termine zugegriffen; Kalenderdaten werden nicht dauerhaft in der App gespeichert.
-    </div>
-    <div class="btn-row"><button class="btn" data-action="save-google">Google-Einstellungen speichern</button></div>
-  </div>
-
-  <div class="card">
     <div class="card-head"><div><h2>Daten &amp; Sicherung</h2><div class="sub">Alle Daten liegen ausschließlich in diesem Browser. Bitte regelmäßig sichern.</div></div></div>
     <div class="note-box">Wird der Browser-Speicher gelöscht (z. B. Cache leeren), gehen nicht gesicherte Daten verloren. Exportieren Sie regelmäßig eine Sicherungsdatei.</div>
     <div class="btn-row">
@@ -1045,7 +1090,7 @@ function openModal(title, bodyHTML, footHTML){
       </div>
     </div>`;
 }
-function closeModal(){ el('modal-root').innerHTML=''; edRechnung=null; edRezept=null; edMahnung=null; edQuittung=null; }
+function closeModal(){ el('modal-root').innerHTML=''; edRechnung=null; edRezept=null; edMahnung=null; edQuittung=null; edKalTermin=null; pendingKalDel=null; }
 
 /* ---------- Rechnungsformular ---------- */
 function openRechnungForm(existing, prefill){
@@ -1669,6 +1714,8 @@ document.addEventListener('change', e=>{
   const t=e.target;
   if(t.id==='monat-select'){ ui.rezeptMonth=t.value; render(); }
   if(t.id==='ausw-jahr'){ ui.auswertungJahr=t.value; render(); }
+  if(t.id==='t-typ'){ const p=el('t-wrap-patient'), ti=el('t-wrap-titel'); if(p&&ti){ const isP=t.value==='patient'; p.style.display=isP?'':'none'; ti.style.display=isP?'none':''; } }
+  if(t.id==='t-repeat'){ const w=el('t-wrap-repeatbis'); if(w) w.style.display=(t.value==='w')?'':'none'; }
   if(t.id==='import-file'){ handleImportFile(t.files[0]); }
   if(t.id==='foto-input'){ handleFotoFiles(t.files); t.value=''; }
 });
@@ -1681,7 +1728,6 @@ document.addEventListener('input', e=>{
   if(t.dataset && (t.dataset.rpf==='anzahl'||t.dataset.rpf==='satz')){
     syncRezeptForm(); const s=el('rezpos-sum'); if(s) s.textContent=fmtEUR(rezPosSum());
   }
-  if(t.id==='gcal-filter'){ gcalFilter(t.value); }
 });
 
 document.addEventListener('click', e=>{
@@ -1799,11 +1845,48 @@ document.addEventListener('click', e=>{
     }
     case 'neue-quittung': openQuittungForm(null); break;
     case 'print-quittung': printQuittung(); break;
-    case 'gcal-connect': gcalConnect(); break;
-    case 'gcal-refresh': gcalFetch(); break;
-    case 'gcal-import': gcalImport(); break;
+    case 'kal-prev': { const [y,m]=(ui.kalMonat||currentYM()).split('-').map(Number); const d=new Date(y,m-2,1); ui.kalMonat=d.getFullYear()+'-'+pad2(d.getMonth()+1); render(); break; }
+    case 'kal-next': { const [y,m]=(ui.kalMonat||currentYM()).split('-').map(Number); const d=new Date(y,m,1); ui.kalMonat=d.getFullYear()+'-'+pad2(d.getMonth()+1); render(); break; }
+    case 'kal-heute': ui.kalMonat=currentYM(); ui.kalTag=todayISO(); render(); break;
+    case 'kal-tag': ui.kalTag=t.dataset.datum; render(); break;
+    case 'neuer-termin': openKalTerminForm(null, t.dataset.datum); break;
+    case 'edit-termin': { const x=(state.kalender||[]).find(k=>k.id===t.dataset.id); if(x) openKalTerminForm(x); break; }
+    case 'kal-del': delKalTermin(t.dataset.id); break;
+    case 'del-termin-one': if(pendingKalDel){ state.kalender=state.kalender.filter(x=>x.id!==pendingKalDel.id); saveData(); } closeModal(); render(); break;
+    case 'del-termin-serie': if(pendingKalDel){ const sid=pendingKalDel.serieId; state.kalender=state.kalender.filter(x=>x.serieId!==sid); saveData(); } closeModal(); render(); break;
+    case 'save-termin': saveKalTermin(); break;
+    case 'terminliste': openTerminlisteForm(); break;
+    case 'print-terminliste': { const n=val('tl-name'); const p=!!(el('tl-past')&&el('tl-past').checked); closeModal(); doPrint(renderTerminlisteDoc(n,p)); break; }
+    case 'terminliste-patient': doPrint(renderTerminlisteDoc(t.dataset.name,false)); break;
+    case 'termine-ics': exportTermineICS(); break;
+    case 'notif-erlauben': notifErlauben(); break;
+    case 't-vorlage': {
+      const v=(state.terminVorlagen||[])[+t.dataset.i]; if(!v) break;
+      const set=(id,x)=>{ const f=el(id); if(f) f.value=x; };
+      set('t-typ', v.typ||'sonstig');
+      const p=el('t-wrap-patient'), ti=el('t-wrap-titel');
+      if(p&&ti){ const isP=(v.typ||'sonstig')==='patient'; p.style.display=isP?'':'none'; ti.style.display=isP?'none':''; }
+      set('t-titel', v.titel||((v.typ==='patient')?'':v.name));
+      if(v.von!=null) set('t-von', v.von);
+      if(v.bis!=null) set('t-bis', v.bis);
+      set('t-erinnerung', String(v.erinnerung||0));
+      break;
+    }
+    case 'vorlagen': openVorlagenForm(); break;
+    case 'vorlage-add': {
+      const name=(val('vl-name')||'').trim();
+      if(!name){ alert('Bitte einen Namen für die Vorlage eingeben.'); break; }
+      if(!Array.isArray(state.terminVorlagen)) state.terminVorlagen=[];
+      state.terminVorlagen.push({ name, typ:val('vl-typ')||'sonstig', titel:(val('vl-titel')||'').trim(), von:val('vl-von'), bis:val('vl-bis'), erinnerung:parseInt(val('vl-erinnerung'),10)||0 });
+      saveData(); toast('Vorlage hinzugefügt'); openVorlagenForm();
+      break;
+    }
+    case 'vorlage-del': {
+      (state.terminVorlagen||[]).splice(+t.dataset.i,1);
+      saveData(); openVorlagenForm();
+      break;
+    }
     case 'export-umsatz': exportUmsatzCSV(t.dataset.jahr); break;
-    case 'save-google': saveGoogle(); break;
 
     /* Einstellungen */
     case 'save-praxis': saveePraxis(); break;
@@ -2110,13 +2193,6 @@ function saveAbrechnende(){
   });
   saveData(); toast('Empfänger gespeichert'); render();
 }
-function saveGoogle(){
-  if(!state.google) state.google={};
-  state.google.clientId = val('g-clientid');
-  // Token verwerfen, falls Client-ID geändert wurde
-  gcal.token=null; gcal.events=[]; gcalTokenClient=null;
-  saveData(); toast('Google-Einstellungen gespeichert'); render();
-}
 
 function syncVertragForm(){
   if(!el('v-name')) return;
@@ -2263,83 +2339,247 @@ function renderQuittungDoc(q){
 }
 
 
-/* ---------- Google Kalender (nur lesend) ---------- */
-function loadGIS(){
-  return new Promise((resolve,reject)=>{
-    if(window.google && google.accounts && google.accounts.oauth2) return resolve();
-    let s=document.getElementById('gis-script');
-    if(s){ s.addEventListener('load',()=>resolve()); s.addEventListener('error',()=>reject(new Error('Google-Anmeldedienst konnte nicht geladen werden.'))); return; }
-    s=document.createElement('script');
-    s.id='gis-script'; s.src='https://accounts.google.com/gsi/client'; s.async=true; s.defer=true;
-    s.onload=()=>resolve();
-    s.onerror=()=>reject(new Error('Google-Anmeldedienst konnte nicht geladen werden (Internetverbindung?).'));
-    document.head.appendChild(s);
-  });
-}
-function gcalConnect(){
-  const g=state.google||{};
-  if(!g.clientId){ alert('Bitte zuerst die Google OAuth-Client-ID in den Einstellungen hinterlegen.'); return; }
-  // Zeitraum aus den Feldern übernehmen, falls vorhanden
-  if(el('gcal-from')) gcal.from=val('gcal-from');
-  if(el('gcal-to'))   gcal.to=val('gcal-to');
-  gcal.connecting=true; gcal.error=''; render();
-  loadGIS().then(()=>{
-    if(!gcalTokenClient){
-      gcalTokenClient = google.accounts.oauth2.initTokenClient({
-        client_id: g.clientId,
-        scope: 'https://www.googleapis.com/auth/calendar.events.readonly',
-        callback: (resp)=>{
-          if(resp && resp.access_token){ gcal.token=resp.access_token; gcalFetch(); }
-          else { gcal.connecting=false; gcal.error='Anmeldung wurde nicht abgeschlossen.'; render(); }
-        },
-        error_callback: ()=>{ gcal.connecting=false; gcal.error='Anmeldung abgebrochen oder fehlgeschlagen.'; render(); }
-      });
-    }
-    try{ gcalTokenClient.requestAccessToken({ prompt: gcal.token?'':'consent' }); }
-    catch(e){ gcal.connecting=false; gcal.error=e.message; render(); }
-  }).catch(e=>{ gcal.connecting=false; gcal.error=e.message; render(); });
-}
-function gcalFetch(){
-  if(!gcal.token){ gcalConnect(); return; }
-  if(el('gcal-from')) gcal.from=val('gcal-from');
-  if(el('gcal-to'))   gcal.to=val('gcal-to');
-  const from = gcal.from || addDays(todayISO(),-60);
-  const to   = gcal.to   || addDays(todayISO(),14);
-  gcal.connecting=true; gcal.error=''; render();
-  const timeMin = new Date(from+'T00:00:00').toISOString();
-  const timeMax = new Date(to+'T23:59:59').toISOString();
-  const url = 'https://www.googleapis.com/calendar/v3/calendars/primary/events?singleEvents=true&orderBy=startTime&maxResults=250'
-    + '&timeMin='+encodeURIComponent(timeMin) + '&timeMax='+encodeURIComponent(timeMax);
-  fetch(url, { headers:{ Authorization:'Bearer '+gcal.token } }).then(res=>{
-    if(res.status===401){ gcal.token=null; throw new Error('Sitzung abgelaufen – bitte erneut „Mit Google verbinden“.'); }
-    if(!res.ok){ throw new Error('Kalender konnte nicht geladen werden (Status '+res.status+').'); }
-    return res.json();
-  }).then(data=>{
-    gcal.events = (data.items||[]).map(ev=>{
-      const sd = (ev.start && (ev.start.dateTime||ev.start.date)) || '';
-      return { id:ev.id, datum: sd.slice(0,10), zeit: (ev.start&&ev.start.dateTime)? sd.slice(11,16):'', titel: ev.summary||'(ohne Titel)' };
-    }).filter(e=>e.datum);
-    gcal.connecting=false; render();
-  }).catch(e=>{ gcal.connecting=false; gcal.error=e.message; render(); });
-}
-function gcalImport(){
-  const checked = Array.prototype.slice.call(document.querySelectorAll('.gcal-ev:checked'));
-  if(!checked.length){ alert('Bitte mindestens einen Termin auswählen.'); return; }
-  const termine = checked.map(c=>({datum:c.getAttribute('data-date'), einheiten:1}))
-    .sort((a,b)=>a.datum.localeCompare(b.datum));
-  const titles = checked.map(c=>c.getAttribute('data-title')).filter(Boolean);
-  const counts={}; let name='', best=0;
-  titles.forEach(t=>{ counts[t]=(counts[t]||0)+1; if(counts[t]>best){best=counts[t]; name=t;} });
-  openRechnungForm(null, { name, termine });
-}
-function gcalFilter(q){
-  q=(q||'').toLowerCase();
-  document.querySelectorAll('.gcal-row').forEach(row=>{
-    const t=row.getAttribute('data-title')||'';
-    row.style.display = (!q || t.indexOf(q)>-1) ? '' : 'none';
-  });
+/* ---------- Termine: Formular, Serie, Terminliste, ICS, Erinnerung ---------- */
+function kalPatientenNamen(){
+  const set=new Set();
+  (state.kalender||[]).forEach(t=>{ if(t.typ==='patient'&&t.patient) set.add(t.patient.trim()); });
+  (state.rezepte||[]).forEach(r=>{ if(r.patient) set.add(r.patient.trim()); });
+  (state.rechnungen||[]).forEach(r=>{ if(r.name) set.add(r.name.trim()); });
+  return [...set].filter(Boolean).sort((a,b)=>a.localeCompare(b,'de'));
 }
 
+function openKalTerminForm(existing, datum){
+  edKalTermin = existing ? structuredClone(existing)
+    : { id:uid(), typ:'patient', datum:datum||ui.kalTag||todayISO(), von:'', bis:'', patient:'', titel:'', notiz:'', erinnerung:0, erinnert:false };
+  const e=edKalTermin;
+  const dl=kalPatientenNamen().map(n=>`<option value="${esc(n)}"></option>`).join('');
+  openModal(existing?'Termin bearbeiten':'Neuer Termin', `
+    ${existing?'':((state.terminVorlagen&&state.terminVorlagen.length)?`
+    <div class="field" style="margin-top:0"><label>Vorlagen · mit einem Tippen ausfüllen</label>
+      <div class="chip-row">${state.terminVorlagen.map((v,i)=>`<button type="button" class="chip" data-action="t-vorlage" data-i="${i}">${esc(v.name)}</button>`).join('')}</div>
+    </div>`:'')}
+    <div class="grid2">
+      <div class="field"><label>Art des Termins</label>
+        <select class="input" id="t-typ">
+          <option value="patient" ${e.typ==='patient'?'selected':''}>Behandlung (Patient/in)</option>
+          <option value="arbeit" ${e.typ==='arbeit'?'selected':''}>Arbeitszeit (Klinik)</option>
+          <option value="arzt" ${e.typ==='arzt'?'selected':''}>Arzttermin</option>
+          <option value="sonstig" ${e.typ==='sonstig'?'selected':''}>Sonstiges</option>
+        </select>
+      </div>
+      <div class="field"><label>Datum</label><input class="input" type="date" id="t-datum" value="${esc(e.datum)}"></div>
+    </div>
+    <div class="grid2">
+      <div class="field"><label>Von</label><input class="input" type="time" id="t-von" value="${esc(e.von||'')}"></div>
+      <div class="field"><label>Bis (optional)</label><input class="input" type="time" id="t-bis" value="${esc(e.bis||'')}"></div>
+    </div>
+    <div class="field" id="t-wrap-patient" style="${e.typ==='patient'?'':'display:none'}">
+      <label>Patient/in</label>
+      <input class="input" id="t-patient" list="t-namen" value="${esc(e.patient||'')}" placeholder="Name eingeben oder auswählen">
+      <datalist id="t-namen">${dl}</datalist>
+    </div>
+    <div class="field" id="t-wrap-titel" style="${e.typ==='patient'?'display:none':''}">
+      <label>Bezeichnung</label>
+      <input class="input" id="t-titel" value="${esc(e.titel||'')}" placeholder="z. B. Frühdienst Uniklinik · Zahnarzt · Fortbildung">
+    </div>
+    <div class="field"><label>Notiz (optional)</label><input class="input" id="t-notiz" value="${esc(e.notiz||'')}" placeholder="z. B. MT · 20 Min · Raum 2"></div>
+    <div class="grid2">
+      <div class="field"><label>Erinnerung</label>
+        <select class="input" id="t-erinnerung">
+          <option value="0" ${!e.erinnerung?'selected':''}>keine</option>
+          <option value="15" ${e.erinnerung===15?'selected':''}>15 Minuten vorher</option>
+          <option value="30" ${e.erinnerung===30?'selected':''}>30 Minuten vorher</option>
+          <option value="60" ${e.erinnerung===60?'selected':''}>1 Stunde vorher</option>
+          <option value="1440" ${e.erinnerung===1440?'selected':''}>1 Tag vorher</option>
+        </select>
+      </div>
+      ${existing?'':`<div class="field"><label>Wiederholen</label>
+        <select class="input" id="t-repeat"><option value="">einmalig</option><option value="w">wöchentlich bis …</option></select>
+      </div>`}
+    </div>
+    ${existing?'':`<div class="field" id="t-wrap-repeatbis" style="display:none"><label>Wöchentlich wiederholen bis</label><input class="input" type="date" id="t-repeat-bis" value="${esc(addDays(e.datum,56))}"></div>`}
+  `, `<button class="btn-link" data-action="close-modal">Abbrechen</button>
+      <button class="btn" data-action="save-termin">Termin speichern</button>`);
+}
+
+function saveKalTermin(){
+  const e=edKalTermin; if(!e) return;
+  e.typ=val('t-typ')||'sonstig'; e.datum=val('t-datum'); e.von=val('t-von'); e.bis=val('t-bis');
+  e.patient=val('t-patient'); e.titel=val('t-titel'); e.notiz=val('t-notiz');
+  e.erinnerung=parseInt(val('t-erinnerung'),10)||0; e.erinnert=false;
+  if(!e.datum){ alert('Bitte ein Datum wählen.'); return; }
+  if(e.typ==='patient' && !(e.patient||'').trim()){ alert('Bitte den Namen der Patientin / des Patienten eingeben.'); return; }
+  if(!Array.isArray(state.kalender)) state.kalender=[];
+  const idx=state.kalender.findIndex(x=>x.id===e.id);
+  const rep=el('t-repeat')?val('t-repeat'):'';
+  const bis=el('t-repeat-bis')?val('t-repeat-bis'):'';
+  if(idx>=0){ state.kalender[idx]=e; }
+  else if(rep==='w' && bis && bis>e.datum){
+    const serieId=uid(); let d=e.datum, n=0;
+    while(d<=bis && n<60){ state.kalender.push(Object.assign(structuredClone(e),{id:uid(), datum:d, serieId})); d=addDays(d,7); n++; }
+  } else { state.kalender.push(e); }
+  saveData(); closeModal();
+  ui.kalTag=e.datum; ui.kalMonat=e.datum.slice(0,7); ui.view='kalender'; render();
+}
+
+function delKalTermin(id){
+  const t=(state.kalender||[]).find(x=>x.id===id); if(!t) return;
+  const serie=t.serieId?state.kalender.filter(x=>x.serieId===t.serieId):[];
+  if(serie.length>1){
+    pendingKalDel=t;
+    openModal('Termin löschen', `<p style="font-size:13.5px;color:var(--soft);margin:0">Dieser Termin gehört zu einer wöchentlichen Serie mit ${serie.length} Terminen („${esc(kalTitel(t))}“).</p>`,
+      `<button class="btn-link" data-action="close-modal">Abbrechen</button>
+       <button class="btn btn-ghost" data-action="del-termin-one">Nur diesen Termin</button>
+       <button class="btn-link danger" data-action="del-termin-serie">Ganze Serie löschen</button>`);
+  } else {
+    if(confirm(`Termin „${kalTitel(t)}“ am ${fmtDate(t.datum)} löschen?`)){
+      state.kalender=state.kalender.filter(x=>x.id!==id); saveData(); render();
+    }
+  }
+}
+
+/* Terminliste für Patient/in (Druck) */
+function openTerminlisteForm(){
+  const namen=[...new Set((state.kalender||[]).filter(t=>t.typ==='patient'&&t.patient).map(t=>t.patient.trim()))].sort((a,b)=>a.localeCompare(b,'de'));
+  if(!namen.length){ alert('Es sind noch keine Behandlungstermine mit Patientennamen angelegt.'); return; }
+  openModal('Terminliste drucken', `
+    <div class="field"><label>Patient/in</label><select class="input" id="tl-name">${namen.map(n=>`<option value="${esc(n)}">${esc(n)}</option>`).join('')}</select></div>
+    <div class="field" style="display:flex;align-items:center;gap:9px"><input type="checkbox" id="tl-past" style="width:16px;height:16px;accent-color:var(--accent)"><label for="tl-past" style="margin:0;font-size:13px;letter-spacing:0;text-transform:none;color:var(--soft)">Auch vergangene Termine aufführen</label></div>
+  `, `<button class="btn-link" data-action="close-modal">Abbrechen</button>
+      <button class="btn" data-action="print-terminliste">Drucken / als PDF</button>`);
+}
+
+function renderTerminlisteDoc(name, auchVergangene){
+  const heute=todayISO();
+  const WDL=['Sonntag','Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag'];
+  const ts=(state.kalender||[]).filter(t=>t.typ==='patient' && (t.patient||'').trim()===name && (auchVergangene||t.datum>=heute))
+    .sort((a,b)=>(a.datum+(a.von||'')).localeCompare(b.datum+(b.von||'')));
+  return `<div class="doc">
+    <div class="doc-pagemark">Terminübersicht</div>
+    ${docHeader()}
+    <div class="doc-addr"><div class="rcpt">${esc(name)}</div><div class="date">${esc(fmtDateLong(heute))}</div></div>
+    <div class="doc-section"><h1>Ihre Termine</h1><span class="eb">Physiotherapeutische Behandlung</span></div>
+    <div class="doc-intro">
+      <p class="an">Guten Tag ${esc(name)},</p>
+      <p>anbei erhalten Sie eine Übersicht Ihrer ${auchVergangene?'':'kommenden '}Behandlungstermine in meiner Praxis.</p>
+    </div>
+    ${ts.length?`<table class="doc-srv">
+      <thead><tr><th>Tag</th><th>Datum</th><th>Uhrzeit</th><th>Hinweis</th></tr></thead>
+      <tbody>${ts.map(t=>`<tr>
+        <td class="pos" style="width:27mm">${WDL[new Date(t.datum+'T12:00').getDay()]}</td>
+        <td class="pos" style="width:24mm">${esc(fmtDate(t.datum))}</td>
+        <td class="pos" style="width:28mm">${t.von?esc(t.von)+(t.bis?' – '+esc(t.bis):'')+' Uhr':'—'}</td>
+        <td><span class="ti" style="font-weight:400">${esc(t.notiz||'')}</span></td>
+      </tr>`).join('')}</tbody>
+    </table>
+    <div class="doc-sub" style="border-top:.5pt solid var(--rule);margin-top:3mm;padding-top:2.5mm"><span>Anzahl Termine</span><span>${ts.length}</span></div>`
+    :`<div class="doc-intro"><p>Derzeit sind keine ${auchVergangene?'':'kommenden '}Termine eingetragen.</p></div>`}
+    <div class="doc-intro" style="margin-top:5mm"><p style="font-size:9pt;color:var(--muted)">Bitte sagen Sie Termine, die Sie nicht wahrnehmen können, möglichst früh ab – spätestens 24 Stunden vorher. So kann der Termin an andere Patientinnen und Patienten vergeben werden. Vielen Dank!</p></div>
+    <div class="doc-sign"><div class="g">Mit freundlichen Grüßen</div><div class="s">${esc(state.praxis.name)}</div></div>
+    ${docFooter(fmtDateLong(heute)+'\u2003·\u2003Terminübersicht')}
+  </div>`;
+}
+
+/* ICS-Export für iPhone-/Geräte-Kalender (echte Erinnerungen auch bei geschlossener App) */
+function addMinutesHM(hm,min){ const [h,m]=hm.split(':').map(Number); const d=new Date(2000,0,1,h,(m||0)+min); return pad2(d.getHours())+':'+pad2(d.getMinutes()); }
+function kalICS(list){
+  const e2=v=>String(v||'').replace(/\\/g,'\\\\').replace(/;/g,'\\;').replace(/,/g,'\\,').replace(/\r?\n/g,'\\n');
+  const dt=(d,t)=>d.replace(/-/g,'')+'T'+(t||'09:00').replace(':','')+'00';
+  const stamp=new Date().toISOString().replace(/[-:]/g,'').slice(0,15)+'Z';
+  const L=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Praxis Behringer//Terminplan//DE','CALSCALE:GREGORIAN'];
+  list.forEach(t=>{
+    const von=t.von||'09:00';
+    const bis=t.bis||addMinutesHM(von,30);
+    L.push('BEGIN:VEVENT','UID:'+t.id+'@praxis-behringer','DTSTAMP:'+stamp,
+      'DTSTART:'+dt(t.datum,von),'DTEND:'+dt(t.datum,bis),
+      'SUMMARY:'+e2(kalTitel(t)+' · '+kalTypLabel(t.typ)));
+    if(t.notiz) L.push('DESCRIPTION:'+e2(t.notiz));
+    if(t.erinnerung){ L.push('BEGIN:VALARM','ACTION:DISPLAY','DESCRIPTION:Erinnerung','TRIGGER:-PT'+(t.erinnerung>=60?Math.round(t.erinnerung/60)+'H':t.erinnerung+'M'),'END:VALARM'); }
+    L.push('END:VEVENT');
+  });
+  L.push('END:VCALENDAR');
+  return L.join('\r\n');
+}
+function exportTermineICS(){
+  const heute=todayISO();
+  const list=(state.kalender||[]).filter(t=>t.datum>=heute).sort((a,b)=>(a.datum+(a.von||'')).localeCompare(b.datum+(b.von||'')));
+  if(!list.length){ alert('Keine künftigen Termine vorhanden.'); return; }
+  const blob=new Blob([kalICS(list)],{type:'text/calendar;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a'); a.href=url; a.download='Termine_Praxis_Behringer.ics';
+  document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+  toast('Kalenderdatei exportiert – in der Kalender-App öffnen');
+}
+
+/* Erinnerungen (solange die App geöffnet ist) */
+function kalReminderCheck(){
+  const list=state.kalender||[]; if(!list.length) return;
+  if(el('lock-screen')) return; /* keine Termindetails auf dem Sperrbildschirm */
+  const now=new Date(); let changed=false;
+  list.forEach(t=>{
+    if(!t.erinnerung||t.erinnert||!t.datum||!t.von) return;
+    const start=new Date(t.datum+'T'+t.von); if(isNaN(start)) return;
+    if(now>=start){ t.erinnert=true; changed=true; return; }
+    const remindAt=new Date(start.getTime()-t.erinnerung*60000);
+    if(now>=remindAt){
+      const inMin=Math.max(1,Math.round((start-now)/60000));
+      const msg='Termin '+(inMin>=1440?'morgen':('in '+inMin+' Min.'))+': '+kalTitel(t)+' ('+t.von+' Uhr)';
+      toast('🔔 '+msg, 8000);
+      try{ if(typeof Notification!=='undefined' && Notification.permission==='granted') new Notification('Praxis Behringer', {body:msg}); }catch(err){}
+      t.erinnert=true; changed=true;
+    }
+  });
+  if(changed) saveData();
+}
+function notifErlauben(){
+  if(typeof Notification==='undefined'){ alert('Benachrichtigungen werden von diesem Browser nicht unterstützt.'); return; }
+  Notification.requestPermission().then(p=>{ toast(p==='granted'?'Benachrichtigungen aktiviert':'Benachrichtigungen nicht erlaubt'); render(); });
+}
+
+/* Termin-Vorlagen verwalten */
+function openVorlagenForm(){
+  const list=state.terminVorlagen||[];
+  openModal('Termin-Vorlagen', `
+    <div class="hint" style="margin-top:0">Vorlagen füllen das Terminformular mit einem Tippen aus – z. B. Fitnessstudio oder Klinikdienste. Sie erscheinen oben im Fenster „Neuer Termin“.</div>
+    ${list.length?`<div class="table-wrap"><table class="tbl">
+      <thead><tr><th>Name</th><th>Art</th><th>Zeit</th><th>Erinnerung</th><th></th></tr></thead>
+      <tbody>${list.map((v,i)=>`<tr>
+        <td class="strong">${esc(v.name)}</td>
+        <td><span class="tt-badge ${v.typ||'sonstig'}" style="margin-left:0">${kalTypLabel(v.typ)}</span></td>
+        <td class="muted">${v.von?esc(v.von)+(v.bis?'–'+esc(v.bis):''):'—'}</td>
+        <td class="muted">${v.erinnerung?(v.erinnerung>=1440?'1 Tag':v.erinnerung+' Min.'):'—'}</td>
+        <td class="row-actions"><button class="btn-link danger" data-action="vorlage-del" data-i="${i}">Entfernen</button></td>
+      </tr>`).join('')}</tbody>
+    </table></div>`:`<div class="empty">Noch keine Vorlagen.</div>`}
+    <div class="subhead">Neue Vorlage anlegen</div>
+    <div class="grid2">
+      <div class="field"><label>Name</label><input class="input" id="vl-name" placeholder="z. B. Fitnessstudio"></div>
+      <div class="field"><label>Art</label>
+        <select class="input" id="vl-typ">
+          <option value="sonstig">Sonstiges</option>
+          <option value="arbeit">Arbeitszeit (Klinik)</option>
+          <option value="arzt">Arzttermin</option>
+          <option value="patient">Behandlung (Patient/in)</option>
+        </select>
+      </div>
+    </div>
+    <div class="field"><label>Bezeichnung im Kalender (optional, sonst Name)</label><input class="input" id="vl-titel" placeholder="z. B. Frühdienst Uniklinik"></div>
+    <div class="grid3">
+      <div class="field"><label>Von</label><input class="input" type="time" id="vl-von"></div>
+      <div class="field"><label>Bis</label><input class="input" type="time" id="vl-bis"></div>
+      <div class="field"><label>Erinnerung</label>
+        <select class="input" id="vl-erinnerung">
+          <option value="0">keine</option>
+          <option value="15">15 Min. vorher</option>
+          <option value="30">30 Min. vorher</option>
+          <option value="60">1 Std. vorher</option>
+          <option value="1440">1 Tag vorher</option>
+        </select>
+      </div>
+    </div>
+    <div class="btn-row"><button class="btn btn-ghost" data-action="vorlage-add">＋ Vorlage hinzufügen</button></div>
+  `, `<button class="btn" data-action="close-modal">Fertig</button>`);
+}
 
 function erstelleMonatsabrechnung(monat){
   const a=state.abrechnendePraxis;
@@ -2401,14 +2641,15 @@ function handleImportFile(file){
 
 /* ---------- Toast ---------- */
 let toastTimer=null;
-function toast(msg){
+function toast(msg, ms){
+  ms=ms||1800;
   let t=el('toast');
   if(!t){ t=document.createElement('div'); t.id='toast';
     t.style.cssText='position:fixed;left:50%;bottom:28px;transform:translateX(-50%);background:#1c1c1c;color:#fff;padding:11px 20px;border-radius:8px;font-size:13px;z-index:80;box-shadow:0 8px 28px rgba(0,0,0,.25);opacity:0;transition:opacity .2s';
     document.body.appendChild(t);
   }
   t.textContent=msg; requestAnimationFrame(()=>{ t.style.opacity='1'; });
-  clearTimeout(toastTimer); toastTimer=setTimeout(()=>{ t.style.opacity='0'; },1800);
+  clearTimeout(toastTimer); toastTimer=setTimeout(()=>{ t.style.opacity='0'; },ms);
 }
 
 window.addEventListener('afterprint', ()=>{ el('print-root').innerHTML=''; });
@@ -2424,6 +2665,9 @@ try{ if(navigator.storage && navigator.storage.persist) navigator.storage.persis
 secLoad();
 if(secEnabled() && cryptoAvailable()){ showLockScreen(); }
 else { render(); }
+kalReminderCheck();
+setInterval(kalReminderCheck, 60000);
+
 
 </script>
 </body>
