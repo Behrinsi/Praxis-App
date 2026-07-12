@@ -1,0 +1,47 @@
+AUTOMATISCHER KATALOG-CHECK · EINRICHTUNG (einmalig, ca. 2 Minuten)
+===================================================================
+
+Was macht der Check?
+Jeden Montag prüft ein kleiner Automatik-Job in Ihrem GitHub-Repository,
+ob der G-BA eine neuere Fassung des Heilmittelkatalogs veröffentlicht hat.
+Das Ergebnis landet in der Datei hmk-status.json. Die App liest diese Datei
+und zeigt im Rezept-Check:
+  · grüner Hinweis  = Prüfregeln aktuell (mit Datum der letzten Prüfung)
+  · gelbe Warnung   = neuere Katalogfassung erkannt -> Regeln aktualisieren lassen
+
+WICHTIG: Der Job erkennt neue Fassungen, er ändert die Prüfregeln NICHT
+selbst. Erscheint die gelbe Warnung, bitte die Aktualisierung der Regeln
+anstoßen (z. B. Claude beauftragen) und danach die neue App-Version hochladen.
+
+EINRICHTUNG
+-----------
+1. Die Dateien aus diesem Paket wie gewohnt hochladen (auch hmk-status.json).
+
+2. Im Browser öffnen:  github.com/Behrinsi/Praxis-App
+   -> Knopf "Add file" -> "Create new file"
+
+3. In das Feld für den Dateinamen GENAU dies eintippen
+   (die Schrägstriche erzeugen automatisch die Ordner):
+
+   .github/workflows/hmk-check.yml
+
+4. Den kompletten Inhalt der beiliegenden Datei  hmk-check.yml
+   in das große Textfeld einfügen (Copy & Paste).
+
+5. Unten grünen Knopf "Commit changes" klicken.
+
+6. Ersten Lauf starten: Reiter "Actions" -> links "HMK-Katalog-Check"
+   -> Knopf "Run workflow" -> grüner Haken nach ca. 1 Minute.
+   Danach läuft der Check jeden Montag automatisch.
+
+HINWEISE
+--------
+· Der Job schreibt einmal pro Woche einen Mini-Eintrag ins Repository
+  ("Katalog-Status geprüft"). Das ist normal und hält den Zeitplan aktiv
+  (GitHub pausiert Zeitpläne sonst nach 60 Tagen ohne Aktivität; sollte
+  das je passieren: Actions-Tab -> "Enable workflow").
+· Der Check wertet die G-BA-Webseite aus. Ändert der G-BA den Seitenaufbau,
+  meldet der Status "fehler" und die App zeigt einen neutralen Hinweis,
+  den Stand gelegentlich selbst zu prüfen (Link ist hinterlegt).
+· Ohne Einrichtung funktioniert die App normal; es fehlt nur die
+  automatische Überwachung.

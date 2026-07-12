@@ -196,6 +196,22 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
   .chip-row{display:flex;gap:7px;flex-wrap:wrap}
   .chip{border:1px solid var(--line);background:var(--panel);border-radius:999px;padding:6px 13px;font-size:12.5px;color:var(--soft);cursor:pointer;transition:background .15s,border-color .15s}
   .chip:hover{background:var(--accent-bg);border-color:var(--accent-weak);color:var(--accent)}
+  /* Rezept-Check */
+  .li-check{grid-template-columns:1fr 90px}
+  .check-flags{display:flex;flex-direction:column;gap:8px;margin:4px 0 6px}
+  .check-flags label{display:flex;gap:9px;align-items:flex-start;font-size:13px;color:var(--soft);cursor:pointer}
+  .check-flags input{width:16px;height:16px;accent-color:var(--accent);margin-top:1px;flex:0 0 auto}
+  .check-banner{border-radius:var(--r-md);padding:13px 16px;font-size:13.5px;font-weight:500;margin:16px 0 10px}
+  .check-banner.f{background:var(--danger-bg);color:var(--danger);border:1px solid #e8cfc8}
+  .check-banner.w{background:var(--amber-bg);color:var(--amber);border:1px solid #ecdfc2}
+  .check-banner.ok{background:var(--green-bg);color:var(--green);border:1px solid #dbe3cd}
+  .check-list{display:flex;flex-direction:column;gap:7px}
+  .check-item{display:flex;gap:10px;align-items:flex-start;font-size:12.8px;color:var(--soft);line-height:1.5}
+  .check-badge{flex:0 0 62px;text-align:center;border-radius:999px;font-size:10.5px;font-weight:600;padding:3px 0;margin-top:1px}
+  .check-badge.f{background:var(--danger-bg);color:var(--danger)}
+  .check-badge.w{background:var(--amber-bg);color:var(--amber)}
+  .check-badge.ok{background:var(--green-bg);color:var(--green)}
+  .check-badge.i{background:var(--accent-bg);color:var(--muted)}
 
   /* Rezept-Belege (Fotos) */
   .foto-count{font-family:var(--sans);font-style:normal;font-size:10px;letter-spacing:.4px;color:var(--muted);text-transform:none;margin-left:8px}
@@ -454,7 +470,7 @@ const DEFAULT_DATA = {
 /* ---------- Persistenz ---------- */
 const STORE_KEY = 'sb_abrechnung_v1';
 let state = loadData();
-const APP_VERSION = '9.1 · Juli 2026';
+const APP_VERSION = '10.1 · Juli 2026';
 let ui = { view:'dashboard', rezeptMonth: currentYM(), auswertungJahr: currentYM().slice(0,4), kalMonat: currentYM(), kalTag: todayISO(), vertragTyp:'gkv', vertragData:{name:'',geb:'',anschrift:'',kasse:''} };
 let edKalTermin = null, pendingKalDel = null;
 
@@ -704,6 +720,7 @@ function viewDashboard(){
       <button class="btn btn-ghost" data-action="neuer-termin">＋ Termin eintragen</button>
       <button class="btn btn-ghost" data-action="neues-rezept">＋ Rezept erfassen</button>
       <button class="btn btn-ghost" data-action="neue-quittung">＋ Quittung erstellen</button>
+      <button class="btn btn-ghost" data-action="rezept-check">Rezept-Check</button>
       <button class="btn btn-ghost" data-action="goto" data-view="rezepte">Monatsabrechnung erstellen</button>
     </div>
   </div>
@@ -780,7 +797,10 @@ function viewRezepte(){
   <div class="card">
     <div class="card-head">
       <div><h2>Rezepterfassung</h2><div class="sub">Über die Praxis abgerechnete Heilmittelverordnungen je Monat erfassen</div></div>
-      <button class="btn" data-action="neues-rezept">＋ Rezept erfassen</button>
+      <div class="btn-row">
+        <button class="btn btn-ghost" data-action="rezept-check">Rezept-Check</button>
+        <button class="btn" data-action="neues-rezept">＋ Rezept erfassen</button>
+      </div>
     </div>
     <div class="field" style="max-width:240px">
       <label>Monat</label>
@@ -1860,6 +1880,8 @@ document.addEventListener('click', e=>{
     case 'terminliste-patient': doPrint(renderTerminlisteDoc(t.dataset.name,false)); break;
     case 'termine-ics': exportTermineICS(); break;
     case 'notif-erlauben': notifErlauben(); break;
+    case 'rezept-check': openRezeptCheckForm(); break;
+    case 'check-run': runRezeptCheck(); break;
     case 't-vorlage': {
       const v=(state.terminVorlagen||[])[+t.dataset.i]; if(!v) break;
       const set=(id,x)=>{ const f=el(id); if(f) f.value=x; };
@@ -2339,6 +2361,219 @@ function renderQuittungDoc(q){
 }
 
 
+/* ---------- Rezept-Check: Verordnungsprüfung Physiotherapie ----------
+   Datengrundlage: Zweiter Teil der Heilmittel-Richtlinie (Heilmittelkatalog),
+   G-BA, Stand 16.05.2024 · Maßnahmen der Physiotherapie (13 Diagnosegruppen).
+   Der Check ist eine Plausibilitäts-Vorprüfung und ersetzt nicht die
+   verbindliche Prüfung durch Abrechnungsstelle und Krankenkasse. */
+const HMK_STAND='Heilmittelkatalog (G-BA), Stand 16.05.2024 · Blankoverordnung Physiotherapie (Schulter, Gruppe EX) seit 01.11.2024';
+const HMK_REGELSTAND='2024-05-16';
+var hmkStatus=null;
+function hmkStatusLaden(){
+  try{
+    if(location.protocol.indexOf('http')!==0) return;      /* nur in der gehosteten App */
+    if(typeof fetch!=='function') return;
+    fetch('hmk-status.json?t='+Date.now(), {cache:'no-store'})
+      .then(r=>r.ok?r.json():null)
+      .then(j=>{ if(j&&typeof j==='object') hmkStatus=j; })
+      .catch(()=>{});
+  }catch(e){}
+}
+function hmkUpdateHinweis(){
+  const link='<a href="https://www.g-ba.de/richtlinien/12/" target="_blank" rel="noopener" style="color:var(--accent)">g-ba.de/richtlinien/12</a>';
+  const s=hmkStatus;
+  if(s && !s.fehler && s.aktuellerStand){
+    if(String(s.aktuellerStand)>HMK_REGELSTAND){
+      return `<div class="note-box" style="border-color:#ecdfc2;background:var(--amber-bg)"><strong style="color:var(--amber)">Neuere Katalogfassung erkannt (Stand ${esc(fmtDate(s.aktuellerStand))}).</strong> Die Prüfregeln dieser App haben Stand ${fmtDate(HMK_REGELSTAND)} – Ergebnisse können veraltet sein. Bitte eine Aktualisierung der Prüfregeln anstoßen. Quelle: ${link}</div>`;
+    }
+    return `<div class="hint" style="margin-top:0">Katalog-Überwachung: Regelstand aktuell${s.geprueft?` (zuletzt automatisch geprüft am ${esc(fmtDate(s.geprueft))})`:''}.</div>`;
+  }
+  const tage=daysBetween(HMK_REGELSTAND, todayISO());
+  if(tage>420){
+    return `<div class="hint" style="margin-top:0">Die Prüfregeln haben Stand ${fmtDate(HMK_REGELSTAND)}. ${s&&s.fehler?'Die automatische Katalog-Überwachung konnte die G-BA-Seite zuletzt nicht auswerten – bitte':'Ob eine neuere Fassung existiert, bitte'} gelegentlich hier prüfen: ${link}</div>`;
+  }
+  return '';
+}
+const HMK_MASSAGEN=['KMT','BGM','SM','PM','UWM','CM'];
+const HMK={
+  WS:{name:'Wirbelsäulenerkrankungen',
+    v:['KG','KG Gruppe','KG-Gerät','KG im Bewegungsbad','KG im Bewegungsbad Gruppe','MT','Übungsbehandlung','Übungsbehandlung Gruppe','Übungsbehandlung im Bewegungsbad','Übungsbehandlung im Bewegungsbad Gruppe','Chirogymnastik','KMT','UWM','SM','PM','BGM','Standardisierte Heilmittelkombination'],
+    e:['Wärmetherapie','Kältetherapie','Traktion','Elektrotherapie','Hydroelektrische Bäder'],
+    hm:6, om:'bis zu 18 Einheiten – davon jeweils bis zu 12 Einheiten für standardisierte Heilmittelkombination bzw. Massagetherapien'},
+  EX:{name:'Erkrankungen der Extremitäten und des Beckens',
+    v:['KG','KG Gruppe','KG-Gerät','KG im Bewegungsbad','KG im Bewegungsbad Gruppe','MT','Übungsbehandlung','Übungsbehandlung Gruppe','Übungsbehandlung im Bewegungsbad','Übungsbehandlung im Bewegungsbad Gruppe','Chirogymnastik','KMT','UWM','SM','PM','BGM','Standardisierte Heilmittelkombination'],
+    e:['Wärmetherapie','Kältetherapie','Elektrotherapie','Hydroelektrische Bäder'],
+    hm:6, om:'bis zu 18 Einheiten · bis zu 50 Einheiten längstens bis zur Vollendung des 18. Lebensjahres – davon jeweils bis zu 12 für standardisierte Heilmittelkombination bzw. Massagetherapien', blanko:true},
+  CS:{name:'Chronifiziertes Schmerzsyndrom',
+    v:['KG','KG Gruppe','KG im Bewegungsbad','KG im Bewegungsbad Gruppe','KG-Gerät','KMT','Übungsbehandlung','Übungsbehandlung Gruppe','Übungsbehandlung im Bewegungsbad','Übungsbehandlung im Bewegungsbad Gruppe','UWM','PM','SM','BGM'],
+    e:['Elektrotherapie','Wärmetherapie','Kältetherapie','Hydroelektrische Bäder'],
+    hm:6, om:'bis zu 18 Einheiten – davon bis zu 12 Einheiten für Massagetechniken'},
+  ZN:{name:'ZNS-Erkrankungen einschl. Rückenmark / Neuromuskuläre Erkrankungen',
+    v:['KG','KG Gruppe','KG im Bewegungsbad','KG im Bewegungsbad Gruppe','KG-ZNS','KG-ZNS-Kinder'],
+    e:['Wärmetherapie','Kältetherapie','Elektrotherapie','Elektrostimulation'],
+    hm:10, om:'bis zu 30 Einheiten · bis zu 50 Einheiten längstens bis zur Vollendung des 18. Lebensjahres', alter:true},
+  PN:{name:'Periphere Nervenläsionen / Muskelerkrankungen',
+    v:['KG','KG Gruppe','KG im Bewegungsbad','KG im Bewegungsbad Gruppe'],
+    e:['Wärmetherapie','Kältetherapie','Elektrotherapie','Elektrostimulation'],
+    hm:10, om:'bis zu 30 Einheiten'},
+  AT:{name:'Störungen der Atmung',
+    v:['KG (Atemtherapie)','KG (Atemtherapie) Gruppe','KG-Muko','Inhalation','BGM'],
+    e:['KMT','Wärmetherapie','Inhalation'],
+    hm:6, om:'bis zu 18 Einheiten · bis zu 50 bei Mukoviszidose oder vergleichbaren pulmonalen Erkrankungen (die 12er-Grenze für Massagetherapie gilt hier nicht)'},
+  GE:{name:'Arterielle Gefäßerkrankungen',
+    v:['KG','KG Gruppe','Übungsbehandlung','Übungsbehandlung Gruppe'],
+    e:['Wärmetherapie','Kältetherapie'],
+    hm:6, om:'bis zu 18 Einheiten'},
+  LY:{name:'Lymphabflussstörungen',
+    v:['MLD-30','MLD-45','MLD-60','MLD (Zeit nach Befund)'],
+    e:['Wärmetherapie','Kältetherapie','Elektrotherapie','Übungsbehandlung','Übungsbehandlung Gruppe','Übungsbehandlung im Bewegungsbad','Übungsbehandlung im Bewegungsbad Gruppe'],
+    hm:6, om:'bis zu 30 Einheiten', hinweis:'Kompressionsbandagierung ist zusätzlich zur MLD verordnungsfähig; Kompressionsbinden sind als Verbandmittel gesondert zu verordnen.'},
+  SO1:{name:'Störung der Dickdarmfunktion',
+    v:['CM','BGM'], e:['Wärmetherapie'],
+    hm:6, om:'bis zu 18 Einheiten (die 12er-Grenze für Massagetherapie gilt hier nicht)'},
+  SO2:{name:'Störungen der Ausscheidung (Stuhl-/Harninkontinenz)',
+    v:['KG','KG Gruppe','Übungsbehandlung','Übungsbehandlung Gruppe'], e:['Elektrotherapie'],
+    hm:6, om:'bis zu 18 Einheiten'},
+  SO3:{name:'Schwindel unterschiedlicher Genese',
+    v:['KG','KG Gruppe','Übungsbehandlung','Übungsbehandlung Gruppe'], e:[],
+    hm:6, om:'bis zu 18 Einheiten'},
+  SO4:{name:'Sekundäre periphere trophische Störungen',
+    v:['CO2-Bad'], e:['Wärmetherapie','Kältetherapie','Elektrotherapie','BGM','SM','PM'],
+    hm:6, om:'bis zu 18 Einheiten (die 12er-Grenze für Massagetherapie gilt hier nicht)'},
+  SO5:{name:'Chronische Adnexitis / chronische Prostatitis',
+    v:['Wärmetherapie'], e:['BGM'],
+    hm:6, om:'bis zu 18 Einheiten (die 12er-Grenze für Massagetherapie gilt hier nicht)', hinweis:'Wärmetherapie hier mittels Peloidbädern/Warmpackungen.'}
+};
+const HMK_ALLE_HM=(()=>{ const set=new Set(); Object.values(HMK).forEach(g=>{ g.v.forEach(h=>set.add(h)); g.e.forEach(h=>set.add(h)); }); return [...set].sort((a,b)=>a.localeCompare(b,'de')); })();
+
+function openRezeptCheckForm(){
+  const heute=todayISO();
+  const gruppen=Object.keys(HMK).map(k=>`<option value="${k}">${k} · ${esc(HMK[k].name)}</option>`).join('');
+  const hmOpts=`<option value="">— kein Heilmittel —</option>`+HMK_ALLE_HM.map(h=>`<option value="${esc(h)}">${esc(h)}</option>`).join('');
+  const row=i=>`
+    <div class="line-row li-check">
+      <select class="input" id="ck-hm-${i}">${hmOpts}</select>
+      <input class="input" type="number" min="1" max="60" id="ck-ein-${i}" placeholder="Einh.">
+    </div>`;
+  openModal('Rezept-Check · Verordnung prüfen', `
+    ${hmkUpdateHinweis()}
+    <div class="note-box" style="margin-top:0">Plausibilitätsprüfung nach dem Heilmittelkatalog (Physiotherapie). Sie ersetzt nicht die verbindliche Prüfung durch Abrechnungsstelle und Krankenkasse.</div>
+    <div class="field"><label>Diagnosegruppe (laut Rezept)</label>
+      <select class="input" id="ck-gruppe"><option value="">— bitte wählen —</option>${gruppen}</select></div>
+    <div class="grid3">
+      <div class="field"><label>Ausstellungsdatum</label><input class="input" type="date" id="ck-ausstellung" value="${heute}"></div>
+      <div class="field"><label>Erster Behandlungstermin</label><input class="input" type="date" id="ck-beginn" value="${heute}"></div>
+      <div class="field"><label>Geburtsdatum (optional)</label><input class="input" type="date" id="ck-geb"></div>
+    </div>
+    <div class="check-flags">
+      <label><input type="checkbox" id="ck-dringlich"> dringlicher Behandlungsbedarf angekreuzt (Beginn binnen 14 Tagen)</label>
+      <label><input type="checkbox" id="ck-blanko"> Blankoverordnung („BLANKOVERORDNUNG" im Heilmittelfeld)</label>
+      <label><input type="checkbox" id="ck-lhb"> langfristiger Heilmittelbedarf / besonderer Verordnungsbedarf liegt vor (Diagnoseliste bzw. Genehmigung)</label>
+    </div>
+    <div class="subhead">Verordnete Heilmittel und Einheiten</div>
+    <div class="line-row li-check line-head"><div>Heilmittel</div><div>Einheiten</div></div>
+    ${row(0)}${row(1)}${row(2)}${row(3)}
+    <div class="grid2" style="margin-top:10px">
+      <div class="field"><label>Frequenz (x pro Woche, optional)</label><input class="input" type="number" min="1" max="14" id="ck-freq" placeholder="z. B. 2"></div>
+    </div>
+    <div id="check-result"></div>
+  `, `<button class="btn-link" data-action="close-modal">Schließen</button>
+      <button class="btn" data-action="check-run">Verordnung prüfen</button>`);
+}
+
+function runRezeptCheck(){
+  const F=[]; const add=(lv,t)=>F.push({lv,t});
+  const gKey=val('ck-gruppe');
+  if(!gKey){ el('check-result').innerHTML=`<div class="note-box">Bitte zuerst die Diagnosegruppe wählen.</div>`; return; }
+  const G=HMK[gKey];
+  const blanko=el('ck-blanko').checked, dringlich=el('ck-dringlich').checked, lhb=el('ck-lhb').checked;
+  const ausst=val('ck-ausstellung'), beginn=val('ck-beginn'), geb=val('ck-geb');
+  const freq=parseInt(val('ck-freq'),10)||0;
+  const hm=[];
+  for(let i=0;i<4;i++){ const h=val('ck-hm-'+i); const e=parseInt(val('ck-ein-'+i),10)||0; if(h) hm.push({h,e}); }
+
+  /* Alter (falls Geburtsdatum angegeben) */
+  let alter=null;
+  if(geb && ausst){ const g=new Date(geb), a=new Date(ausst); alter=a.getFullYear()-g.getFullYear(); const m=a.getMonth()-g.getMonth(); if(m<0||(m===0&&a.getDate()<g.getDate())) alter--; }
+
+  /* 1) Fristen */
+  if(ausst && beginn){
+    const tage=daysBetween(ausst, beginn);
+    if(tage<0) add('F','Der Behandlungsbeginn liegt vor dem Ausstellungsdatum.');
+    else if(blanko){
+      if(tage>112) add('F',`Blankoverordnung: Gültigkeit von 16 Wochen ab Ausstellungsdatum überschritten (${tage} Tage).`);
+      else add('OK',`Behandlungsbeginn innerhalb der 16-wöchigen Gültigkeit der Blankoverordnung (${tage} Tage nach Ausstellung).`);
+    } else {
+      const frist=dringlich?14:28;
+      if(tage>frist) add('F',`Behandlungsbeginn ${tage} Tage nach Ausstellung – zulässig sind höchstens ${frist} Tage${dringlich?' (dringlicher Behandlungsbedarf)':''}. Die Verordnung verliert sonst ihre Gültigkeit.`);
+      else add('OK',`Behandlungsbeginn fristgerecht (${tage} von max. ${frist} Tagen nach Ausstellung).`);
+    }
+  }
+
+  /* 2) Blanko-Plausibilität */
+  if(blanko){
+    if(!G.blanko) add('W',`Die Blankoverordnung Physiotherapie gilt derzeit für Schulter-Diagnosen der Gruppe EX. Für die Gruppe ${gKey} ist eine Blankoverordnung ungewöhnlich – bitte prüfen.`);
+    else add('I','Blankoverordnung: Auswahl der Heilmittel (aus dem Katalog der Gruppe EX), Menge und Frequenz liegen bei der Therapeutin; Mengensteuerung über das Ampelsystem der Blanko-Vereinbarung.');
+  }
+
+  /* 3) Heilmittel-Zulässigkeit */
+  if(!hm.length) add('W','Es wurde kein Heilmittel eingetragen – Zulässigkeit und Mengen können nicht geprüft werden.');
+  let sumV=0, sumE=0, nV=0, nE=0, hatKombi=false;
+  hm.forEach(x=>{
+    const isV=G.v.includes(x.h), isE=G.e.includes(x.h);
+    if(x.h==='Standardisierte Heilmittelkombination') hatKombi=true;
+    if(isV){ nV++; sumV+=x.e; add('OK',`„${x.h}“ ist in Gruppe ${gKey} als vorrangiges Heilmittel verordnungsfähig.`); }
+    else if(isE){ nE++; sumE+=x.e; add('OK',`„${x.h}“ ist in Gruppe ${gKey} als ergänzendes Heilmittel verordnungsfähig.`); }
+    else add('F',`„${x.h}“ ist in der Diagnosegruppe ${gKey} (${G.name}) NICHT verordnungsfähig – Absetzungsgefahr. Rücksprache mit der Arztpraxis (Änderung/Neuausstellung) empfohlen.`);
+  });
+
+  /* 4) Kombinationsregeln */
+  if(nV>3) add('F','Mehr als drei vorrangige Heilmittel auf einer Verordnung sind nicht zulässig (max. 3 vorrangige + 1 ergänzendes).');
+  if(nE>1) add('F','Mehr als ein ergänzendes Heilmittel je Verordnung ist nicht zulässig.');
+  if(nE>0 && nV===0) add('F','Ein ergänzendes Heilmittel kann nur zusätzlich zu einem vorrangigen Heilmittel verordnet werden.');
+  if(hatKombi && hm.length>1) add('W','Die standardisierte Heilmittelkombination deckt komplexe Schädigungen ab – die gleichzeitige Verordnung weiterer Heilmittel auf demselben Rezept ist unüblich und sollte geprüft werden.');
+
+  /* 5) Mengen */
+  if(!blanko && sumV>0){
+    if(sumV>G.hm){
+      if(lhb) add('W',`Summe der vorrangigen Einheiten (${sumV}) überschreitet die Höchstmenge je Verordnung (${G.hm}). Bei langfristigem/besonderem Verordnungsbedarf ist eine Bemessung für bis zu 12 Wochen Behandlungsdauer zulässig – ICD-10 und Diagnosegruppe müssen der Diagnoseliste entsprechen (bzw. Genehmigung vorliegen).`);
+      else add('F',`Summe der vorrangigen Einheiten (${sumV}) überschreitet die Höchstmenge je Verordnung der Gruppe ${gKey} (bis zu ${G.hm}).`);
+    } else add('OK',`Vorrangige Einheiten (${sumV}) innerhalb der Höchstmenge je Verordnung (bis zu ${G.hm}).`);
+    if(sumE>G.hm) add('W',`Die Einheiten des ergänzenden Heilmittels (${sumE}) überschreiten die Höchstmenge je Verordnung (${G.hm}).`);
+  }
+  add('I',`Orientierende Behandlungsmenge der Gruppe ${gKey}: ${G.om}. Sie gilt je Verordnungsfall (gleicher Arzt, gleiche Erkrankung; endet 6 Monate nach der letzten Verordnung); eine medizinisch begründete Überschreitung ist möglich.`);
+
+  /* 6) Alter (ZN) */
+  if(alter!=null){
+    hm.forEach(x=>{
+      if(x.h==='KG-ZNS-Kinder' && alter>=18) add('F',`KG-ZNS-Kinder ist längstens bis zur Vollendung des 18. Lebensjahres verordnungsfähig (Alter: ${alter}).`);
+      if(x.h==='KG-ZNS' && alter<18) add('F',`KG-ZNS gilt für Patientinnen und Patienten nach Vollendung des 18. Lebensjahres (Alter: ${alter}) – für Kinder/Jugendliche: KG-ZNS-Kinder.`);
+    });
+  } else if(hm.some(x=>x.h==='KG-ZNS'||x.h==='KG-ZNS-Kinder')){
+    add('I','KG-ZNS gilt ab, KG-ZNS-Kinder bis zur Vollendung des 18. Lebensjahres – Geburtsdatum eintragen, um dies zu prüfen.');
+  }
+
+  /* 7) Frequenz */
+  if(freq && !blanko){
+    if(freq<1||freq>3) add('W',`Angegebene Frequenz ${freq}×/Woche liegt außerhalb der Frequenzempfehlung (1–3× wöchentlich). Die Frequenz ist eine Empfehlung; deutliche Abweichungen sollten medizinisch begründet sein.`);
+    else add('OK',`Frequenz ${freq}×/Woche innerhalb der Empfehlung (1–3× wöchentlich).`);
+  }
+  if(G.hinweis) add('I',G.hinweis);
+  if(lhb) add('I','Langfristiger/besonderer Verordnungsbedarf: Verordnung ist extrabudgetär; ICD-10-Code und Diagnosegruppe müssen exakt der Diagnoseliste entsprechen (bzw. Kassen-Genehmigung).');
+
+  /* Ergebnis rendern */
+  const nF=F.filter(x=>x.lv==='F').length, nW=F.filter(x=>x.lv==='W').length;
+  const banner = nF
+    ? `<div class="check-banner f">✗ ${nF} kritische${nF>1?'':'r'} Punkt${nF>1?'e':''} – Verordnung in dieser Form voraussichtlich nicht abrechenbar. Vor Behandlungsbeginn klären (Arztpraxis/abrechnende Praxis).</div>`
+    : nW ? `<div class="check-banner w">⚠ Keine kritischen Fehler, aber ${nW} Hinweis${nW>1?'e':''} – bitte prüfen.</div>`
+         : `<div class="check-banner ok">✓ Keine Auffälligkeiten nach Katalog- und Fristenprüfung.</div>`;
+  const LV={F:['Fehler','f'],W:['Hinweis','w'],OK:['OK','ok'],I:['Info','i']};
+  el('check-result').innerHTML = banner
+    + `<div class="check-list">${F.map(x=>`<div class="check-item"><span class="check-badge ${LV[x.lv][1]}">${LV[x.lv][0]}</span><div>${x.t}</div></div>`).join('')}</div>`
+    + `<div class="hint" style="margin-top:12px"><strong>Formalien auf dem Rezept zusätzlich prüfen:</strong> Arztunterschrift &amp; Betriebsstättenstempel · Verordnungsdatum · Versichertendaten · ICD-10-Code und Diagnosegruppe · Leitsymptomatik (Buchstabe oder Freitext) · Heilmittel mit Einheiten · ggf. Therapiebericht/Hausbesuch angekreuzt · nachträgliche Änderungen nur mit ärztlicher Abzeichnung gültig · Behandlungsunterbrechungen über 14 Kalendertage dokumentieren/begründen.</div>`
+    + `<div class="hint" style="margin-top:6px;color:var(--muted)">Regelstand: ${HMK_STAND}. Ohne Gewähr – verbindlich prüfen Abrechnungsstelle und Krankenkasse.</div>`;
+}
+
 /* ---------- Termine: Formular, Serie, Terminliste, ICS, Erinnerung ---------- */
 function kalPatientenNamen(){
   const set=new Set();
@@ -2667,6 +2902,7 @@ if(secEnabled() && cryptoAvailable()){ showLockScreen(); }
 else { render(); }
 kalReminderCheck();
 setInterval(kalReminderCheck, 60000);
+hmkStatusLaden();
 
 
 </script>

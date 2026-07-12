@@ -1,0 +1,66 @@
+name: HMK-Katalog-Check
+# Prüft wöchentlich, ob der G-BA eine neuere Fassung des Heilmittelkatalogs
+# veröffentlicht hat, und schreibt das Ergebnis nach hmk-status.json.
+# Die Praxis-App liest diese Datei und zeigt im Rezept-Check einen Hinweis,
+# falls die Prüfregeln veraltet sind.
+
+on:
+  schedule:
+    - cron: '17 6 * * 1'      # jeden Montag, 06:17 UTC
+  workflow_dispatch: {}        # erlaubt manuellen Start über den Actions-Tab
+
+permissions:
+  contents: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Katalogstand beim G-BA ermitteln
+        run: |
+          python3 - << 'PY'
+          import re, json, datetime, urllib.request
+
+          # Regelstand der in der App hinterlegten Pruefregeln.
+          # Wird bei jedem Regel-Update der App mit aktualisiert.
+          APP_STAND = '2024-05-16'
+
+          status = {
+              'appRegelstand': APP_STAND,
+              'aktuellerStand': None,
+              'neuerKatalog': False,
+              'fehler': False,
+              'geprueft': datetime.date.today().isoformat(),
+              'quelle': 'https://www.g-ba.de/richtlinien/12/'
+          }
+          try:
+              req = urllib.request.Request(status['quelle'],
+                    headers={'User-Agent': 'Mozilla/5.0 (HMK-Check Praxis-App)'})
+              html = urllib.request.urlopen(req, timeout=30).read().decode('utf-8', 'ignore')
+              # Datumsangaben aus den Dateinamen der Katalog-Downloads,
+              # z. B. "HeilM-RL_2024-05-16_Heilmittelkatalog.pdf"
+              dates = re.findall(r'HeilM-RL[_-](\d{4}-\d{2}-\d{2})[^"\']{0,80}?Heilmittelkatalog', html)
+              dates = [d for d in dates if re.match(r'^\d{4}-\d{2}-\d{2}$', d)]
+              if dates:
+                  neu = max(dates)
+                  status['aktuellerStand'] = neu
+                  status['neuerKatalog'] = neu > APP_STAND
+              else:
+                  status['fehler'] = True
+          except Exception:
+              status['fehler'] = True
+
+          json.dump(status, open('hmk-status.json', 'w', encoding='utf-8'),
+                    ensure_ascii=False, indent=2)
+          print(json.dumps(status, ensure_ascii=False, indent=2))
+          PY
+
+      - name: Ergebnis speichern
+        run: |
+          git config user.name 'hmk-check'
+          git config user.email 'actions@users.noreply.github.com'
+          git add hmk-status.json
+          git diff --cached --quiet || git commit -m 'Katalog-Status geprüft'
+          git push

@@ -4,7 +4,7 @@
      nur wenn offline, wird die zuletzt gespeicherte Version aus dem Cache genutzt.
    - Übrige Dateien (Icons, Manifest, Schriften): CACHE-FIRST (schnell, offline-fähig).
    Bei jeder neuen Version unten die Versionsnummer erhöhen. */
-const CACHE = 'praxis-behringer-v10';
+const CACHE = 'praxis-behringer-v12';
 const ASSETS = [
   './',
   './index.html',
@@ -37,6 +37,12 @@ function isHTML(req) {
 self.addEventListener('fetch', (e) => {
   const req = e.request;
   if (req.method !== 'GET') return;
+
+  // Katalog-Status immer aus dem Netz (nie veraltet); offline: letzter Stand
+  if (req.url.indexOf('hmk-status.json') !== -1) {
+    e.respondWith(fetch(req).catch(() => caches.match(req)));
+    return;
+  }
 
   if (isHTML(req)) {
     e.respondWith(
