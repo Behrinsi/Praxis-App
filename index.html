@@ -212,6 +212,18 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
   .check-badge.w{background:var(--amber-bg);color:var(--amber)}
   .check-badge.ok{background:var(--green-bg);color:var(--green)}
   .check-badge.i{background:var(--accent-bg);color:var(--muted)}
+  .check-vorschlag{margin-top:14px;background:var(--accent-bg);border:1px solid var(--accent-weak);border-left:3px solid var(--accent);border-radius:0 10px 10px 0;padding:12px 14px}
+  .check-vorschlag .k{font-size:10.5px;letter-spacing:1.6px;text-transform:uppercase;color:var(--accent);font-weight:600;margin-bottom:7px}
+  .check-vorschlag .vi{font-size:12.8px;color:var(--ink);line-height:1.5;margin-bottom:5px}
+  .check-vorschlag .vd{font-size:11px;color:var(--muted);margin-top:6px;line-height:1.45}
+  .icd-res{border:1px solid var(--rule-soft);border-radius:10px;overflow:hidden;margin-top:2px}
+  .icd-row{display:flex;align-items:center;gap:10px;padding:9px 12px;border-bottom:1px solid var(--rule-soft);cursor:pointer;transition:background .12s}
+  .icd-row:last-child{border-bottom:none}
+  .icd-row:hover{background:var(--accent-bg)}
+  .icd-row .code{flex:0 0 62px;font-weight:600;font-size:12.5px;color:var(--accent);font-variant-numeric:tabular-nums}
+  .icd-row .nm{flex:1 1 auto;font-size:12.8px;color:var(--ink);line-height:1.35}
+  .icd-row .tags{flex:0 0 auto;display:flex;gap:4px}
+  .icd-row .tt-badge{margin-left:0}
 
   /* Rezept-Belege (Fotos) */
   .foto-count{font-family:var(--sans);font-style:normal;font-size:10px;letter-spacing:.4px;color:var(--muted);text-transform:none;margin-left:8px}
@@ -470,7 +482,7 @@ const DEFAULT_DATA = {
 /* ---------- Persistenz ---------- */
 const STORE_KEY = 'sb_abrechnung_v1';
 let state = loadData();
-const APP_VERSION = '10.1 · Juli 2026';
+const APP_VERSION = '10.4 · Juli 2026';
 let ui = { view:'dashboard', rezeptMonth: currentYM(), auswertungJahr: currentYM().slice(0,4), kalMonat: currentYM(), kalTag: todayISO(), vertragTyp:'gkv', vertragData:{name:'',geb:'',anschrift:'',kasse:''} };
 let edKalTermin = null, pendingKalDel = null;
 
@@ -1738,6 +1750,7 @@ document.addEventListener('change', e=>{
   if(t.id==='t-repeat'){ const w=el('t-wrap-repeatbis'); if(w) w.style.display=(t.value==='w')?'':'none'; }
   if(t.id==='import-file'){ handleImportFile(t.files[0]); }
   if(t.id==='foto-input'){ handleFotoFiles(t.files); t.value=''; }
+  if(t.id==='ck-suche'){ renderIcdSuche(t.value); }
 });
 document.addEventListener('input', e=>{
   const t=e.target;
@@ -1882,6 +1895,15 @@ document.addEventListener('click', e=>{
     case 'notif-erlauben': notifErlauben(); break;
     case 'rezept-check': openRezeptCheckForm(); break;
     case 'check-run': runRezeptCheck(); break;
+    case 'print-ruecksprache': if(lastCheck) doPrint(renderRueckspracheDoc(lastCheck)); break;
+    case 'icd-pick': {
+      const f=el('ck-icd'); if(f) f.value=t.dataset.c;
+      const g=el('ck-gruppe'); if(g && !g.value && t.dataset.g) g.value=t.dataset.g;
+      const b=el('ck-suche-res'); if(b) b.innerHTML='';
+      const su=el('ck-suche'); if(su) su.value='';
+      toast('ICD übernommen: '+t.dataset.c);
+      break;
+    }
     case 't-vorlage': {
       const v=(state.terminVorlagen||[])[+t.dataset.i]; if(!v) break;
       const set=(id,x)=>{ const f=el(id); if(f) f.value=x; };
@@ -2446,6 +2468,260 @@ const HMK={
 };
 const HMK_ALLE_HM=(()=>{ const set=new Set(); Object.values(HMK).forEach(g=>{ g.v.forEach(h=>set.add(h)); g.e.forEach(h=>set.add(h)); }); return [...set].sort((a,b)=>a.localeCompare(b,'de')); })();
 
+/* Blanko-Diagnoseliste: Anhang 1 zur Anlage 1 des Vertrages nach § 125a SGB V (Physiotherapie),
+   i. d. F. vom 01.11.2024 – abschließende Liste der 114 Schulter-ICD-Codes (als Präfixe verdichtet). */
+const HMK_BLANKO_ICD=['M13.11','M13.81','M13.91','M19.01','M19.11','M19.21','M19.81','M19.91',
+ 'M24.11','M24.21','M24.31','M24.41','M24.51','M24.61','M24.81','M24.91',
+ 'M25.01','M25.11','M25.21','M25.31','M25.41','M25.61',
+ 'M65.01','M65.11','M65.81','M65.91','M66.11','M66.21','M66.31','M66.41',
+ 'M71.01','M71.11','M71.31','M71.81','M71.91','M75',
+ 'M84.01','M84.11','M84.21','M84.31','M84.41','M84.81','M84.91',
+ 'M93.21','M93.81','M94.21','M94.31','M94.81','M94.91',
+ 'S42.0','S42.1','S42.2','S42.3','S42.7','S42.8','S42.9','S43','S46','S49',
+ 'T84.00','T84.10','T22.30','T22.32','T22.33','Z96.60','Z98.8'];
+
+/* Orientierende ICD-Bereiche → typische Diagnosegruppen. Für Regel-Verordnungen existiert
+   KEINE abschließende amtliche Zuordnungsliste – dies ist eine Plausibilitäts-Orientierung.
+   Erste Übereinstimmung zählt. */
+const HMK_ICD_ORIENT=[
+  {re:/^M4\d|^M5[0-4]/, g:['WS','CS'], t:'Wirbelsäulen-Diagnosen (M40–M54)'},
+  {re:/^M0\d|^M1\d|^M2[0-5]/, g:['EX','CS'], t:'Gelenk-/Arthropathie-Diagnosen (M00–M25)'},
+  {re:/^M6\d|^M7\d/, g:['EX','CS','PN'], t:'Weichteil-/Muskel-Diagnosen (M60–M79)'},
+  {re:/^M8\d|^M9\d/, g:['EX','WS'], t:'Knochen-/Knorpel-Diagnosen (M80–M99)'},
+  {re:/^S06/, g:['ZN'], t:'intrakranielle Verletzungen (S06)'},
+  {re:/^S1[2-6]|^S2[2-4]|^S3[2-4]/, g:['WS','EX'], t:'Wirbelsäulen-Verletzungen'},
+  {re:/^S4\d|^S5\d|^S6\d|^S7\d|^S8\d|^S9\d/, g:['EX','PN'], t:'Extremitäten-Verletzungen (S40–S99)'},
+  {re:/^G8[0-3]|^G3[0-7]|^G1[0-4]|^G2[0-6]|^G4[0-7]|^G9\d/, g:['ZN'], t:'ZNS-Erkrankungen'},
+  {re:/^I6\d/, g:['ZN'], t:'zerebrovaskuläre Erkrankungen (I60–I69)'},
+  {re:/^G5\d|^G6[0-4]|^G7[0-3]/, g:['PN','ZN'], t:'periphere Nerven-/Muskelerkrankungen (G50–G73)'},
+  {re:/^J4[0-7]|^J6\d|^J8\d|^J9\d|^E84/, g:['AT'], t:'Atemwegserkrankungen / Mukoviszidose'},
+  {re:/^I7\d/, g:['GE','SO4'], t:'arterielle Gefäßerkrankungen (I70–I79)'},
+  {re:/^I89|^I97|^Q82\.0/, g:['LY'], t:'Lymphabflussstörungen'},
+  {re:/^K59/, g:['SO1'], t:'Dickdarm-Funktionsstörungen (K59)'},
+  {re:/^N39\.[34]|^R32|^R15|^N31/, g:['SO2'], t:'Inkontinenz-/Ausscheidungsstörungen'},
+  {re:/^H8[12]|^R42/, g:['SO3'], t:'Schwindel-Diagnosen'},
+  {re:/^L97|^I83\.[02]/, g:['SO4','GE'], t:'periphere trophische Störungen / Ulcera'},
+  {re:/^N70|^N41/, g:['SO5'], t:'Adnexitis / Prostatitis'},
+  {re:/^F45\.4|^R52/, g:['CS','WS','EX'], t:'chronische Schmerz-Diagnosen'},
+  {re:/^Z9[68]/, g:['EX'], t:'Zustände nach Eingriffen / Implantate (Z96/Z98)'},
+  {re:/^C\d\d|^D[0-4]\d/, g:null, t:'Tumor-Diagnosen'}
+];
+function icdNorm(raw){
+  let s=String(raw||'').toUpperCase().replace(/\s+/g,'').replace(/[†*!+]/g,'');
+  /* Zusatzkennzeichen (Diagnosesicherheit G/V/Z/A, Seite L/R/B) am Ende entfernen, z. B. "M75.1 G" oder "M54.4LG" */
+  s=s.replace(/([0-9.\-])[GVZALRB]{1,2}$/,'$1');
+  return s;
+}
+function icdBlankoMatch(code){
+  const c=code.replace(/-$/,'').replace(/\.$/,'');
+  return HMK_BLANKO_ICD.some(p=>c===p || c.indexOf(p)===0);
+}
+
+/* Typische ICD-Beispiele je Diagnosegruppe (Formulierungshilfe für die Arzt-Rücksprache –
+   gilt nur, sofern die tatsächliche Diagnose entspricht; Codierung obliegt der Arztpraxis). */
+const HMK_GRUPPEN_BEISPIELE={
+  WS:['M54.5 – Kreuzschmerz','M51.2 – Bandscheibenverlagerung','M47.- – Spondylose'],
+  EX:['M75.1 – Läsion der Rotatorenmanschette','M17.1 – Gonarthrose','S83.5 – Kniebandverletzung'],
+  CS:['F45.41 – chronische Schmerzstörung','R52.1 – chronischer unbeeinflussbarer Schmerz'],
+  ZN:['I63.- – Hirninfarkt','G35 – Multiple Sklerose','G81.- – Hemiparese'],
+  PN:['G56.0 – Karpaltunnelsyndrom','G54.- – Nervenwurzelläsion','G71.0 – Muskeldystrophie'],
+  AT:['J44.- – COPD','E84.- – Mukoviszidose','J45.- – Asthma bronchiale'],
+  GE:['I70.2- – pAVK der Extremitäten','I73.9 – periphere Gefäßkrankheit'],
+  LY:['I89.0 – Lymphödem','I97.2 – Lymphödem nach Mastektomie'],
+  SO1:['K59.0 – Obstipation'],
+  SO2:['N39.3 – Belastungsinkontinenz','N39.4- – sonstige Harninkontinenz'],
+  SO3:['H81.1 – benigner paroxysmaler Lagerungsschwindel','R42 – Schwindel'],
+  SO4:['L97 – Ulcus cruris','I83.0 – Varizen mit Ulzeration'],
+  SO5:['N70.1 – chronische Adnexitis','N41.1 – chronische Prostatitis']
+};
+/* Kurzbezeichnungen häufiger Blanko-Codes (aus Anhang 1) */
+const HMK_BLANKO_NAME={
+  'M75':'Schulterläsionen (M75.-)','M75.0':'Frozen Shoulder','M75.1':'Läsion der Rotatorenmanschette',
+  'M75.2':'Bizepssehnen-Tendinitis','M75.3':'Tendinitis calcarea','M75.4':'Impingement-Syndrom der Schulter',
+  'M75.5':'Bursitis im Schulterbereich','S43':'Luxation/Verstauchung des Schultergürtels (S43.-)',
+  'S43.4':'Verstauchung des Schultergelenkes','S46':'Muskel-/Sehnenverletzung der Schulter (S46.-)',
+  'S46.0':'Verletzung der Rotatorenmanschette','S42.2':'Fraktur des proximalen Humerus',
+  'S49':'Verletzung der Schulter/des Oberarmes (S49.-)','M24.41':'habituelle Luxation, Schulterregion',
+  'M19.91':'Arthrose, Schulterregion','M13.91':'Arthritis, Schulterregion'
+};
+function icdRepair(raw){
+  let s=icdNorm(String(raw||'').replace(/,/g,'.'));
+  if(/^[A-Z]\d{3,4}$/.test(s)) s=s.slice(0,3)+'.'+s.slice(3);
+  return /^[A-Z]\d{2}\.\d{1,2}$/.test(s)?s:null;
+}
+function icdSchulterVariante(c){
+  if(/^[A-Z]\d{2}\.\d$/.test(c)) return c+'1';
+  if(/^[A-Z]\d{2}\.\d\d$/.test(c)) return c.slice(0,-1)+'1';
+  return null;
+}
+function blankoName(code){ return HMK_BLANKO_NAME[code]||HMK_BLANKO_NAME[code.slice(0,3)]||''; }
+function blankoDisp(p){ return p.length===3?p+'.-':p; }
+function blankoAlternativen(c){
+  const out=[];
+  const v=icdSchulterVariante(c);
+  if(v && icdBlankoMatch(v)) out.push({code:v, warum:'Schulterregion-Variante (5. Stelle „1“) des angegebenen Codes'});
+  const fam=c.slice(0,3);
+  HMK_BLANKO_ICD.filter(p=>p.slice(0,3)===fam && p!==v && p!==c).slice(0,3)
+    .forEach(p=>out.push({code:blankoDisp(p), warum:'gelisteter Code derselben ICD-Familie'}));
+  if(!out.length){
+    out.push({code:'M75.4', warum:'typische Schulterdiagnose – nur falls zutreffend'},
+             {code:'M75.1', warum:'typische Schulterdiagnose – nur falls zutreffend'});
+  }
+  return out.slice(0,3);
+}
+let lastCheck=null;
+
+/* Kuratiertes Diagnose-Verzeichnis (physiotherapie-relevante Auswahl, ~90 Einträge) für die
+   Klartext-Suche → ICD-Vorschlag. KEIN vollständiger ICD-10-GM; Endstelligkeit/Seitenangabe
+   und verbindliche Codierung obliegen der Arztpraxis. */
+const HMK_DIAG=[
+ /* Schulter (überwiegend Blanko-Liste, Anhang 1) */
+ {c:'M75.4',n:'Impingement-Syndrom der Schulter',k:'engpass subakromial schulterenge',g:['EX']},
+ {c:'M75.1',n:'Läsion/Ruptur der Rotatorenmanschette (Supraspinatus)',k:'rotatorenmanschette supraspinatus sehnenriss',g:['EX']},
+ {c:'M75.0',n:'Frozen Shoulder / adhäsive Kapsulitis',k:'schultersteife kapsulitis periarthropathia humeroscapularis',g:['EX']},
+ {c:'M75.3',n:'Tendinitis calcarea der Schulter (Kalkschulter)',k:'kalkschulter kalkdepot',g:['EX']},
+ {c:'M75.2',n:'Tendinitis der Bizepssehne',k:'bizeps bizepssehne',g:['EX']},
+ {c:'M75.5',n:'Bursitis im Schulterbereich',k:'schleimbeutelentzuendung schulter',g:['EX']},
+ {c:'M75.6',n:'Labrumläsion der Schulter (degenerativ)',k:'labrum slap',g:['EX']},
+ {c:'M75.8',n:'Sonstige Schulterläsionen',k:'schulterlaesion',g:['EX']},
+ {c:'M25.51',n:'Schulterschmerz (Gelenkschmerz Schulterregion)',k:'schulterschmerzen',g:['EX']},
+ {c:'M19.91',n:'Arthrose der Schulterregion (Omarthrose)',k:'omarthrose schulterarthrose',g:['EX']},
+ {c:'M13.91',n:'Arthritis der Schulterregion',k:'schulterentzuendung',g:['EX']},
+ {c:'M24.41',n:'Habituelle (Sub-)Luxation, Schulterregion',k:'schulterinstabilitaet instabile schulter',g:['EX']},
+ {c:'M24.51',n:'Gelenkkontraktur, Schulterregion',k:'kontraktur schulter bewegungseinschraenkung',g:['EX']},
+ {c:'S43.00',n:'Luxation des Schultergelenkes',k:'schulterluxation ausgekugelt ausgerenkt',g:['EX']},
+ {c:'S43.1',n:'Luxation des Akromioklavikulargelenkes (AC-Gelenk)',k:'acg akromioklavikular tossy rockwood',g:['EX']},
+ {c:'S43.4',n:'Verstauchung/Zerrung des Schultergelenkes',k:'schulterdistorsion schulterzerrung',g:['EX']},
+ {c:'S46.0',n:'Traumatische Verletzung der Rotatorenmanschette',k:'rotatorenmanschettenriss trauma',g:['EX']},
+ {c:'S42.2',n:'Fraktur des proximalen Humerus (Oberarmkopf)',k:'humeruskopffraktur oberarmbruch subkapital',g:['EX']},
+ {c:'S42.0',n:'Fraktur der Klavikula (Schlüsselbein)',k:'klavikulafraktur schluesselbeinbruch',g:['EX']},
+ {c:'T84.00',n:'Komplikation durch Schulter-Endoprothese',k:'schulterprothese schulter tep',g:['EX']},
+ /* Wirbelsäule */
+ {c:'M54.5',n:'Kreuzschmerz (Lumbago)',k:'rueckenschmerz lws hexenschuss lumbalgie',g:['WS']},
+ {c:'M54.4',n:'Lumboischialgie',k:'ischias ischialgie',g:['WS']},
+ {c:'M54.2',n:'Zervikalneuralgie (Nackenschmerz)',k:'hws nackenschmerzen zervikalsyndrom',g:['WS']},
+ {c:'M54.6',n:'Schmerzen im Bereich der Brustwirbelsäule',k:'bws thorakal',g:['WS']},
+ {c:'M53.1',n:'Zervikobrachial-Syndrom',k:'schulter arm syndrom',g:['WS']},
+ {c:'M51.1',n:'Lumbaler Bandscheibenschaden mit Radikulopathie',k:'bandscheibenvorfall prolaps nps wurzelreizung lws',g:['WS']},
+ {c:'M50.1',n:'Zervikaler Bandscheibenschaden mit Radikulopathie',k:'bandscheibenvorfall hws',g:['WS']},
+ {c:'M51.2',n:'Sonstige Bandscheibenverlagerung',k:'bandscheibenprotrusion vorwoelbung',g:['WS']},
+ {c:'M48.0',n:'Spinalkanalstenose',k:'spinalstenose enger spinalkanal claudicatio spinalis',g:['WS']},
+ {c:'M47.-',n:'Spondylose',k:'spondylarthrose facettensyndrom',g:['WS']},
+ {c:'M43.1',n:'Spondylolisthesis (Wirbelgleiten)',k:'gleitwirbel',g:['WS']},
+ {c:'M42.-',n:'Osteochondrose der Wirbelsäule',k:'osteochondrose',g:['WS']},
+ {c:'M41.-',n:'Skoliose',k:'wirbelsaeulenverkruemmung',g:['WS']},
+ {c:'M40.-',n:'Kyphose und Lordose',k:'rundruecken hohlkreuz morbus scheuermann',g:['WS']},
+ {c:'S13.4',n:'Distorsion der Halswirbelsäule (Schleudertrauma)',k:'hws distorsion beschleunigungsverletzung',g:['WS']},
+ {c:'S22.0',n:'Fraktur eines Brustwirbels',k:'wirbelbruch bwk',g:['WS']},
+ {c:'S32.0',n:'Fraktur eines Lendenwirbels',k:'wirbelbruch lwk',g:['WS']},
+ {c:'M96.1',n:'Postlaminektomie-Syndrom',k:'zustand nach bandscheiben op failed back',g:['WS']},
+ {c:'M81.9',n:'Osteoporose ohne pathologische Fraktur',k:'knochenschwund',g:['WS','EX']},
+ /* Extremitäten */
+ {c:'M16.1',n:'Koxarthrose (primär)',k:'hueftarthrose huefte',g:['EX']},
+ {c:'M17.1',n:'Gonarthrose (primär)',k:'kniearthrose knie',g:['EX']},
+ {c:'M23.-',n:'Binnenschädigung des Kniegelenkes (Meniskus, degenerativ)',k:'meniskusschaden meniskopathie',g:['EX']},
+ {c:'S83.2',n:'Meniskusriss (akut)',k:'meniskusriss',g:['EX']},
+ {c:'S83.5',n:'Verletzung des Kreuzbandes',k:'vkb hkb kreuzbandriss',g:['EX']},
+ {c:'M77.1',n:'Epicondylitis radialis humeri (Tennisellenbogen)',k:'tennisarm ellenbogen',g:['EX']},
+ {c:'M77.0',n:'Epicondylitis ulnaris humeri (Golferellenbogen)',k:'golferarm',g:['EX']},
+ {c:'M76.6',n:'Achillessehnen-Tendinitis (Achillodynie)',k:'achillessehne',g:['EX']},
+ {c:'M77.3',n:'Kalkaneussporn (Fersensporn)',k:'ferse',g:['EX']},
+ {c:'M72.2',n:'Plantarfasziitis / plantare Fibromatose',k:'plantarfaszie fusssohle',g:['EX']},
+ {c:'M70.6',n:'Bursitis trochanterica',k:'trochanter huefte schleimbeutel',g:['EX']},
+ {c:'M65.9',n:'Tendovaginitis (Sehnenscheidenentzündung)',k:'sehnenscheide',g:['EX']},
+ {c:'M20.1',n:'Hallux valgus',k:'ballenzeh',g:['EX']},
+ {c:'S93.4',n:'Distorsion des oberen Sprunggelenkes',k:'osg umknicktrauma baenderriss supinationstrauma sprunggelenk',g:['EX']},
+ {c:'S52.5',n:'Distale Radiusfraktur',k:'handgelenkbruch speiche colles',g:['EX']},
+ {c:'S72.0',n:'Schenkelhalsfraktur',k:'oberschenkelhalsbruch huefte fraktur',g:['EX']},
+ {c:'S82.-',n:'Fraktur des Unterschenkels / Sprunggelenkes',k:'sprunggelenkfraktur weber tibia fibula',g:['EX']},
+ {c:'Z96.64',n:'Zustand nach Hüft-Endoprothese (Hüft-TEP)',k:'hueft tep prothese',g:['EX']},
+ {c:'Z96.65',n:'Zustand nach Knie-Endoprothese (Knie-TEP)',k:'knie tep prothese',g:['EX']},
+ {c:'Z98.8',n:'Zustand nach Operation',k:'postoperativ nach op',g:['EX']},
+ /* ZNS */
+ {c:'I63.9',n:'Hirninfarkt (Schlaganfall)',k:'apoplex insult stroke',g:['ZN']},
+ {c:'I61.-',n:'Intrazerebrale Blutung',k:'hirnblutung',g:['ZN']},
+ {c:'I69.3',n:'Folgen eines Hirninfarktes',k:'schlaganfall folgen residuen zustand nach apoplex',g:['ZN']},
+ {c:'G81.-',n:'Hemiparese / Hemiplegie',k:'halbseitenlaehmung',g:['ZN']},
+ {c:'G82.-',n:'Paraparese / Tetraparese',k:'querschnitt laehmung',g:['ZN']},
+ {c:'G35',n:'Multiple Sklerose',k:'ms encephalomyelitis disseminata',g:['ZN']},
+ {c:'G20',n:'Morbus Parkinson',k:'parkinson schuettellaehmung',g:['ZN']},
+ {c:'G80.-',n:'Infantile Zerebralparese',k:'icp cerebralparese kind',g:['ZN']},
+ {c:'S06.-',n:'Schädel-Hirn-Trauma',k:'sht gehirnerschuetterung contusio',g:['ZN']},
+ {c:'G12.2',n:'Motoneuron-Krankheit (u. a. ALS)',k:'amyotrophe lateralsklerose',g:['ZN']},
+ {c:'Q05.-',n:'Spina bifida',k:'offener ruecken',g:['ZN']},
+ {c:'F82.-',n:'Umschriebene Entwicklungsstörung motorischer Funktionen',k:'entwicklungsverzoegerung kind motorik uemf',g:['ZN']},
+ /* Periphere Nerven / Muskeln */
+ {c:'G56.0',n:'Karpaltunnelsyndrom',k:'kts medianus hand kribbeln',g:['PN']},
+ {c:'G56.2',n:'Läsion des N. ulnaris',k:'sulcus ulnaris ellenrinne',g:['PN']},
+ {c:'G57.3',n:'Läsion des N. peroneus (Fußheberschwäche)',k:'peroneusparese fussheberparese',g:['PN']},
+ {c:'G54.-',n:'Krankheiten von Nervenwurzeln und -plexus',k:'wurzellaesion plexusparese',g:['PN']},
+ {c:'G51.0',n:'Fazialisparese',k:'gesichtslaehmung bell',g:['PN']},
+ {c:'G62.9',n:'Polyneuropathie',k:'pnp',g:['PN']},
+ {c:'G61.0',n:'Guillain-Barré-Syndrom',k:'gbs',g:['PN']},
+ {c:'G71.0',n:'Muskeldystrophie',k:'duchenne becken guertel',g:['PN']},
+ {c:'G70.0',n:'Myasthenia gravis',k:'myasthenie',g:['PN']},
+ {c:'S44.-',n:'Verletzung von Nerven (Schulter/Arm)',k:'nervenverletzung nervenlaesion arm',g:['PN','EX']},
+ /* Atmung */
+ {c:'J44.-',n:'COPD (chronisch obstruktive Lungenkrankheit)',k:'chronische bronchitis lungenemphysem raucherlunge',g:['AT']},
+ {c:'J45.-',n:'Asthma bronchiale',k:'asthma',g:['AT']},
+ {c:'E84.-',n:'Mukoviszidose (zystische Fibrose)',k:'cf',g:['AT']},
+ {c:'J47',n:'Bronchiektasen',k:'bronchiektasie',g:['AT']},
+ {c:'U09.9',n:'Post-COVID-Zustand',k:'long covid corona folgen',g:['AT']},
+ /* Gefäße / Lymphe */
+ {c:'I70.2',n:'pAVK der Extremitäten',k:'schaufensterkrankheit claudicatio durchblutungsstoerung',g:['GE']},
+ {c:'I73.9',n:'Periphere Gefäßkrankheit',k:'raynaud',g:['GE']},
+ {c:'I89.0',n:'Lymphödem, anderenorts nicht klassifiziert',k:'lymphoedem bein arm schwellung',g:['LY']},
+ {c:'I97.2',n:'Lymphödem nach Mastektomie',k:'brustkrebs armlymphoedem nach brust op',g:['LY']},
+ {c:'Q82.0',n:'Hereditäres Lymphödem',k:'angeboren',g:['LY']},
+ /* Sonstige (SO1–SO5, CS) */
+ {c:'K59.0',n:'Obstipation',k:'verstopfung darmtraegheit',g:['SO1']},
+ {c:'N39.3',n:'Belastungsinkontinenz',k:'stressinkontinenz blasenschwaeche beckenboden',g:['SO2']},
+ {c:'N39.4',n:'Sonstige Harninkontinenz (z. B. Dranginkontinenz)',k:'urge inkontinenz',g:['SO2']},
+ {c:'R32',n:'Harninkontinenz, nicht näher bezeichnet',k:'blasenschwaeche',g:['SO2']},
+ {c:'N31.-',n:'Neuromuskuläre Dysfunktion der Harnblase',k:'neurogene blase',g:['SO2']},
+ {c:'R15',n:'Stuhlinkontinenz',k:'analinkontinenz',g:['SO2']},
+ {c:'H81.1',n:'Benigner paroxysmaler Lagerungsschwindel',k:'bppv bplv lagerungsschwindel otolithen',g:['SO3']},
+ {c:'H81.0',n:'Morbus Menière',k:'meniere drehschwindel',g:['SO3']},
+ {c:'R42',n:'Schwindel und Taumel',k:'vertigo gleichgewichtsstoerung',g:['SO3']},
+ {c:'L97',n:'Ulcus cruris, anderenorts nicht klassifiziert',k:'offenes bein unterschenkelgeschwuer',g:['SO4']},
+ {c:'I83.0',n:'Varizen mit Ulzeration',k:'krampfadern ulkus',g:['SO4']},
+ {c:'N70.1',n:'Chronische Adnexitis',k:'salpingitis oophoritis unterleib',g:['SO5']},
+ {c:'N41.1',n:'Chronische Prostatitis',k:'prostata',g:['SO5']},
+ {c:'F45.41',n:'Chronische Schmerzstörung mit somatischen und psychischen Faktoren',k:'schmerzstoerung somatoform',g:['CS']},
+ {c:'R52.1',n:'Chronischer unbeeinflussbarer Schmerz',k:'chronischer schmerz',g:['CS']},
+ {c:'R52.2',n:'Sonstiger chronischer Schmerz',k:'chronisches schmerzsyndrom',g:['CS']},
+ {c:'M79.70',n:'Fibromyalgie',k:'fibromyalgiesyndrom weichteilrheuma',g:['CS']}
+];
+function normTxt(str){ return String(str||'').toLowerCase().replace(/ä/g,'ae').replace(/ö/g,'oe').replace(/ü/g,'ue').replace(/ß/g,'ss').replace(/[^a-z0-9.]+/g,' ').trim(); }
+function icdSuche(q){
+  const nq=normTxt(q).split(' ').filter(w=>w.length>=2);
+  if(!nq.length) return [];
+  const res=[];
+  for(const d of HMK_DIAG){
+    if(!d._h) d._h=normTxt(d.c+' '+d.n+' '+(d.k||'')+' '+(d.g||[]).join(' '));
+    if(nq.every(w=>d._h.indexOf(w)>=0)) res.push(d);
+    if(res.length>=8) break;
+  }
+  return res;
+}
+function renderIcdSuche(q){
+  const box=el('ck-suche-res'); if(!box) return;
+  if(!q || normTxt(q).length<2){ box.innerHTML=''; return; }
+  const hits=icdSuche(q);
+  if(!hits.length){
+    box.innerHTML=`<div class="hint" style="margin-top:4px">Keine Übereinstimmung in der physiotherapie-bezogenen Auswahl. Vollständige ICD-10-GM-Suche z. B. über <a href="https://www.icd-code.de/" target="_blank" rel="noopener" style="color:var(--accent)">icd-code.de</a> – gefundenen Code oben eintragen.</div>`;
+    return;
+  }
+  box.innerHTML=`<div class="icd-res">${hits.map(h=>`
+    <div class="icd-row" data-action="icd-pick" data-c="${h.c}" data-g="${(h.g||[])[0]||''}" role="button">
+      <span class="code">${h.c}</span>
+      <span class="nm">${esc(h.n)}</span>
+      <span class="tags">${(h.g||[]).map(x=>`<span class="tt-badge sonstig">${x}</span>`).join('')}${icdBlankoMatch(h.c.replace(/\.?-$/,''))?'<span class="tt-badge patient">Blanko</span>':''}</span>
+    </div>`).join('')}</div>
+  <div class="hint" style="margin-top:6px">Kuratierte physiotherapie-bezogene Auswahl (kein vollständiger ICD-10-GM). Endstelligkeit/Seitenangabe ggf. präzisieren – verbindlich codiert die Arztpraxis.</div>`;
+}
+
+
 function openRezeptCheckForm(){
   const heute=todayISO();
   const gruppen=Object.keys(HMK).map(k=>`<option value="${k}">${k} · ${esc(HMK[k].name)}</option>`).join('');
@@ -2458,8 +2734,18 @@ function openRezeptCheckForm(){
   openModal('Rezept-Check · Verordnung prüfen', `
     ${hmkUpdateHinweis()}
     <div class="note-box" style="margin-top:0">Plausibilitätsprüfung nach dem Heilmittelkatalog (Physiotherapie). Sie ersetzt nicht die verbindliche Prüfung durch Abrechnungsstelle und Krankenkasse.</div>
-    <div class="field"><label>Diagnosegruppe (laut Rezept)</label>
-      <select class="input" id="ck-gruppe"><option value="">— bitte wählen —</option>${gruppen}</select></div>
+    <div class="field"><label>Diagnose-Suche · Klartext → ICD-Vorschlag</label>
+      <input class="input" id="ck-suche" placeholder="z. B. Impingement Schulter · Kreuzschmerz · Schlaganfall · Tennisarm" autocomplete="off">
+    </div>
+    <div id="ck-suche-res"></div>
+    <div class="grid2">
+      <div class="field"><label>Diagnosegruppe (laut Rezept)</label>
+        <select class="input" id="ck-gruppe"><option value="">— bitte wählen —</option>${gruppen}</select></div>
+      <div class="field"><label>ICD-10-Code (laut Rezept)</label>
+        <input class="input" id="ck-icd" placeholder="z. B. M75.1" autocapitalize="characters"></div>
+    </div>
+    <div class="field"><label>Patient/in (optional – erscheint auf der Rücksprache-Notiz)</label>
+      <input class="input" id="ck-patient" list="ck-namen" placeholder="Name"><datalist id="ck-namen">${kalPatientenNamen().map(n=>`<option value="${esc(n)}"></option>`).join('')}</datalist></div>
     <div class="grid3">
       <div class="field"><label>Ausstellungsdatum</label><input class="input" type="date" id="ck-ausstellung" value="${heute}"></div>
       <div class="field"><label>Erster Behandlungstermin</label><input class="input" type="date" id="ck-beginn" value="${heute}"></div>
@@ -2483,6 +2769,7 @@ function openRezeptCheckForm(){
 
 function runRezeptCheck(){
   const F=[]; const add=(lv,t)=>F.push({lv,t});
+  const V=[]; const sug=t=>V.push(t);
   const gKey=val('ck-gruppe');
   if(!gKey){ el('check-result').innerHTML=`<div class="note-box">Bitte zuerst die Diagnosegruppe wählen.</div>`; return; }
   const G=HMK[gKey];
@@ -2491,6 +2778,33 @@ function runRezeptCheck(){
   const freq=parseInt(val('ck-freq'),10)||0;
   const hm=[];
   for(let i=0;i<4;i++){ const h=val('ck-hm-'+i); const e=parseInt(val('ck-ein-'+i),10)||0; if(h) hm.push({h,e}); }
+
+  /* ICD-10: Format und Plausibilität zur Diagnosegruppe */
+  const icdRaw=val('ck-icd');
+  const icd=icdNorm(icdRaw);
+  const icdClean=icd.replace(/-$/,'').replace(/\.$/,'');
+  const icdValid=/^[A-Z]\d{2}(\.\d{1,2})?$/.test(icdClean);
+  if(!icdRaw){
+    add('I','Kein ICD-10-Code eingetragen. Auf der Verordnung ist er Pflichtangabe – ohne Code keine Diagnose-Plausibilisierung.');
+  } else if(!icdValid){
+    add('W',`„${icdRaw}“ sieht nicht nach einem gültigen ICD-10-GM-Code aus (erwartet z. B. M75.1 oder G82.-). Bitte Schreibweise prüfen.`);
+    const rep=icdRepair(icdRaw);
+    if(rep) sug(`Vermutlich Schreibweise: Gemeint ist wahrscheinlich ${rep} – bitte auf der Verordnung prüfen.`);
+  } else {
+    const hit=HMK_ICD_ORIENT.find(o=>o.re.test(icdClean));
+    if(hit && hit.g){
+      if(hit.g.indexOf(gKey)>=0) add('OK',`ICD ${icdClean} (${hit.t}) passt plausibel zur Diagnosegruppe ${gKey}.`);
+      else {
+        add('W',`ICD ${icdClean} gehört zu ${hit.t} – typische Diagnosegruppe(n): ${hit.g.join(', ')}. Angegeben ist ${gKey}. Für Regel-Verordnungen gibt es keine abschließende amtliche Zuordnungsliste (die Zuordnung trifft die Arztpraxis) – bei offensichtlicher Diskrepanz Rücksprache empfohlen.`);
+        sug(`Diagnosegruppe prüfen: Für ICD ${icdClean} ist typischerweise die Gruppe ${hit.g[0]} vorgesehen – ggf. Neuausstellung mit Diagnosegruppe ${hit.g[0]} statt ${gKey}.`);
+        if(HMK_GRUPPEN_BEISPIELE[gKey]) sug(`Falls inhaltlich die Gruppe ${gKey} (${HMK[gKey].name}) zutrifft, wären typische ICD-Beispiele: ${HMK_GRUPPEN_BEISPIELE[gKey].join(' · ')}.`);
+      }
+    } else if(hit){
+      add('I',`ICD ${icdClean} (${hit.t}): Die Gruppenzuordnung ist hier diagnosespezifisch – keine automatische Orientierung möglich.`);
+    } else {
+      add('I',`ICD ${icdClean}: keine automatische Gruppen-Orientierung hinterlegt – Zuordnung laut Verordnung übernehmen.`);
+    }
+  }
 
   /* Alter (falls Geburtsdatum angegeben) */
   let alter=null;
@@ -2510,10 +2824,25 @@ function runRezeptCheck(){
     }
   }
 
-  /* 2) Blanko-Plausibilität */
+  /* 2) Blanko-Plausibilität inkl. abschließender Diagnoseliste (Anhang 1) */
   if(blanko){
     if(!G.blanko) add('W',`Die Blankoverordnung Physiotherapie gilt derzeit für Schulter-Diagnosen der Gruppe EX. Für die Gruppe ${gKey} ist eine Blankoverordnung ungewöhnlich – bitte prüfen.`);
-    else add('I','Blankoverordnung: Auswahl der Heilmittel (aus dem Katalog der Gruppe EX), Menge und Frequenz liegen bei der Therapeutin; Mengensteuerung über das Ampelsystem der Blanko-Vereinbarung.');
+    else {
+      add('I','Blankoverordnung: Auswahl der Heilmittel (aus dem Katalog der Gruppe EX), Menge und Frequenz liegen bei der Therapeutin; Mengensteuerung über das Ampelsystem der Blanko-Vereinbarung.');
+      if(icdValid){
+        if(icdBlankoMatch(icdClean)){
+          add('OK',`ICD ${icdClean} steht auf der abschließenden Blanko-Diagnoseliste (Anhang 1, Schulter) – Blankoverordnung mit Gruppe EX zulässig.`);
+          if(/^(Z96\.60|Z98\.8)/.test(icdClean)) add('I','Z96.60 bzw. Z98.8 begründen die Blankoverordnung nur in der vereinbarten Kombination (Z96.60 + Z98.8 bzw. M24.41 + Z98.8) – bitte prüfen, dass beide Codes auf der Verordnung stehen.');
+          if(/^(M75\.1|T22\.3)/.test(icdClean)) add('I','Für diesen Code gilt zusätzlich BVB bzw. langfristiger Heilmittelbedarf – das Ampelsystem der Blanko-Vereinbarung greift hier nicht.');
+        } else {
+          add('W',`ICD ${icdClean} steht NICHT auf der abschließenden Blanko-Diagnoseliste (114 Schulter-Codes, Anhang 1 zum Vertrag nach § 125a SGB V). Ohne gelisteten Code ist keine Blankoverordnung möglich – es wäre eine Regel-Verordnung erforderlich.`);
+          const alts=blankoAlternativen(icdClean);
+          sug(`Blanko-fähige Codes als Rücksprache-Vorschlag (nur sofern die tatsächliche Diagnose entspricht): ${alts.map(a=>a.code+(blankoName(a.code)?' – '+blankoName(a.code):'')+' ('+a.warum+')').join(' · ')}. Alternativ: Neuausstellung als Regel-Verordnung mit dem vorhandenen Code.`);
+        }
+      } else {
+        add('I','Für die Blanko-Prüfung bitte den ICD-10-Code eintragen – die Diagnoseliste (114 Schulter-Codes) ist abschließend.');
+      }
+    }
   }
 
   /* 3) Heilmittel-Zulässigkeit */
@@ -2524,7 +2853,12 @@ function runRezeptCheck(){
     if(x.h==='Standardisierte Heilmittelkombination') hatKombi=true;
     if(isV){ nV++; sumV+=x.e; add('OK',`„${x.h}“ ist in Gruppe ${gKey} als vorrangiges Heilmittel verordnungsfähig.`); }
     else if(isE){ nE++; sumE+=x.e; add('OK',`„${x.h}“ ist in Gruppe ${gKey} als ergänzendes Heilmittel verordnungsfähig.`); }
-    else add('F',`„${x.h}“ ist in der Diagnosegruppe ${gKey} (${G.name}) NICHT verordnungsfähig – Absetzungsgefahr. Rücksprache mit der Arztpraxis (Änderung/Neuausstellung) empfohlen.`);
+    else {
+      add('F',`„${x.h}“ ist in der Diagnosegruppe ${gKey} (${G.name}) NICHT verordnungsfähig – Absetzungsgefahr. Rücksprache mit der Arztpraxis (Änderung/Neuausstellung) empfohlen.`);
+      const gs=Object.keys(HMK).filter(k=>HMK[k].v.indexOf(x.h)>=0);
+      if(gs.length) sug(`„${x.h}“ ist vorrangig verordnungsfähig in: ${gs.join(', ')}. Falls die entsprechende Indikation vorliegt, Neuausstellung mit Gruppe ${gs[0]} erwägen${HMK_GRUPPEN_BEISPIELE[gs[0]]?` (typischer ICD z. B. ${HMK_GRUPPEN_BEISPIELE[gs[0]][0]})`:''}.`);
+      else { const ge=Object.keys(HMK).filter(k=>HMK[k].e.indexOf(x.h)>=0); if(ge.length) sug(`„${x.h}“ ist (nur als ergänzendes Heilmittel) verordnungsfähig in: ${ge.join(', ')}.`); }
+    }
   });
 
   /* 4) Kombinationsregeln */
@@ -2559,7 +2893,7 @@ function runRezeptCheck(){
     else add('OK',`Frequenz ${freq}×/Woche innerhalb der Empfehlung (1–3× wöchentlich).`);
   }
   if(G.hinweis) add('I',G.hinweis);
-  if(lhb) add('I','Langfristiger/besonderer Verordnungsbedarf: Verordnung ist extrabudgetär; ICD-10-Code und Diagnosegruppe müssen exakt der Diagnoseliste entsprechen (bzw. Kassen-Genehmigung).');
+  if(lhb) add('I',`Langfristiger/besonderer Verordnungsbedarf: Verordnung ist extrabudgetär; ICD-10-Code und Diagnosegruppe müssen exakt der Diagnoseliste entsprechen (bzw. Kassen-Genehmigung). ${icdValid?`Abgleich für ICD ${icdClean} + Gruppe ${gKey}: `:''}<a href="https://www.kbv.de/documents/praxis/verordnungen/heilmittel/heilmittel-diagnoseliste.pdf" target="_blank" rel="noopener" style="color:var(--accent)">KBV-Diagnoseliste LHB/BVB (PDF)</a>.`);
 
   /* Ergebnis rendern */
   const nF=F.filter(x=>x.lv==='F').length, nW=F.filter(x=>x.lv==='W').length;
@@ -2568,10 +2902,43 @@ function runRezeptCheck(){
     : nW ? `<div class="check-banner w">⚠ Keine kritischen Fehler, aber ${nW} Hinweis${nW>1?'e':''} – bitte prüfen.</div>`
          : `<div class="check-banner ok">✓ Keine Auffälligkeiten nach Katalog- und Fristenprüfung.</div>`;
   const LV={F:['Fehler','f'],W:['Hinweis','w'],OK:['OK','ok'],I:['Info','i']};
+  lastCheck={ gKey, gName:G.name, icd: icdValid?icdClean:(icdRaw||'—'), blanko, patient:val('ck-patient'), ausst,
+    findings:F.filter(x=>x.lv==='F'||x.lv==='W').map(x=>x.t.replace(/<[^>]*>/g,'')), vorschlaege:V.slice() };
+  const vHtml = V.length ? `<div class="check-vorschlag">
+      <div class="k">Vorschläge für die Rücksprache mit der Arztpraxis</div>
+      ${V.map(t=>`<div class="vi">– ${t}</div>`).join('')}
+      <div class="vd">Die Codierung obliegt der Arztpraxis. Die Vorschläge gelten nur, sofern die tatsächliche Diagnose ihnen entspricht – sie dienen der Rücksprache, nicht der „passenden“ Abrechnung.</div>
+      <div class="btn-row" style="margin-top:10px"><button class="btn btn-ghost btn-sm" data-action="print-ruecksprache">Rücksprache-Notiz drucken</button></div>
+    </div>` : '';
   el('check-result').innerHTML = banner
     + `<div class="check-list">${F.map(x=>`<div class="check-item"><span class="check-badge ${LV[x.lv][1]}">${LV[x.lv][0]}</span><div>${x.t}</div></div>`).join('')}</div>`
+    + vHtml
     + `<div class="hint" style="margin-top:12px"><strong>Formalien auf dem Rezept zusätzlich prüfen:</strong> Arztunterschrift &amp; Betriebsstättenstempel · Verordnungsdatum · Versichertendaten · ICD-10-Code und Diagnosegruppe · Leitsymptomatik (Buchstabe oder Freitext) · Heilmittel mit Einheiten · ggf. Therapiebericht/Hausbesuch angekreuzt · nachträgliche Änderungen nur mit ärztlicher Abzeichnung gültig · Behandlungsunterbrechungen über 14 Kalendertage dokumentieren/begründen.</div>`
-    + `<div class="hint" style="margin-top:6px;color:var(--muted)">Regelstand: ${HMK_STAND}. Ohne Gewähr – verbindlich prüfen Abrechnungsstelle und Krankenkasse.</div>`;
+    + `<div class="hint" style="margin-top:6px;color:var(--muted)">Regelstand: ${HMK_STAND} · Blanko-Diagnoseliste: Anhang 1 zum Vertrag nach § 125a SGB V (i. d. F. 01.11.2024). Ohne Gewähr – verbindlich prüfen Abrechnungsstelle und Krankenkasse.</div>`;
+}
+
+function renderRueckspracheDoc(d){
+  const heute=todayISO();
+  const zeilen=(d.findings||[]).map(t=>`<p style="margin:0 0 2.6mm">– ${esc(t)}</p>`).join('');
+  const vs=(d.vorschlaege||[]).map(t=>`<p style="margin:0 0 2.6mm">– ${esc(t)}</p>`).join('');
+  return `<div class="doc">
+    <div class="doc-pagemark">Rücksprache zur Heilmittelverordnung</div>
+    ${docHeader()}
+    <div class="doc-addr">
+      <div class="rcpt">An die ausstellende Arztpraxis${d.patient?`<br>Patient/in: ${esc(d.patient)}`:''}</div>
+      <div class="date">${esc(fmtDateLong(heute))}</div>
+    </div>
+    <div class="doc-section"><h1>Rücksprache zur Verordnung</h1><span class="eb">Bitte um Prüfung bzw. Neuausstellung</span></div>
+    <div class="doc-intro">
+      <p class="an">Sehr geehrte Kolleginnen und Kollegen,</p>
+      <p>bei Annahme der Heilmittelverordnung${d.patient?` für ${esc(d.patient)}`:''} (Diagnosegruppe <strong>${esc(d.gKey)}</strong>${d.icd&&d.icd!=='—'?`, ICD-10 <strong>${esc(d.icd)}</strong>`:''}${d.blanko?', Blankoverordnung':''}${d.ausst?`, ausgestellt am ${esc(fmtDate(d.ausst))}`:''}) sind bei der Plausibilitätsprüfung nach dem Heilmittelkatalog folgende Punkte aufgefallen, die einer Abrechnung entgegenstehen können:</p>
+    </div>
+    <div class="doc-intro" style="margin-top:1mm">${zeilen||'<p>–</p>'}</div>
+    ${vs?`<div class="doc-intro" style="margin-top:3mm"><p style="font-weight:600;margin-bottom:2.6mm">Vorschlag zur Neuausstellung – sofern die tatsächliche Diagnose dem entspricht:</p>${vs}<p style="font-size:9pt;color:var(--muted)">Die Codierung und die Auswahl der Diagnosegruppe obliegen selbstverständlich Ihrer Praxis.</p></div>`:''}
+    <div class="doc-intro" style="margin-top:3mm"><p>Ich bitte um kurze Prüfung und – falls zutreffend – um eine korrigierte Neuausstellung, damit die Behandlung zeitnah beginnen bzw. fortgesetzt werden kann. Für Rückfragen stehe ich gern zur Verfügung. Vielen Dank!</p></div>
+    <div class="doc-sign"><div class="g">Mit freundlichen und kollegialen Grüßen</div><div class="s">${esc(state.praxis.name)}</div></div>
+    ${docFooter(fmtDateLong(heute)+'\u2003·\u2003Rücksprache Heilmittelverordnung')}
+  </div>`;
 }
 
 /* ---------- Termine: Formular, Serie, Terminliste, ICS, Erinnerung ---------- */
