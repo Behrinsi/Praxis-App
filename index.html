@@ -482,7 +482,7 @@ const DEFAULT_DATA = {
 /* ---------- Persistenz ---------- */
 const STORE_KEY = 'sb_abrechnung_v1';
 let state = loadData();
-const APP_VERSION = '10.4 · Juli 2026';
+const APP_VERSION = '10.5 · Juli 2026';
 let ui = { view:'dashboard', rezeptMonth: currentYM(), auswertungJahr: currentYM().slice(0,4), kalMonat: currentYM(), kalTag: todayISO(), vertragTyp:'gkv', vertragData:{name:'',geb:'',anschrift:'',kasse:''} };
 let edKalTermin = null, pendingKalDel = null;
 
@@ -1750,10 +1750,11 @@ document.addEventListener('change', e=>{
   if(t.id==='t-repeat'){ const w=el('t-wrap-repeatbis'); if(w) w.style.display=(t.value==='w')?'':'none'; }
   if(t.id==='import-file'){ handleImportFile(t.files[0]); }
   if(t.id==='foto-input'){ handleFotoFiles(t.files); t.value=''; }
-  if(t.id==='ck-suche'){ renderIcdSuche(t.value); }
 });
 document.addEventListener('input', e=>{
   const t=e.target;
+  // Diagnose-Suche: live beim Tippen (input feuert bei jeder Eingabe, change erst beim Verlassen)
+  if(t.id==='ck-suche'){ renderIcdSuche(t.value); }
   // Rechnungsbetrag live aktualisieren
   if(t.dataset && (t.dataset.pf==='anzahl'||t.dataset.pf==='einzel')){
     syncRechnungForm(); const s=el('rech-sum'); if(s) s.textContent=fmtEUR(rechnungSumme(edRechnung));

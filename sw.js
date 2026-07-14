@@ -4,7 +4,7 @@
      nur wenn offline, wird die zuletzt gespeicherte Version aus dem Cache genutzt.
    - Übrige Dateien (Icons, Manifest, Schriften): CACHE-FIRST (schnell, offline-fähig).
    Bei jeder neuen Version unten die Versionsnummer erhöhen. */
-const CACHE = 'praxis-behringer-v15';
+const CACHE = 'praxis-behringer-v16';
 const ASSETS = [
   './',
   './index.html',
